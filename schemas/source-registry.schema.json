@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Xopoko/poland/blob/main/schemas/source-registry.schema.json",
+  "title": "Poland source registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "registry_version", "description", "sources"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "registry_version": {"type": "string", "format": "date"},
+    "description": {"type": "string", "minLength": 1, "maxLength": 1000},
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 512,
+      "items": {"$ref": "#/$defs/source"}
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "authority",
+        "url",
+        "domains",
+        "jurisdiction",
+        "localities",
+        "languages",
+        "topics",
+        "access",
+        "effect",
+        "automation",
+        "last_verified",
+        "freshness_days",
+        "notes",
+        "publisher",
+        "source_tier",
+        "source_kind",
+        "accessed_at",
+        "publication_date",
+        "modified_date",
+        "effective_from",
+        "effective_to",
+        "status",
+        "locator"
+      ],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 80, "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+        "title": {"type": "string", "minLength": 1, "maxLength": 300},
+        "authority": {"type": "string", "minLength": 1, "maxLength": 240},
+        "url": {"type": "string", "format": "uri", "pattern": "^https://", "maxLength": 2048},
+        "domains": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 253, "pattern": "^[a-z0-9.-]+$"}
+        },
+        "jurisdiction": {"enum": ["national", "eu", "voivodeship", "gmina"]},
+        "localities": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 80, "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"}
+        },
+        "languages": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 2, "maxLength": 6, "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$"}
+        },
+        "topics": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 80, "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"}
+        },
+        "access": {"enum": ["public", "authenticated", "credentialed_api"]},
+        "effect": {"enum": ["informational", "personal_record", "consequential"]},
+        "automation": {"enum": ["public_read_only", "public_read_only_handoff", "prohibited_external_effect"]},
+        "last_verified": {"type": "string", "format": "date"},
+        "freshness_days": {"type": "integer", "minimum": 1, "maximum": 365},
+        "notes": {"type": "string", "minLength": 1, "maxLength": 1000},
+        "publisher": {"type": "string", "minLength": 1, "maxLength": 240},
+        "source_tier": {"enum": ["T0", "T1", "T2"]},
+        "source_kind": {"enum": ["legal_text", "official_guidance", "official_service", "official_registry"]},
+        "accessed_at": {"type": "string", "format": "date"},
+        "publication_date": {"type": ["string", "null"], "format": "date"},
+        "modified_date": {"type": ["string", "null"], "format": "date"},
+        "effective_from": {"type": ["string", "null"], "format": "date"},
+        "effective_to": {"type": ["string", "null"], "format": "date"},
+        "status": {"enum": ["active", "superseded", "unavailable"]},
+        "locator": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "value"],
+          "properties": {
+            "type": {"enum": ["page", "heading", "article", "paragraph", "annex", "table_row", "form_field"]},
+            "value": {"type": "string", "minLength": 1, "maxLength": 240}
+          }
+        }
+      }
+    }
+  }
+}

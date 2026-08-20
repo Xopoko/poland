@@ -1,0 +1,61 @@
+{
+  "name": "poland-agent-skills",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Official-source-first Agent Skills for life and administration in Poland.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Xopoko/poland.git"
+  },
+  "keywords": [
+    "pi-package",
+    "poland",
+    "immigration",
+    "expats",
+    "official-sources",
+    "agent-skills"
+  ],
+  "files": [
+    ".claude-plugin",
+    ".codex-plugin",
+    ".cursor-plugin",
+    "agents",
+    "assets",
+    "data",
+    "lib",
+    "mcp",
+    "references",
+    "schemas",
+    "scripts",
+    "skills"
+  ],
+  "pi": {
+    "skills": [
+      "./skills/poland",
+      "./skills/poland-appeals-review",
+      "./skills/poland-benefits-support",
+      "./skills/poland-business",
+      "./skills/poland-case-planning",
+      "./skills/poland-citizenship-long-term",
+      "./skills/poland-consumer-banking",
+      "./skills/poland-digital-government",
+      "./skills/poland-emergency-rights",
+      "./skills/poland-employment-rights",
+      "./skills/poland-eu-mobility",
+      "./skills/poland-family-education",
+      "./skills/poland-foreign-documents",
+      "./skills/poland-healthcare",
+      "./skills/poland-housing",
+      "./skills/poland-identity",
+      "./skills/poland-local-services",
+      "./skills/poland-protection-referral",
+      "./skills/poland-social-insurance",
+      "./skills/poland-source-verification",
+      "./skills/poland-stay-residence",
+      "./skills/poland-tax",
+      "./skills/poland-transport-driving",
+      "./skills/poland-work-authorization"
+    ]
+  }
+}

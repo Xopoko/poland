@@ -1,0 +1,29 @@
+---
+name: poland-benefits-support
+description: Benefits support. Use for Polish family benefits, social assistance, disability support, or Empatia routes.
+---
+
+# Poland Benefits and Public Support
+
+Use for family-benefit, social-assistance, disability-support, and Empatia or
+municipality-owned public-support navigation. School, childcare, and university
+administration belong to `poland-family-education`.
+
+Confirm the benefit or support category, relevant person's citizenship/status
+group, household category without names or financial values, locality, benefit
+period, deadline, and whether an official decision already exists. Do not infer
+entitlement or request account, income, health, or identity records in plugin
+tools.
+
+Use current Gov.pl, ministry, Empatia, and competent municipal or disability
+support sources returned by the registry. Identify the responsible authority,
+current period and public channel, evidence categories, locality variation, and
+official landing-page handoff. If the route reaches an authenticated case, login
+wall, personal record, or form, stop. Verify amounts, thresholds, dates, and
+forms from public official pages at action time. Do not submit, appeal, inspect
+records, or promise an award even with user consent.
+
+Route school or childcare administration to `poland-family-education`, social
+insurance to `poland-social-insurance`, residence dependencies to
+`poland-stay-residence`, and adverse decisions to `poland-appeals-review`. Read
+`../../references/daily-life-map.md`.

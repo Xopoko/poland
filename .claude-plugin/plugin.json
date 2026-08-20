@@ -1,0 +1,26 @@
+{
+  "name": "poland",
+  "version": "0.1.0",
+  "description": "Official-source-first Poland support for residents, immigrants, and expats: residence, work, tax, documents, healthcare, and daily administration with dated evidence, offline tools, and strict user-only action boundaries.",
+  "author": {
+    "name": "Xopoko",
+    "email": "xopoko@users.noreply.github.com",
+    "url": "https://github.com/Xopoko"
+  },
+  "homepage": "https://github.com/Xopoko/poland",
+  "repository": "https://github.com/Xopoko/poland",
+  "license": "MIT",
+  "keywords": [
+    "poland",
+    "immigration",
+    "expats",
+    "residence",
+    "work",
+    "tax",
+    "healthcare",
+    "official-sources",
+    "agent-skills",
+    "mcp",
+    "cli"
+  ]
+}

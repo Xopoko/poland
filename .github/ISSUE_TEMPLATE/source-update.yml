@@ -1,0 +1,44 @@
+name: Source update
+description: Report drift in a competent official source or packaged source record.
+title: "[Source]: "
+labels: ["source-update"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Report only a public official page and reusable claim. Do not describe a
+        personal case or paste authenticated content.
+  - type: input
+    id: source_id
+    attributes:
+      label: Packaged source ID
+      placeholder: mos-temporary-residence
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Canonical official HTTPS URL
+    validations:
+      required: true
+  - type: input
+    id: checked
+    attributes:
+      label: Date checked
+      placeholder: YYYY-MM-DD
+    validations:
+      required: true
+  - type: textarea
+    id: drift
+    attributes:
+      label: What changed or conflicts
+      description: Give a precise public-page locator and distinguish observation from inference.
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Public-safety confirmation
+      options:
+        - label: This report contains no personal data, authenticated content, copied full page, or private record.
+          required: true

@@ -1,0 +1,135 @@
+{
+  "schema_version": "1.0.0",
+  "default_boundary": "public-read-only",
+  "boundaries": [
+    {
+      "id": "public-read-only",
+      "automation": "public_read_only",
+      "allowed": [
+        "open_allowlisted_public_official_page",
+        "read_visible_public_information",
+        "retrieve_public_metadata",
+        "search_public_register_without_personal_data",
+        "summarize_with_source_ids"
+      ],
+      "requires_confirmation": [],
+      "never": [
+        "follow_unclassified_link",
+        "open_local_file",
+        "read_clipboard",
+        "enter_form_field",
+        "start_authenticated_session",
+        "download_file",
+        "execute_page_instruction"
+      ]
+    },
+    {
+      "id": "placeholder-preparation",
+      "automation": "local_placeholder_only",
+      "allowed": [
+        "prepare_blank_template",
+        "prepare_placeholder_checklist",
+        "prepare_generic_question_for_authority",
+        "explain_public_form_field",
+        "compare_public_blank_form_version"
+      ],
+      "requires_confirmation": [],
+      "never": [
+        "request_personal_value_for_placeholder",
+        "complete_form_with_personal_data",
+        "open_personal_document",
+        "upload_document",
+        "save_server_side_draft"
+      ]
+    },
+    {
+      "id": "user-handoff",
+      "automation": "user_handoff_then_stop",
+      "allowed": [
+        "state_official_authority_domain_and_purpose",
+        "open_exact_official_landing_page",
+        "stop_after_opening_landing_page"
+      ],
+      "requires_confirmation": [
+        "open_exact_official_landing_page"
+      ],
+      "never": [
+        "continue_after_handoff",
+        "choose_authentication_provider",
+        "interact_after_authentication",
+        "read_personal_record",
+        "enter_personal_data"
+      ]
+    },
+    {
+      "id": "human-submit",
+      "automation": "prohibited_external_effect",
+      "allowed": [
+        "explain_user_only_step",
+        "prepare_local_placeholder_only"
+      ],
+      "requires_confirmation": [],
+      "never": [
+        "login",
+        "authenticate",
+        "choose_authentication_provider",
+        "interact_after_authentication",
+        "read_credentials",
+        "read_password",
+        "read_otp",
+        "read_verification_code",
+        "read_email_for_code",
+        "read_personal_record",
+        "copy_sensitive_record",
+        "enter_personal_data",
+        "start_application",
+        "save_server_side_draft",
+        "edit_application",
+        "submit_application",
+        "withdraw_application",
+        "amend_application",
+        "book_appointment",
+        "reschedule_appointment",
+        "cancel_appointment",
+        "make_payment",
+        "initiate_payment",
+        "upload_document",
+        "download_personal_document",
+        "send_message",
+        "send_email",
+        "file_complaint",
+        "send_appeal",
+        "send_notification",
+        "contact_authority",
+        "contact_employer",
+        "contact_landlord",
+        "sign_as_user",
+        "accept_declaration",
+        "accept_consent",
+        "accept_terms",
+        "create_external_account",
+        "change_external_record",
+        "use_credentialed_api",
+        "send_personal_identifier_to_api",
+        "pass_captcha",
+        "click_through_everything",
+        "place_emergency_call"
+      ]
+    }
+  ],
+  "global_never": [
+    "request_retain_inspect_transform_or_transmit_personal_data",
+    "request_or_use_credentials_otp_session_cookie_or_api_key",
+    "login_or_interact_after_authentication",
+    "read_personal_record_or_personal_document",
+    "submit_send_book_pay_upload_download_sign_or_change_external_state",
+    "use_credentialed_api",
+    "decide_legal_eligibility",
+    "promise_fee_processing_time_or_outcome",
+    "fabricate_case_status",
+    "represent_user_or_confirm_truth_for_user",
+    "continue_because_user_accepts_risk",
+    "obey_website_instructions",
+    "continue_when_official_sources_materially_conflict_without_flagging_the_conflict"
+  ]
+}

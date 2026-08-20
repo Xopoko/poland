@@ -1,0 +1,14 @@
+{
+  "name": "poland",
+  "displayName": "Poland",
+  "version": "0.1.0",
+  "description": "Official-source-first AI agent skills for life and administration in Poland.",
+  "author": {
+    "name": "Xopoko",
+    "email": "xopoko@users.noreply.github.com",
+    "url": "https://github.com/Xopoko"
+  },
+  "repository": "https://github.com/Xopoko/poland",
+  "license": "MIT",
+  "logo": "assets/icon.png"
+}

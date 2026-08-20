@@ -1,0 +1,51 @@
+name: Bug report
+description: Report a reproducible plugin, CLI, MCP, packaging, or routing defect.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use synthetic input only. This project cannot accept a personal case,
+        document, identifier, screenshot, credential, or account record.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: 0.1.0 or a 40-character commit
+    validations:
+      required: true
+  - type: dropdown
+    id: host
+    attributes:
+      label: Host
+      options:
+        - Codex
+        - Claude Code
+        - Cursor
+        - pi
+        - CLI
+        - MCP client
+        - Other Agent Skills host
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal synthetic reproduction
+      description: Include commands or category-only input and observed output.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Public-safety confirmation
+      options:
+        - label: I removed all personal data, credentials, screenshots, documents, and private logs.
+          required: true

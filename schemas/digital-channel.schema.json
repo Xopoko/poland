@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Xopoko/poland/blob/main/schemas/digital-channel.schema.json",
+  "title": "Poland digital government channel catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "description", "channels"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "description": {"type": "string", "minLength": 1, "maxLength": 1000},
+    "channels": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "items": {"$ref": "#/$defs/channel"}
+    }
+  },
+  "$defs": {
+    "tokenArray": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120,
+        "pattern": "^[a-z0-9]+(?:[_-][a-z0-9]+)*$"
+      }
+    },
+    "channel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "channel_kind",
+        "source_ids",
+        "access_scope",
+        "public_surface",
+        "protected_surface",
+        "authentication_categories",
+        "agent_mode",
+        "stop_before",
+        "live_verify",
+        "notes"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "name": {"type": "string", "minLength": 1, "maxLength": 200},
+        "channel_kind": {
+          "enum": [
+            "application_portal",
+            "appointment_portal",
+            "correspondence",
+            "identity_signature",
+            "information_portal",
+            "mobile_app",
+            "open_data_api",
+            "personal_account",
+            "public_registry"
+          ]
+        },
+        "source_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        },
+        "access_scope": {
+          "enum": ["authenticated", "credentialed_api", "mixed", "public"]
+        },
+        "public_surface": {
+          "allOf": [
+            {"$ref": "#/$defs/tokenArray"},
+            {"minItems": 1}
+          ]
+        },
+        "protected_surface": {"$ref": "#/$defs/tokenArray"},
+        "authentication_categories": {"$ref": "#/$defs/tokenArray"},
+        "agent_mode": {
+          "enum": [
+            "prohibited_external_effect",
+            "public_read_only",
+            "public_read_only_handoff"
+          ]
+        },
+        "stop_before": {
+          "allOf": [
+            {"$ref": "#/$defs/tokenArray"},
+            {"minItems": 1}
+          ]
+        },
+        "live_verify": {
+          "allOf": [
+            {"$ref": "#/$defs/tokenArray"},
+            {"minItems": 1}
+          ]
+        },
+        "notes": {"type": "string", "minLength": 1, "maxLength": 800}
+      }
+    }
+  }
+}

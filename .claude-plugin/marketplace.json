@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "poland",
+  "version": "0.1.0",
+  "owner": {
+    "name": "Xopoko",
+    "email": "xopoko@users.noreply.github.com"
+  },
+  "metadata": {
+    "description": "Official-source-first AI agent skills for life and administration in Poland."
+  },
+  "plugins": [
+    {
+      "name": "poland",
+      "description": "Official-source-first Poland support for residents, immigrants, and expats: residence, work, tax, documents, healthcare, and daily administration with dated evidence, offline tools, and strict user-only action boundaries.",
+      "repository": "https://github.com/Xopoko/poland",
+      "version": "0.1.0",
+      "author": {
+        "name": "Xopoko",
+        "email": "xopoko@users.noreply.github.com",
+        "url": "https://github.com/Xopoko"
+      },
+      "license": "MIT",
+      "category": "productivity",
+      "keywords": [
+        "poland",
+        "immigration",
+        "expats",
+        "official-sources",
+        "agent-skills",
+        "mcp"
+      ],
+      "source": "./"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "last_verified": "2026-08-20",
+  "regions": [
+    {"id": "dolnoslaskie", "name": "Dolnoslaskie", "administrative_centres": ["Wroclaw"]},
+    {"id": "kujawsko-pomorskie", "name": "Kujawsko-Pomorskie", "administrative_centres": ["Bydgoszcz", "Torun"]},
+    {"id": "lubelskie", "name": "Lubelskie", "administrative_centres": ["Lublin"]},
+    {"id": "lubuskie", "name": "Lubuskie", "administrative_centres": ["Gorzow Wielkopolski", "Zielona Gora"]},
+    {"id": "lodzkie", "name": "Lodzkie", "administrative_centres": ["Lodz"]},
+    {"id": "malopolskie", "name": "Malopolskie", "administrative_centres": ["Krakow"]},
+    {"id": "mazowieckie", "name": "Mazowieckie", "administrative_centres": ["Warsaw"]},
+    {"id": "opolskie", "name": "Opolskie", "administrative_centres": ["Opole"]},
+    {"id": "podkarpackie", "name": "Podkarpackie", "administrative_centres": ["Rzeszow"]},
+    {"id": "podlaskie", "name": "Podlaskie", "administrative_centres": ["Bialystok"]},
+    {"id": "pomorskie", "name": "Pomorskie", "administrative_centres": ["Gdansk"]},
+    {"id": "slaskie", "name": "Slaskie", "administrative_centres": ["Katowice"]},
+    {"id": "swietokrzyskie", "name": "Swietokrzyskie", "administrative_centres": ["Kielce"]},
+    {"id": "warminsko-mazurskie", "name": "Warminsko-Mazurskie", "administrative_centres": ["Olsztyn"]},
+    {"id": "wielkopolskie", "name": "Wielkopolskie", "administrative_centres": ["Poznan"]},
+    {"id": "zachodniopomorskie", "name": "Zachodniopomorskie", "administrative_centres": ["Szczecin"]}
+  ]
+}

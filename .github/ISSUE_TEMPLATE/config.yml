@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Support and personal-data rules
+    url: https://github.com/Xopoko/poland/blob/main/SUPPORT.md
+    about: Read this before sharing any reproduction or source report.
+  - name: Private security report
+    url: https://github.com/Xopoko/poland/security/advisories/new
+    about: Report a vulnerability without posting it publicly.

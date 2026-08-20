@@ -1,0 +1,23 @@
+{
+  "schema_version": "poland.scenario-golden-cases.v1",
+  "cases": [
+    {"query": "I am moving to Poland for work", "scenario_id": "move-to-poland", "required_source": "your-europe-citizens"},
+    {"query": "temporary residence next step", "scenario_id": "residence-next-step", "required_source": "udsc-home"},
+    {"query": "citizenship procedure", "scenario_id": "citizenship-route", "required_source": "gov-citizenship"},
+    {"query": "first address and PESEL", "scenario_id": "first-address-and-pesel", "required_source": "gov-pesel-foreigners"},
+    {"query": "work permit", "scenario_id": "work-authorization-route", "required_source": "biznes-legal-work"},
+    {"query": "employment contract problem", "scenario_id": "employment-rights-problem", "required_source": "pip-employees"},
+    {"query": "tax record", "scenario_id": "tax-record-check", "required_source": "podatki-home"},
+    {"query": "ZUS insurance record", "scenario_id": "social-insurance-record-check", "required_source": "ezus"},
+    {"query": "start or verify business", "scenario_id": "start-or-verify-business", "required_source": "biznes-ceidg"},
+    {"query": "health access", "scenario_id": "health-access", "required_source": "nfz-patient"},
+    {"query": "foreign document use", "scenario_id": "foreign-document-use", "required_source": "sworn-translators"},
+    {"query": "EU cross border authority problem", "scenario_id": "eu-cross-border-problem", "required_source": "solvit"},
+    {"query": "international protection", "scenario_id": "protection-referral", "required_source": "udsc-home"},
+    {"query": "appeal refusal", "scenario_id": "administrative-review", "required_source": "free-legal-aid"},
+    {"query": "family benefit", "scenario_id": "family-benefit-route", "required_source": "family-benefits"},
+    {"query": "landlord dispute", "scenario_id": "housing-dispute", "required_source": "free-legal-aid"},
+    {"query": "consumer complaint", "scenario_id": "consumer-dispute", "required_source": "uokik-consumer"},
+    {"query": "immediate safety", "scenario_id": "immediate-safety", "required_source": "emergency-112"}
+  ]
+}

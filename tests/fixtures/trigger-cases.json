@@ -1,0 +1,101 @@
+{
+  "schema_version": "poland.trigger-cases.v1",
+  "skills": {
+    "poland": {
+      "should_trigger": ["Help me organize everything I need to do after moving to Poland."],
+      "should_not_trigger": ["Translate this unrelated poem into Polish."]
+    },
+    "poland-case-planning": {
+      "should_trigger": ["Make a deadline and evidence plan for my Polish administrative cases."],
+      "should_not_trigger": ["Tell me today's weather in Warsaw."]
+    },
+    "poland-source-verification": {
+      "should_trigger": ["Verify this Poland permit instruction against current official sources."],
+      "should_not_trigger": ["Summarize the private blog I pasted without fact checking."]
+    },
+    "poland-stay-residence": {
+      "should_trigger": ["Which official route covers my temporary residence case in Poland?"],
+      "should_not_trigger": ["I received a refusal and need the official appeal route."]
+    },
+    "poland-protection-referral": {
+      "should_trigger": ["Where can I find official international-protection help in Poland after an unsafe return concern?"],
+      "should_not_trigger": ["Plan my ordinary temporary residence application for work."]
+    },
+    "poland-citizenship-long-term": {
+      "should_trigger": ["Which official Polish route covers long-term EU resident status or citizenship?"],
+      "should_not_trigger": ["What is the next step for my temporary residence card?"]
+    },
+    "poland-appeals-review": {
+      "should_trigger": ["I received a Polish refusal; find the official review route and deadline source."],
+      "should_not_trigger": ["Help me plan a first-time residence application."]
+    },
+    "poland-eu-mobility": {
+      "should_trigger": ["I am an EU citizen staying in Poland for work; what registration path applies?"],
+      "should_not_trigger": ["I need a non-EU visa for Poland."]
+    },
+    "poland-identity": {
+      "should_trigger": ["Where does a foreigner obtain PESEL and meldunek in my gmina?"],
+      "should_not_trigger": ["Look up a business entity in KRS."]
+    },
+    "poland-work-authorization": {
+      "should_trigger": ["Which official work-permit or employer-notification route applies in Poland?"],
+      "should_not_trigger": ["My employer did not pay my salary."]
+    },
+    "poland-employment-rights": {
+      "should_trigger": ["My Polish employer changed my job conditions; find the PIP route."],
+      "should_not_trigger": ["Does my residence status require a work permit?"]
+    },
+    "poland-tax": {
+      "should_trigger": ["Find the current official PIT and e-Tax Office filing route for Poland."],
+      "should_not_trigger": ["Help me inspect my ZUS contribution record."]
+    },
+    "poland-social-insurance": {
+      "should_trigger": ["Help me find the official eZUS route for my Polish insurance record."],
+      "should_not_trigger": ["Prepare my PIT filing checklist."]
+    },
+    "poland-business": {
+      "should_trigger": ["Plan official CEIDG and REGON checks before starting a business in Poland."],
+      "should_not_trigger": ["My employer did not pay my salary."]
+    },
+    "poland-healthcare": {
+      "should_trigger": ["How do I verify NFZ coverage and find the right IKP service?"],
+      "should_not_trigger": ["Diagnose my chest pain from these symptoms."]
+    },
+    "poland-housing": {
+      "should_trigger": ["Build a safe evidence checklist before renting a flat in Krakow."],
+      "should_not_trigger": ["Register my child's school place."]
+    },
+    "poland-family-education": {
+      "should_trigger": ["Find the municipality and school steps for a child arriving from abroad."],
+      "should_not_trigger": ["Check which family-benefit authority owns my case."]
+    },
+    "poland-benefits-support": {
+      "should_trigger": ["Find the official Polish family-benefit or social-assistance route for my gmina."],
+      "should_not_trigger": ["Register my child at a Polish school."]
+    },
+    "poland-transport-driving": {
+      "should_trigger": ["Route my foreign driving licence exchange to the correct Polish office."],
+      "should_not_trigger": ["Apply for a residence permit based on work."]
+    },
+    "poland-consumer-banking": {
+      "should_trigger": ["Which official Polish channel handles my telecom complaint?"],
+      "should_not_trigger": ["Move money from my bank account now."]
+    },
+    "poland-foreign-documents": {
+      "should_trigger": ["Does this foreign diploma route need apostille, translation, or NAWA recognition?"],
+      "should_not_trigger": ["Certify that my translation is legally valid."]
+    },
+    "poland-digital-government": {
+      "should_trigger": ["Guide me through the official ePUAP login boundary without taking my password."],
+      "should_not_trigger": ["Bypass this government CAPTCHA."]
+    },
+    "poland-local-services": {
+      "should_trigger": ["Find the competent voivodeship office and current booking route."],
+      "should_not_trigger": ["Give a generic national overview with no local procedure."]
+    },
+    "poland-emergency-rights": {
+      "should_trigger": ["My passport was taken and I may be in danger at work in Poland."],
+      "should_not_trigger": ["Make a routine appointment reminder for next month."]
+    }
+  }
+}

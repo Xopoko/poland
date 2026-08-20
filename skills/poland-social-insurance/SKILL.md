@@ -1,0 +1,29 @@
+---
+name: poland-social-insurance
+description: Social insurance. Use for Polish ZUS or eZUS registration, contributions, coverage records, or cross-border coordination.
+---
+
+# Poland Social Insurance
+
+Use for ZUS/eZUS navigation, payer or insured-person registration routes,
+contribution records, certificates, social-insurance coverage, and cross-border
+coordination. Tax filing belongs to `poland-tax`; healthcare access and medical
+records belong to `poland-healthcare`.
+
+Confirm worker, employer, business, student, family, or other stated coverage
+context; relevant country or countries; locality; period; deadline; and whether
+the request concerns public guidance or an official-service handoff. Do not
+collect PESEL, account data, contribution amounts, health data, credentials, or
+personal-record content in plugin tools.
+
+Use current public ZUS and official EU coordination sources. Name unresolved
+coverage questions and show the competent institution and evidence categories.
+At the eZUS landing page, stop: login, authenticated reads, declarations,
+payments, filings, uploads, downloads, and record changes are prohibited even
+with user consent.
+Do not decide coverage or benefit entitlement from incomplete facts.
+
+Route employment rights to `poland-employment-rights`, work permission to
+`poland-work-authorization`, healthcare to `poland-healthcare`, and family or
+social-assistance benefits to `poland-benefits-support`. Read
+`../../references/work-tax-business.md`.

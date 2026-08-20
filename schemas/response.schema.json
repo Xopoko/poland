@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Xopoko/poland/blob/main/schemas/response.schema.json",
+  "title": "Poland CLI and MCP semantic response envelope",
+  "oneOf": [
+    {"$ref": "#/$defs/success"},
+    {"$ref": "#/$defs/failure"}
+  ],
+  "$defs": {
+    "base": {
+      "type": "object",
+      "required": ["contract", "ok", "command", "data_version", "data_mode"],
+      "properties": {
+        "contract": {"const": "poland.response.v1"},
+        "ok": {"type": "boolean"},
+        "command": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{0,79}$"},
+        "data_version": {"type": "string", "format": "date"},
+        "data_mode": {"const": "OFFLINE_PACKAGED_DATA"}
+      }
+    },
+    "citation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "title", "url", "authority", "publisher", "source_tier", "accessed_at", "effective_period", "locator"],
+      "properties": {
+        "source_id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 80},
+        "title": {"type": "string", "minLength": 1, "maxLength": 300},
+        "url": {"type": "string", "format": "uri", "pattern": "^https://", "maxLength": 2048},
+        "authority": {"type": "string", "minLength": 1, "maxLength": 240},
+        "publisher": {"type": "string", "minLength": 1, "maxLength": 240},
+        "source_tier": {"enum": ["T0", "T1", "T2"]},
+        "accessed_at": {"type": "string", "format": "date"},
+        "effective_period": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["from", "to"],
+          "properties": {
+            "from": {"type": ["string", "null"], "format": "date"},
+            "to": {"type": ["string", "null"], "format": "date"}
+          }
+        },
+        "locator": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "value"],
+          "properties": {
+            "type": {"enum": ["page", "heading", "article", "paragraph", "annex", "table_row", "form_field"]},
+            "value": {"type": ["string", "null"], "maxLength": 240}
+          }
+        }
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message_key", "details"],
+      "properties": {
+        "code": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{1,79}$"},
+        "message_key": {"type": "string", "pattern": "^error\\.[a-z0-9_]+$", "maxLength": 120},
+        "details": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "field": {"type": "string", "pattern": "^[a-z0-9_]+$", "maxLength": 80},
+            "fields": {
+              "type": "array",
+              "maxItems": 64,
+              "uniqueItems": true,
+              "items": {"type": "string", "pattern": "^[a-z0-9_]+$", "maxLength": 80}
+            },
+            "reason": {"type": "string", "pattern": "^[a-z0-9_]+$", "maxLength": 80},
+            "max_length": {"type": "integer", "minimum": 1, "maximum": 1048576},
+            "max_bytes": {"type": "integer", "minimum": 1, "maximum": 1048576}
+          }
+        }
+      }
+    },
+    "success": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["contract", "ok", "command", "data_version", "data_mode", "as_of", "result", "warnings", "citations"],
+          "properties": {
+            "contract": {"const": "poland.response.v1"},
+            "ok": {"const": true},
+            "command": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{0,79}$"},
+            "data_version": {"type": "string", "format": "date"},
+            "data_mode": {"const": "OFFLINE_PACKAGED_DATA"},
+            "as_of": {"type": "string", "format": "date"},
+            "result": {"type": ["object", "array"]},
+            "warnings": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {"type": "string", "pattern": "^[A-Z0-9_]+$", "maxLength": 80}
+            },
+            "citations": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 128,
+              "items": {"$ref": "#/$defs/citation"}
+            }
+          }
+        }
+      ]
+    },
+    "failure": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["contract", "ok", "command", "data_version", "data_mode", "error"],
+          "properties": {
+            "contract": {"const": "poland.response.v1"},
+            "ok": {"const": false},
+            "command": {"type": "string", "pattern": "^[a-z][a-z0-9._-]{0,79}$"},
+            "data_version": {"type": "string", "format": "date"},
+            "data_mode": {"const": "OFFLINE_PACKAGED_DATA"},
+            "error": {"$ref": "#/$defs/error"}
+          }
+        }
+      ]
+    }
+  }
+}

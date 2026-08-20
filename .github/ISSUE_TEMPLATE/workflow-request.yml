@@ -1,0 +1,31 @@
+name: Workflow request
+description: Propose a reusable Poland workflow or improve an existing skill.
+title: "[Workflow]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Reusable user outcome
+      description: Describe the general task, not one person's case.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Competent official sources
+      description: List public first-party authority URLs and the claims they support.
+  - type: textarea
+    id: boundary
+    attributes:
+      label: Safety and action boundary
+      description: Explain what the plugin may prepare and where it must stop.
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Public-safety confirmation
+      options:
+        - label: This is reusable and contains no personal data, credentials, documents, screenshots, or private records.
+          required: true

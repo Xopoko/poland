@@ -1,0 +1,2065 @@
+{
+  "schema_version": "1.0.0",
+  "registry_version": "2026-08-20",
+  "description": "First-party public sources for navigating administrative and daily-life matters in Poland.",
+  "sources": [
+    {
+      "id": "udsc-home",
+      "title": "Office for Foreigners",
+      "authority": "Office for Foreigners",
+      "url": "https://www.gov.pl/web/udsc-en",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en",
+        "uk",
+        "ru"
+      ],
+      "topics": [
+        "immigration",
+        "international-protection",
+        "temporary-protection"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only",
+      "last_verified": "2026-08-20",
+      "freshness_days": 14,
+      "notes": "Use as the national authority landing page. Verify procedure-specific instructions separately.",
+      "publisher": "Office for Foreigners",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "mos-residence",
+      "title": "Case Handling Module for residence matters",
+      "authority": "Office for Foreigners",
+      "url": "https://mos.cudzoziemcy.gov.pl/en/",
+      "domains": [
+        "mos.cudzoziemcy.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en",
+        "uk",
+        "ru",
+        "fr",
+        "vi",
+        "ar"
+      ],
+      "topics": [
+        "residence",
+        "applications",
+        "case-handling"
+      ],
+      "access": "authenticated",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 7,
+      "notes": "Only public guidance is in scope. The plugin stops before login, personal records, form entry, signing, or sending.",
+      "publisher": "Office for Foreigners",
+      "source_tier": "T1",
+      "source_kind": "official_service",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "gov-citizenship",
+      "title": "Polish citizenship procedures",
+      "authority": "Ministry of the Interior and Administration",
+      "url": "https://www.gov.pl/web/mswia-en/apply-for-polish-citizenship",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en"
+      ],
+      "topics": [
+        "citizenship",
+        "recognition",
+        "confirmation"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only",
+      "last_verified": "2026-08-20",
+      "freshness_days": 30,
+      "notes": "Route by procedure, residence, and competent voivodeship or consulate.",
+      "publisher": "Ministry of the Interior and Administration",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "mazowieckie-foreigners",
+      "title": "Foreigners affairs in Mazowieckie",
+      "authority": "Mazowieckie Voivodeship Office",
+      "url": "https://www.gov.pl/web/uw-mazowiecki/sprawy-cudzoziemcow",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "voivodeship",
+      "localities": [
+        "mazowieckie"
+      ],
+      "languages": [
+        "pl",
+        "en",
+        "uk",
+        "ru"
+      ],
+      "topics": [
+        "residence",
+        "appointments",
+        "case-status"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-20",
+      "freshness_days": 7,
+      "notes": "Local procedures and appointment channels may change independently of national guidance.",
+      "publisher": "Mazowieckie Voivodeship Office",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "wielkopolskie-foreigners",
+      "title": "Foreigners Department in Wielkopolskie",
+      "authority": "Wielkopolskie Voivodeship Office",
+      "url": "https://migrant.poznan.uw.gov.pl/en",
+      "domains": [
+        "migrant.poznan.uw.gov.pl"
+      ],
+      "jurisdiction": "voivodeship",
+      "localities": [
+        "wielkopolskie"
+      ],
+      "languages": [
+        "pl",
+        "en",
+        "uk",
+        "ru"
+      ],
+      "topics": [
+        "residence",
+        "appointments",
+        "case-status"
+      ],
+      "access": "authenticated",
+      "effect": "personal_record",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-20",
+      "freshness_days": 7,
+      "notes": "Some appointment options depend on case state. Never guess a case identifier.",
+      "publisher": "Wielkopolskie Voivodeship Office",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "dolnoslaskie-foreigners",
+      "title": "Foreigners portal in Dolnoslaskie",
+      "authority": "Dolnoslaskie Voivodeship Office",
+      "url": "https://przybysz.duw.pl/en/",
+      "domains": [
+        "przybysz.duw.pl"
+      ],
+      "jurisdiction": "voivodeship",
+      "localities": [
+        "dolnoslaskie"
+      ],
+      "languages": [
+        "pl",
+        "en",
+        "uk",
+        "ru"
+      ],
+      "topics": [
+        "residence",
+        "appointments",
+        "document-collection"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-20",
+      "freshness_days": 7,
+      "notes": "Preparation, appointment, and document collection may use different local systems.",
+      "publisher": "Dolnoslaskie Voivodeship Office",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "malopolskie-foreigners",
+      "title": "Foreigners affairs in Malopolskie",
+      "authority": "Malopolskie Voivodeship Office",
+      "url": "https://www.malopolska.uw.gov.pl/default.aspx?page=foreigners",
+      "domains": [
+        "malopolska.uw.gov.pl"
+      ],
+      "jurisdiction": "voivodeship",
+      "localities": [
+        "malopolskie"
+      ],
+      "languages": [
+        "pl",
+        "en"
+      ],
+      "topics": [
+        "residence",
+        "appointments",
+        "eu-citizens"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-20",
+      "freshness_days": 7,
+      "notes": "Confirm the abstract matter before identifying the public appointment landing page, then stop.",
+      "publisher": "Malopolskie Voivodeship Office",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "gov-pesel-foreigners",
+      "title": "Obtain a PESEL number as a foreigner",
+      "authority": "Ministry of Digital Affairs",
+      "url": "https://www.gov.pl/web/gov/uzyskaj-numer-pesel-dla-cudzoziemcow",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "gmina",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "pesel",
+        "identity",
+        "gmina"
+      ],
+      "access": "public",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 30,
+      "notes": "Use the page to prepare. The competent gmina handles the application.",
+      "publisher": "Ministry of Digital Affairs",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "gov-meldunek-foreigners",
+      "title": "Register an address as a foreigner",
+      "authority": "Ministry of Digital Affairs",
+      "url": "https://www.gov.pl/web/gov/zamelduj-sie-na-pobyt-staly-dla-cudzoziemcow",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "gmina",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "meldunek",
+        "address-registration",
+        "gmina"
+      ],
+      "access": "authenticated",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 30,
+      "notes": "Collect locality and housing-document context before routing.",
+      "publisher": "Ministry of Digital Affairs",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "profil-zaufany",
+      "title": "Trusted Profile",
+      "authority": "Ministry of Digital Affairs",
+      "url": "https://www.gov.pl/web/profilzaufany",
+      "domains": [
+        "gov.pl",
+        "pz.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "electronic-identity",
+        "trusted-signature",
+        "login-gov-pl"
+      ],
+      "access": "authenticated",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 14,
+      "notes": "The user owns authentication and every signature. Never request login or verification secrets.",
+      "publisher": "Ministry of Digital Affairs",
+      "source_tier": "T1",
+      "source_kind": "official_service",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "epuap",
+      "title": "Electronic Platform of Public Administration Services",
+      "authority": "Ministry of Digital Affairs",
+      "url": "https://epuap.gov.pl/wps/portal",
+      "domains": [
+        "epuap.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "government-correspondence",
+        "electronic-inbox",
+        "general-letter"
+      ],
+      "access": "authenticated",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 30,
+      "notes": "Only generic placeholder drafting and public channel guidance are in scope; never inspect attachments or send.",
+      "publisher": "Ministry of Digital Affairs",
+      "source_tier": "T1",
+      "source_kind": "official_service",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "mobywatel",
+      "title": "mObywatel services",
+      "authority": "Ministry of Digital Affairs",
+      "url": "https://www.gov.pl/web/mobywatel/mobywatel-w-przegladarce1",
+      "domains": [
+        "gov.pl",
+        "mobywatel.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en",
+        "uk"
+      ],
+      "topics": [
+        "digital-government",
+        "documents",
+        "services"
+      ],
+      "access": "authenticated",
+      "effect": "personal_record",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-20",
+      "freshness_days": 14,
+      "notes": "Document and service availability depends on identity, status, and current product support.",
+      "publisher": "Ministry of Digital Affairs",
+      "source_tier": "T1",
+      "source_kind": "official_service",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "e-deliveries",
+      "title": "Public registered electronic delivery",
+      "authority": "Ministry of Digital Affairs",
+      "url": "https://www.gov.pl/web/e-doreczenia",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "electronic-delivery",
+        "government-correspondence",
+        "inbox"
+      ],
+      "access": "authenticated",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 14,
+      "notes": "Delivery-channel obligations and rollout dates change; verify for the user and recipient.",
+      "publisher": "Ministry of Digital Affairs",
+      "source_tier": "T1",
+      "source_kind": "official_service",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "gov-civil-record-copy",
+      "title": "Obtain a civil status record copy",
+      "authority": "Ministry of Digital Affairs",
+      "url": "https://www.gov.pl/web/gov/uzyskaj-odpis-aktu-stanu-cywilnego",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "gmina",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "civil-records",
+        "birth",
+        "marriage",
+        "death"
+      ],
+      "access": "authenticated",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 60,
+      "notes": "Use for preparation and authority routing, not autonomous ordering.",
+      "publisher": "Ministry of Digital Affairs",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "pip-employees",
+      "title": "State Labour Inspection employee guidance",
+      "authority": "State Labour Inspection",
+      "url": "https://www.pip.gov.pl/en/for-employees",
+      "domains": [
+        "pip.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en",
+        "uk"
+      ],
+      "topics": [
+        "employment",
+        "labour-rights",
+        "complaints",
+        "safety"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only",
+      "last_verified": "2026-08-20",
+      "freshness_days": 30,
+      "notes": "Identify public complaint guidance and the competent inspectorate; the plugin never files or sends a complaint.",
+      "publisher": "State Labour Inspection",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "biznes-legal-work",
+      "title": "Legal work by foreign nationals",
+      "authority": "Ministry of Development and Technology",
+      "url": "https://biznes.gov.pl/en/portal/004948",
+      "domains": [
+        "biznes.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en"
+      ],
+      "topics": [
+        "employment",
+        "work-authorization",
+        "employers"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only",
+      "last_verified": "2026-08-20",
+      "freshness_days": 14,
+      "notes": "Use as orientation only; route status-specific questions to current authority instructions.",
+      "publisher": "Ministry of Development and Technology",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "praca-gov-pl",
+      "title": "Public employment services",
+      "authority": "Ministry of Family, Labour and Social Policy",
+      "url": "https://www.praca.gov.pl/eurzad/index.eup",
+      "domains": [
+        "praca.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "employment-office",
+        "work-authorization",
+        "jobseeker"
+      ],
+      "access": "authenticated",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 14,
+      "notes": "Only public descriptions are in scope; the plugin never enters, signs, or submits a form or declaration.",
+      "publisher": "Ministry of Family, Labour and Social Policy",
+      "source_tier": "T1",
+      "source_kind": "official_service",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "podatki-home",
+      "title": "Tax information portal",
+      "authority": "Ministry of Finance",
+      "url": "https://www.podatki.gov.pl/en",
+      "domains": [
+        "podatki.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en"
+      ],
+      "topics": [
+        "tax",
+        "pit",
+        "vat",
+        "guidance"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only",
+      "last_verified": "2026-08-20",
+      "freshness_days": 14,
+      "notes": "Prefer current Polish procedure pages when translated material is older.",
+      "publisher": "Ministry of Finance",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "e-tax-office",
+      "title": "e-Tax Office",
+      "authority": "National Revenue Administration",
+      "url": "https://www.podatki.gov.pl/e-urzad-skarbowy/",
+      "domains": [
+        "podatki.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "tax",
+        "personal-records",
+        "returns",
+        "certificates"
+      ],
+      "access": "authenticated",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 7,
+      "notes": "The plugin stops at the public landing page and never logs in, reads personal data, files, corrects, pays, or requests a certificate.",
+      "publisher": "National Revenue Administration",
+      "source_tier": "T1",
+      "source_kind": "official_service",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "tax-office-appointments",
+      "title": "Tax office appointments",
+      "authority": "National Revenue Administration",
+      "url": "https://www.podatki.gov.pl/umow-wizyte-w-urzedzie-skarbowym",
+      "domains": [
+        "podatki.gov.pl",
+        "wizyta.podatki.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "tax",
+        "appointments",
+        "local-office"
+      ],
+      "access": "public",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 14,
+      "notes": "Public office and topic lookup is read-only. The plugin never inspects availability, books, reschedules, or cancels.",
+      "publisher": "National Revenue Administration",
+      "source_tier": "T1",
+      "source_kind": "official_service",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "zus-home",
+      "title": "Social Insurance Institution",
+      "authority": "Social Insurance Institution",
+      "url": "https://www.zus.pl/en/",
+      "domains": [
+        "zus.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en",
+        "uk"
+      ],
+      "topics": [
+        "social-insurance",
+        "contributions",
+        "benefits"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only",
+      "last_verified": "2026-08-20",
+      "freshness_days": 14,
+      "notes": "Language selectors do not guarantee that every linked page is translated.",
+      "publisher": "Social Insurance Institution",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "ezus",
+      "title": "eZUS electronic services",
+      "authority": "Social Insurance Institution",
+      "url": "https://www.zus.pl/en/baza-wiedzy/o-portalu-pue-/informacje-",
+      "domains": [
+        "zus.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "social-insurance",
+        "personal-records",
+        "applications",
+        "appointments"
+      ],
+      "access": "authenticated",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 7,
+      "notes": "PUE and eZUS terminology is transitioning. Confirm the current interface before giving click paths.",
+      "publisher": "Social Insurance Institution",
+      "source_tier": "T1",
+      "source_kind": "official_service",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "biznes-ceidg",
+      "title": "Business registration and CEIDG services",
+      "authority": "Ministry of Development and Technology",
+      "url": "https://biznes.gov.pl/en",
+      "domains": [
+        "biznes.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en"
+      ],
+      "topics": [
+        "business",
+        "ceidg",
+        "sole-proprietor",
+        "registration"
+      ],
+      "access": "authenticated",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 14,
+      "notes": "Public search and guidance are read-only. Registration and changes affect official records.",
+      "publisher": "Ministry of Development and Technology",
+      "source_tier": "T1",
+      "source_kind": "official_service",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "krs-search",
+      "title": "National Court Register search",
+      "authority": "Ministry of Justice",
+      "url": "https://wyszukiwarka-krs.ms.gov.pl/",
+      "domains": [
+        "wyszukiwarka-krs.ms.gov.pl",
+        "api-krs.ms.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "business",
+        "krs",
+        "entities",
+        "registry"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only",
+      "last_verified": "2026-08-20",
+      "freshness_days": 30,
+      "notes": "Use official extracts for evidence. Revalidate any API contract before implementation.",
+      "publisher": "Ministry of Justice",
+      "source_tier": "T1",
+      "source_kind": "official_registry",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "gus-regon-api",
+      "title": "REGON API",
+      "authority": "Statistics Poland",
+      "url": "https://api.stat.gov.pl/Home/RegonApi?lang=en",
+      "domains": [
+        "api.stat.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en"
+      ],
+      "topics": [
+        "business",
+        "regon",
+        "registry",
+        "api"
+      ],
+      "access": "credentialed_api",
+      "effect": "informational",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 60,
+      "notes": "The documented production service requires a user key. Do not embed credentials in plugin data.",
+      "publisher": "Statistics Poland",
+      "source_tier": "T1",
+      "source_kind": "official_registry",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "gus-teryt-api",
+      "title": "TERYT territorial register API",
+      "authority": "Statistics Poland",
+      "url": "https://api.stat.gov.pl/Home/TerytApi?lang=en",
+      "domains": [
+        "api.stat.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en"
+      ],
+      "topics": [
+        "territory",
+        "voivodeship",
+        "powiat",
+        "gmina",
+        "api"
+      ],
+      "access": "credentialed_api",
+      "effect": "informational",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 90,
+      "notes": "Use to normalize official territorial identifiers, not to infer competent authority alone.",
+      "publisher": "Statistics Poland",
+      "source_tier": "T1",
+      "source_kind": "official_registry",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "open-data-api",
+      "title": "Polish Open Data API",
+      "authority": "Chancellery of the Prime Minister",
+      "url": "https://api.dane.gov.pl/1.4/doc?urls.primaryName=DANE.GOV.PL+RDF+API",
+      "domains": [
+        "api.dane.gov.pl",
+        "dane.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en"
+      ],
+      "topics": [
+        "open-data",
+        "datasets",
+        "api"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only",
+      "last_verified": "2026-08-20",
+      "freshness_days": 90,
+      "notes": "Dataset metadata must be checked for provider, coverage date, and update frequency.",
+      "publisher": "Chancellery of the Prime Minister",
+      "source_tier": "T1",
+      "source_kind": "official_registry",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "bip-directory",
+      "title": "Public Information Bulletin directory",
+      "authority": "Chancellery of the Prime Minister",
+      "url": "https://www.gov.pl/web/bip",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "bip",
+        "public-information",
+        "authority-directory"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-20",
+      "freshness_days": 90,
+      "notes": "BIP content is decentralized. Verify the owning authority and publication date on each linked site.",
+      "publisher": "Chancellery of the Prime Minister",
+      "source_tier": "T1",
+      "source_kind": "official_registry",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "ikp",
+      "title": "Internet Patient Account",
+      "authority": "Ministry of Health and e-Health Centre",
+      "url": "https://pacjent.gov.pl/internetowe-konto-pacjenta",
+      "domains": [
+        "pacjent.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "uk"
+      ],
+      "topics": [
+        "health",
+        "prescriptions",
+        "referrals",
+        "personal-records"
+      ],
+      "access": "authenticated",
+      "effect": "personal_record",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-20",
+      "freshness_days": 14,
+      "notes": "Treat all account content as sensitive. The plugin stops before login and never reads records, authorizes, changes, or books.",
+      "publisher": "Ministry of Health and e-Health Centre",
+      "source_tier": "T1",
+      "source_kind": "official_service",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "nfz-patient",
+      "title": "National Health Fund patient information",
+      "authority": "National Health Fund",
+      "url": "https://www.nfz.gov.pl/dla-pacjenta/",
+      "domains": [
+        "nfz.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en",
+        "uk"
+      ],
+      "topics": [
+        "health",
+        "insurance",
+        "treatment",
+        "provider-search"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only",
+      "last_verified": "2026-08-20",
+      "freshness_days": 30,
+      "notes": "Separate general treatment information from individual insurance entitlement.",
+      "publisher": "National Health Fund",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "gov-social-assistance",
+      "title": "Social assistance information",
+      "authority": "Ministry of Family, Labour and Social Policy",
+      "url": "https://www.gov.pl/web/gov/skorzystaj-z-pomocy-spolecznej",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "gmina",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "social-assistance",
+        "housing-support",
+        "local-support"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-20",
+      "freshness_days": 30,
+      "notes": "Local social assistance centres assess individual cases. Do not predict eligibility.",
+      "publisher": "Ministry of Family, Labour and Social Policy",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "uokik-consumer",
+      "title": "Consumer rights",
+      "authority": "Office of Competition and Consumer Protection",
+      "url": "https://uokik.gov.pl/en/consumer-rights",
+      "domains": [
+        "uokik.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en",
+        "uk"
+      ],
+      "topics": [
+        "consumer",
+        "housing",
+        "contracts",
+        "complaints"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only",
+      "last_verified": "2026-08-20",
+      "freshness_days": 30,
+      "notes": "First establish whether the other party is acting as a business before routing a consumer dispute.",
+      "publisher": "Office of Competition and Consumer Protection",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "uke-consumer",
+      "title": "Telecommunications and postal consumer information",
+      "authority": "Office of Electronic Communications",
+      "url": "https://cik.uke.gov.pl/",
+      "domains": [
+        "cik.uke.gov.pl",
+        "uke.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "telecom",
+        "postal",
+        "consumer",
+        "complaints"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-20",
+      "freshness_days": 60,
+      "notes": "Use for sector routing and public guidance. The plugin never files or sends a complaint.",
+      "publisher": "Office of Electronic Communications",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "financial-ombudsman",
+      "title": "Financial Ombudsman",
+      "authority": "Financial Ombudsman",
+      "url": "https://rf.gov.pl/en/",
+      "domains": [
+        "rf.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en",
+        "uk"
+      ],
+      "topics": [
+        "banking",
+        "insurance",
+        "financial-services",
+        "complaints"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-20",
+      "freshness_days": 60,
+      "notes": "Use after identifying the financial provider and current complaint stage.",
+      "publisher": "Financial Ombudsman",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "family-benefits",
+      "title": "Family benefits",
+      "authority": "Ministry of Family, Labour and Social Policy",
+      "url": "https://www.gov.pl/web/rodzina/wiadczenia-rodzinne",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "family",
+        "benefits",
+        "care"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only",
+      "last_verified": "2026-08-20",
+      "freshness_days": 14,
+      "notes": "Capture benefit period, household facts, residence status, and current rules before routing.",
+      "publisher": "Ministry of Family, Labour and Social Policy",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "good-start",
+      "title": "Good Start education benefit",
+      "authority": "Ministry of Family, Labour and Social Policy",
+      "url": "https://www.gov.pl/web/rodzina/dobry-start",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "family",
+        "education",
+        "benefits"
+      ],
+      "access": "authenticated",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 7,
+      "notes": "Benefit-year and foreigner-specific conditions can change. Never reuse an older eligibility summary.",
+      "publisher": "Ministry of Family, Labour and Social Policy",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "empatia",
+      "title": "Empatia information and services portal",
+      "authority": "Ministry of Family, Labour and Social Policy",
+      "url": "https://empatia.mpips.gov.pl/",
+      "domains": [
+        "empatia.mpips.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "family",
+        "social-assistance",
+        "applications"
+      ],
+      "access": "authenticated",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 14,
+      "notes": "Use ministry pages to identify the current channel before directing the user to a form.",
+      "publisher": "Ministry of Family, Labour and Social Policy",
+      "source_tier": "T1",
+      "source_kind": "official_service",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "education-foreign-children",
+      "title": "Education for children arriving from abroad",
+      "authority": "Ministry of National Education",
+      "url": "https://www.gov.pl/web/edukacja/nauka-dzieci-przybywajacych-z-zagranicy-w-polskim-systemie-edukacji",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "gmina",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en",
+        "uk",
+        "ru"
+      ],
+      "topics": [
+        "education",
+        "school",
+        "children",
+        "language-support"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-20",
+      "freshness_days": 30,
+      "notes": "Local school and municipality capacity affects the route. Ignore old statistical counts when seeking current procedure.",
+      "publisher": "Ministry of National Education",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "gov-driving-licence-exchange",
+      "title": "Exchange a foreign driving licence",
+      "authority": "Ministry of Infrastructure",
+      "url": "https://www.gov.pl/web/gov/wymien-zagraniczne-prawo-jazdy-na-polskie",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "driving",
+        "licence",
+        "document-exchange"
+      ],
+      "access": "public",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 30,
+      "notes": "The service page asks whether the person has lived in Poland for at least 185 days and routes by issuing country, licence type, and the competent starostwo, city office, or Warsaw district office. Verify current conditions and do not decide exchange eligibility or promise processing time.",
+      "publisher": "Ministry of Infrastructure",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": "2023-08-10",
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "drivers-act-consolidated",
+      "title": "Act on Drivers - consolidated text",
+      "authority": "Sejm of the Republic of Poland",
+      "url": "https://eli.gov.pl/api/acts/DU/2025/1226/text/U/D20251226Lj.pdf",
+      "domains": [
+        "eli.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "driving",
+        "foreign-licence",
+        "licence-exchange",
+        "ordinary-residence"
+      ],
+      "access": "public",
+      "effect": "consequential",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-20",
+      "freshness_days": 7,
+      "notes": "Articles 5 and 11 use different time concepts: recognition of a qualifying foreign licence and ordinary residence for issuing a Polish licence. Articles 4 and 14 govern recognized documents and exchange. Recheck the consolidated text and amendments before applying either rule to a person.",
+      "publisher": "Chancellery of the Sejm",
+      "source_tier": "T0",
+      "source_kind": "legal_text",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": "2026-08-19",
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "article",
+        "value": "art. 4; art. 5(4); art. 11; art. 14"
+      }
+    },
+    {
+      "id": "utk-passenger-rights",
+      "title": "Rail passenger rights",
+      "authority": "Office of Rail Transport",
+      "url": "https://utk.gov.pl/en/passenger-rights",
+      "domains": [
+        "utk.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en",
+        "uk"
+      ],
+      "topics": [
+        "transport",
+        "rail",
+        "passenger-rights",
+        "complaints"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only",
+      "last_verified": "2026-08-20",
+      "freshness_days": 60,
+      "notes": "Identify the carrier, journey, and complaint stage before routing.",
+      "publisher": "Office of Rail Transport",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "sworn-translators",
+      "title": "Find a sworn translator",
+      "authority": "Ministry of Justice",
+      "url": "https://www.gov.pl/web/sprawiedliwosc/tlumacze-przysiegli",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "documents",
+        "translation",
+        "sworn-translator"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only",
+      "last_verified": "2026-08-20",
+      "freshness_days": 60,
+      "notes": "Confirm the receiving authority's document and translation requirements before ordering work.",
+      "publisher": "Ministry of Justice",
+      "source_tier": "T1",
+      "source_kind": "official_registry",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "apostille",
+      "title": "Apostille and document legalization",
+      "authority": "Ministry of Foreign Affairs",
+      "url": "https://www.gov.pl/web/diplomacy/certification-of-documents",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "en"
+      ],
+      "topics": [
+        "documents",
+        "apostille",
+        "legalization"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only",
+      "last_verified": "2026-08-20",
+      "freshness_days": 60,
+      "notes": "Determine issuing country, document type, destination, and treaty route before giving a checklist.",
+      "publisher": "Ministry of Foreign Affairs",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "nawa-recognition",
+      "title": "Recognition of foreign education",
+      "authority": "Polish National Agency for Academic Exchange",
+      "url": "https://nawa.gov.pl/en/recognition",
+      "domains": [
+        "nawa.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en",
+        "uk"
+      ],
+      "topics": [
+        "education",
+        "diploma",
+        "recognition",
+        "qualifications"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-20",
+      "freshness_days": 60,
+      "notes": "Route by education level, issuing country, and purpose. Do not predict recognition.",
+      "publisher": "Polish National Agency for Academic Exchange",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "emergency-112",
+      "title": "Emergency number 112",
+      "authority": "Ministry of the Interior and Administration",
+      "url": "https://www.gov.pl/web/mswia-en/emergency-number-112",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en"
+      ],
+      "topics": [
+        "emergency",
+        "police",
+        "fire",
+        "medical"
+      ],
+      "access": "public",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 30,
+      "notes": "Display immediate safety guidance. Never place an emergency call or report automatically.",
+      "publisher": "Ministry of the Interior and Administration",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "anti-trafficking-kcik",
+      "title": "National Consulting and Intervention Centre for trafficking victims",
+      "authority": "Ministry of the Interior and Administration",
+      "url": "https://www.gov.pl/web/kcik-en",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en",
+        "fr",
+        "vi"
+      ],
+      "topics": [
+        "trafficking",
+        "exploitation",
+        "safety",
+        "interpreter"
+      ],
+      "access": "public",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 30,
+      "notes": "Prioritize safety and user-controlled contact. Do not expose sensitive narrative in logs.",
+      "publisher": "Ministry of the Interior and Administration",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "free-legal-aid",
+      "title": "Free legal aid for foreigners",
+      "authority": "Ministry of Justice",
+      "url": "https://www.gov.pl/web/free-aid/aid-to-foreigners",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "gmina",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en",
+        "uk",
+        "ru"
+      ],
+      "topics": [
+        "legal-aid",
+        "foreigners",
+        "appointments",
+        "escalation"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-20",
+      "freshness_days": 30,
+      "notes": "Use for human escalation when facts, deadlines, or adverse decisions require individual advice.",
+      "publisher": "Ministry of Justice",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "your-europe-citizens",
+      "title": "Your Europe citizens portal",
+      "authority": "European Commission",
+      "url": "https://europa.eu/youreurope/citizens/index_en.htm",
+      "domains": [
+        "europa.eu"
+      ],
+      "jurisdiction": "eu",
+      "localities": [],
+      "languages": [
+        "bg",
+        "cs",
+        "da",
+        "de",
+        "et",
+        "el",
+        "en",
+        "es",
+        "fr",
+        "ga",
+        "hr",
+        "it",
+        "lv",
+        "lt",
+        "hu",
+        "mt",
+        "nl",
+        "pl",
+        "pt",
+        "ro",
+        "sk",
+        "sl",
+        "fi",
+        "sv"
+      ],
+      "topics": [
+        "eu-rights",
+        "residence",
+        "work",
+        "social-security",
+        "documents"
+      ],
+      "access": "public",
+      "effect": "informational",
+      "automation": "public_read_only",
+      "last_verified": "2026-08-20",
+      "freshness_days": 60,
+      "notes": "Use for EU cross-border orientation, then confirm the Polish implementing authority.",
+      "publisher": "European Commission",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "udsc-mos-electronic-residence",
+      "title": "Basic information about the MOS system",
+      "authority": "Office for Foreigners",
+      "url": "https://www.gov.pl/web/udsc-en/basic-information-about-the-mos-system",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en"
+      ],
+      "topics": [
+        "electronic-submission",
+        "login-gov-pl",
+        "mos",
+        "residence"
+      ],
+      "access": "public",
+      "effect": "consequential",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-20",
+      "freshness_days": 7,
+      "notes": "The official guidance describes electronic MOS submission from 2026-04-27, listed paper exceptions, electronic signatures, third-party attachments, and later in-person identity steps. Verify the current exception and form before handoff.",
+      "publisher": "Office for Foreigners",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": "2026-04-27",
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "heading",
+        "value": "How can you apply for a residence permit in Poland?"
+      }
+    },
+    {
+      "id": "mos-eu-blue-card",
+      "title": "EU Blue Card for highly qualified employment",
+      "authority": "Office for Foreigners",
+      "url": "https://mos.cudzoziemcy.gov.pl/en/categories-information/possibilities-legalization/non-eu-continued-stay/permit-temporary/work/blue-card/",
+      "domains": [
+        "mos.cudzoziemcy.gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl",
+        "en"
+      ],
+      "topics": [
+        "blue-card",
+        "highly-qualified-employment",
+        "residence",
+        "work-authorization"
+      ],
+      "access": "public",
+      "effect": "consequential",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-20",
+      "freshness_days": 7,
+      "notes": "Use the public requirements and procedure sections for generic routing only. Verify the current salary threshold, qualification route, contract conditions, employer role, mobility rule, and notice duties live; never decide eligibility.",
+      "publisher": "Office for Foreigners",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "heading",
+        "value": "Requirements"
+      }
+    },
+    {
+      "id": "solvit",
+      "title": "SOLVIT problem-solving network",
+      "authority": "European Commission",
+      "url": "https://ec.europa.eu/solvit/index_en.htm",
+      "domains": [
+        "ec.europa.eu"
+      ],
+      "jurisdiction": "eu",
+      "localities": [],
+      "languages": [
+        "en",
+        "pl"
+      ],
+      "topics": [
+        "eu-rights",
+        "cross-border",
+        "public-authority",
+        "escalation"
+      ],
+      "access": "authenticated",
+      "effect": "consequential",
+      "automation": "prohibited_external_effect",
+      "last_verified": "2026-08-20",
+      "freshness_days": 60,
+      "notes": "Use only after checking that the issue concerns cross-border EU rights and a public authority.",
+      "publisher": "European Commission",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-20",
+      "publication_date": null,
+      "modified_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "page",
+        "value": "canonical_landing_page"
+      }
+    }
+  ]
+}

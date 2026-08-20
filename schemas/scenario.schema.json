@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Xopoko/poland/blob/main/schemas/scenario.schema.json",
+  "title": "Poland scenario registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "description", "scenarios"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "description": {"type": "string", "minLength": 1, "maxLength": 1000},
+    "scenarios": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {"$ref": "#/$defs/scenario"}
+    }
+  },
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "token": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[a-z0-9]+(?:[_-][a-z0-9]+)*$"
+    },
+    "parameterList": {
+      "type": "array",
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80,
+        "pattern": "^[a-z0-9]+(?:[_-][a-z0-9]+)*$"
+      }
+    },
+    "actionList": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/token"}
+    },
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "purpose",
+        "keywords",
+        "owner_skill_ids",
+        "composition",
+        "required_parameters",
+        "optional_parameters",
+        "source_ids",
+        "local_source_topic",
+        "stop_before",
+        "escalate_when"
+      ],
+      "properties": {
+        "id": {"$ref": "#/$defs/slug"},
+        "purpose": {"type": "string", "minLength": 1, "maxLength": 500},
+        "keywords": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 120}
+        },
+        "owner_skill_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/slug"}
+        },
+        "composition": {"enum": ["single", "multi"]},
+        "required_parameters": {
+          "allOf": [
+            {"$ref": "#/$defs/parameterList"},
+            {"minItems": 1}
+          ]
+        },
+        "optional_parameters": {"$ref": "#/$defs/parameterList"},
+        "source_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/slug"}
+        },
+        "local_source_topic": {"$ref": "#/$defs/slug"},
+        "stop_before": {"$ref": "#/$defs/actionList"},
+        "escalate_when": {"$ref": "#/$defs/actionList"}
+      }
+    }
+  }
+}

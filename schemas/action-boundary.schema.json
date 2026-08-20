@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Xopoko/poland/blob/main/schemas/action-boundary.schema.json",
+  "title": "Poland action boundary registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "default_boundary", "boundaries", "global_never"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "default_boundary": {"$ref": "#/$defs/slug"},
+    "boundaries": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "items": {"$ref": "#/$defs/boundary"}
+    },
+    "global_never": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[a-z0-9]+(?:[_-][a-z0-9]+)*$"
+      }
+    }
+  },
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "automation": {
+      "enum": [
+        "public_read_only",
+        "local_placeholder_only",
+        "user_handoff_then_stop",
+        "prohibited_external_effect"
+      ]
+    },
+    "actionList": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120,
+        "pattern": "^[a-z0-9]+(?:[_-][a-z0-9]+)*$"
+      }
+    },
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "automation", "allowed", "requires_confirmation", "never"],
+      "properties": {
+        "id": {"$ref": "#/$defs/slug"},
+        "automation": {"$ref": "#/$defs/automation"},
+        "allowed": {
+          "allOf": [
+            {"$ref": "#/$defs/actionList"},
+            {"minItems": 1}
+          ]
+        },
+        "requires_confirmation": {"$ref": "#/$defs/actionList"},
+        "never": {
+          "allOf": [
+            {"$ref": "#/$defs/actionList"},
+            {"minItems": 1}
+          ]
+        }
+      }
+    }
+  }
+}

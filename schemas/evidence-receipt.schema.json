@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Xopoko/poland/blob/main/schemas/evidence-receipt.schema.json",
+  "title": "Claim-level official-source evidence receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "result",
+    "source_id",
+    "observed_at",
+    "url",
+    "authority",
+    "publisher",
+    "source_tier",
+    "source_accessed_at",
+    "page_title",
+    "page_modified_at",
+    "content_hash_sha256",
+    "locator",
+    "supports",
+    "effective_period",
+    "evidence_gate",
+    "effect_boundary",
+    "conflicts"
+  ],
+  "properties": {
+    "schema_version": {"const": "poland.evidence-receipt.v2"},
+    "receipt_id": {"type": "string", "pattern": "^receipt-[a-f0-9]{20}$"},
+    "result": {"enum": ["verified", "changed", "unavailable", "needs_review"]},
+    "source_id": {"$ref": "#/$defs/sourceId"},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "url": {"type": "string", "format": "uri", "pattern": "^https://", "maxLength": 2048},
+    "authority": {"type": "string", "minLength": 1, "maxLength": 240},
+    "publisher": {"type": "string", "minLength": 1, "maxLength": 240},
+    "source_tier": {"enum": ["T0", "T1", "T2"]},
+    "source_accessed_at": {"type": "string", "format": "date"},
+    "page_title": {"type": "string", "minLength": 1, "maxLength": 300},
+    "page_modified_at": {"type": ["string", "null"], "format": "date-time"},
+    "content_hash_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+    "locator": {"$ref": "#/$defs/locator"},
+    "supports": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$", "maxLength": 120}
+    },
+    "effective_period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from", "to"],
+      "properties": {
+        "from": {"type": ["string", "null"], "format": "date"},
+        "to": {"type": ["string", "null"], "format": "date"}
+      }
+    },
+    "evidence_gate": {"$ref": "#/$defs/evidenceGate"},
+    "effect_boundary": {"enum": ["informational", "personal_record", "consequential"]},
+    "conflicts": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {"$ref": "#/$defs/conflict"}
+    }
+  },
+  "$defs": {
+    "sourceId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "maxLength": 80
+    },
+    "locator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "value"],
+      "properties": {
+        "type": {"enum": ["page", "heading", "article", "paragraph", "annex", "table_row", "form_field"]},
+        "value": {"type": ["string", "null"], "maxLength": 240}
+      }
+    },
+    "conflict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "conflict_type"],
+      "properties": {
+        "source_id": {"$ref": "#/$defs/sourceId"},
+        "conflict_type": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 120}
+      }
+    },
+    "freshnessRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "last_verified", "age_days", "freshness_days", "status", "record_status", "effective_from", "effective_to", "effect"],
+      "properties": {
+        "source_id": {"$ref": "#/$defs/sourceId"},
+        "last_verified": {"type": "string", "format": "date"},
+        "age_days": {"type": "integer"},
+        "freshness_days": {"type": "integer", "minimum": 1, "maximum": 365},
+        "status": {"enum": ["fresh", "review_due", "stale", "future", "inactive", "out_of_effective_period"]},
+        "record_status": {"enum": ["active", "superseded", "unavailable"]},
+        "effective_from": {"type": ["string", "null"], "format": "date"},
+        "effective_to": {"type": ["string", "null"], "format": "date"},
+        "effect": {"enum": ["informational", "personal_record", "consequential"]}
+      }
+    },
+    "evidenceGate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["data_mode", "as_of", "state", "actionable", "live_verification_required", "usable_for", "not_usable_for", "warnings", "sources", "conflicts"],
+      "properties": {
+        "data_mode": {"const": "OFFLINE_PACKAGED_DATA"},
+        "as_of": {"type": "string", "format": "date"},
+        "state": {"enum": ["verified", "review_due", "stale", "unsupported_as_of", "conflict"]},
+        "actionable": {"type": "boolean"},
+        "live_verification_required": {"type": "boolean"},
+        "usable_for": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z0-9_]+$", "maxLength": 80}
+        },
+        "not_usable_for": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z0-9_]+$", "maxLength": 80}
+        },
+        "warnings": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[A-Z0-9_]+$", "maxLength": 80}
+        },
+        "sources": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {"$ref": "#/$defs/freshnessRecord"}
+        },
+        "conflicts": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {"$ref": "#/$defs/conflict"}
+        }
+      }
+    }
+  }
+}
