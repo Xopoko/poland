@@ -19,17 +19,21 @@ Use current Office for Foreigners, Gov.pl, Biznes.gov.pl, and public employment
 service records. Identify the responsible actor, authority, current channel,
 evidence categories, residence dependency, and human filing boundary. Verify
 forms, deadlines, and exemptions at action time. Do not conclude that work is
-lawful or unlawful from incomplete facts. The plugin must not log in, inspect
-personal or employer records, enter data, upload, download, sign, send, or file
-an employer notice even with user consent; provide the exact official landing
-page and stop.
+lawful or unlawful from incomplete facts.
+
+Hands-on service assistance follows `../../references/automation-playbook.md`.
+The actor who owns the account authenticates, signs, and accepts employer or
+applicant declarations. After that actor explicitly scopes the task, a
+caller-owned tool may inspect relevant records and fill necessary fields.
+Server-side draft creation, upload, download, send, notice filing, or submission
+requires a fresh action-time confirmation and receipt check.
 
 Treat praca.gov.pl as the public map and protected filing channel for relevant
 employer-side permits, declarations, and notifications, not as the worker's
 universal portal. Identify whether the foreigner, employer or other entrusting
 entity, or voivode owns each step before planning it. Any authenticated
-employer-side action belongs to the employer or its authorized human
-representative, never the agent.
+employer-side action requires authorization from the employer or its authorized
+human representative; the foreign worker's authorization alone is insufficient.
 
 For EU Blue Card questions, compose this skill with `poland-stay-residence` and
 use `mos-eu-blue-card` plus `udsc-mos-electronic-residence`. Live-verify the

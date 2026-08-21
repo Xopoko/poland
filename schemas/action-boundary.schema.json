@@ -37,10 +37,11 @@
     "automation": {
       "enum": [
         "public_read_only",
-        "local_placeholder_only",
-        "user_handoff_then_stop",
-        "prohibited_external_effect"
-      ]
+        "task_scoped_assistance",
+        "confirmation_gated_external_effect",
+        "user_only_restricted"
+      ],
+      "description": "Effect policy for the boundary. Confirmation-gated effects require a fresh visible summary; user-only actions cannot be delegated by confirmation."
     },
     "actionList": {
       "type": "array",
@@ -61,13 +62,18 @@
         "id": {"$ref": "#/$defs/slug"},
         "automation": {"$ref": "#/$defs/automation"},
         "allowed": {
+          "description": "Actions available once the boundary's prerequisites are satisfied.",
           "allOf": [
             {"$ref": "#/$defs/actionList"},
             {"minItems": 1}
           ]
         },
-        "requires_confirmation": {"$ref": "#/$defs/actionList"},
+        "requires_confirmation": {
+          "description": "Actions requiring explicit task-scope authorization or a fresh action-time confirmation as specified by the boundary.",
+          "$ref": "#/$defs/actionList"
+        },
         "never": {
+          "description": "Actions that cannot be delegated within this boundary; confirmation does not unlock them.",
           "allOf": [
             {"$ref": "#/$defs/actionList"},
             {"minItems": 1}

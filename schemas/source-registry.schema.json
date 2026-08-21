@@ -59,7 +59,7 @@
           "uniqueItems": true,
           "items": {"type": "string", "minLength": 1, "maxLength": 253, "pattern": "^[a-z0-9.-]+$"}
         },
-        "jurisdiction": {"enum": ["national", "eu", "voivodeship", "gmina"]},
+        "jurisdiction": {"enum": ["national", "eu", "voivodeship", "powiat", "gmina"]},
         "localities": {
           "type": "array",
           "maxItems": 64,
@@ -82,7 +82,15 @@
         },
         "access": {"enum": ["public", "authenticated", "credentialed_api"]},
         "effect": {"enum": ["informational", "personal_record", "consequential"]},
-        "automation": {"enum": ["public_read_only", "public_read_only_handoff", "prohibited_external_effect"]},
+        "automation": {
+          "enum": [
+            "human_in_loop_operator",
+            "public_read_only",
+            "public_read_only_handoff",
+            "prohibited_external_effect",
+            "user_handoff_then_stop"
+          ]
+        },
         "last_verified": {"type": "string", "format": "date"},
         "freshness_days": {"type": "integer", "minimum": 1, "maximum": 365},
         "notes": {"type": "string", "minLength": 1, "maxLength": 1000},

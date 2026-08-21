@@ -18,10 +18,15 @@ tools.
 Use current Gov.pl, ministry, Empatia, and competent municipal or disability
 support sources returned by the registry. Identify the responsible authority,
 current period and public channel, evidence categories, locality variation, and
-official landing-page handoff. If the route reaches an authenticated case, login
-wall, personal record, or form, stop. Verify amounts, thresholds, dates, and
-forms from public official pages at action time. Do not submit, appeal, inspect
-records, or promise an award even with user consent.
+official landing-page handoff. Verify amounts, thresholds, dates, and forms from
+public official pages at action time. Do not infer entitlement or promise an
+award.
+
+For requested hands-on help, follow `../../references/automation-playbook.md`.
+After user-only authentication and explicit task scope, a caller-owned tool may
+inspect the relevant case record and fill necessary fields. Submission, appeal,
+upload, download, or other external effect requires action-time confirmation;
+signatures, attestations, and final payment authorization remain with the user.
 
 Route school or childcare administration to `poland-family-education`, social
 insurance to `poland-social-insurance`, residence dependencies to

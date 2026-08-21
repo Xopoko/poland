@@ -17,8 +17,11 @@ dates, school records, and account data in plugin tools.
 
 Separate national guidance from gmina, school, and university implementation.
 Verify the current authority, intake period, form, document chain, translation
-requirement, and submission channel. Stop before personal-data entry,
-declaration, or submission.
+requirement, and submission channel. Hands-on portal work follows
+`../../references/automation-playbook.md`: the relevant adult user authenticates,
+explicitly scopes any access to a child's or student's records, and performs
+signatures and declarations; necessary form filling is task-scoped, and upload,
+booking, or submission requires action-time confirmation.
 
 Foreign certificates, apostille, translations, and qualification recognition
 route to `poland-foreign-documents`; appointments route to

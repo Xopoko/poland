@@ -21,6 +21,6 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python scripts/validate_package.py
-      - run: python scripts/poland.py validate --as-of 2026-08-20
+      - run: python scripts/poland.py validate --as-of 2026-08-21
       - run: python -m unittest discover -s tests
       - run: python scripts/token_report.py

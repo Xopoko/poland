@@ -21,8 +21,24 @@ Prefer a current Polish procedure page over an older translation, while explaini
 
 ## Translation quality
 
-Machine translation may support orientation but is not a sworn translation. Preserve the original official title, source ID, and URL when translating public guidance. Do not inspect or translate identity data, personal documents, or legal declarations; user review does not expand this boundary.
+Machine translation may support orientation but is not a sworn translation.
+Preserve the original official title, source ID, and URL when translating public
+guidance. Keep identity data, personal documents, and legal declarations out of
+bundled plugin tools and public-source evidence.
+
+For a user-selected personal document, a caller-owned tool may inspect or produce
+an orientation translation only after explicit task-scoped authorization. Show
+the limitation clearly, minimize exposed data, do not persist the document in
+plugin artifacts, and never present machine output as a sworn translation or
+accept a legal declaration for the user.
 
 ## Document safety
 
-Do not request, inspect, store, translate, transmit, upload, or download passports, residence cards, civil records, health documents, financial statements, or attachments. Route only from non-identifying document categories. The plugin may hand off the exact official landing page and then stop.
+Use only non-identifying document categories in bundled plugin tools. In a
+caller-owned task context, inspect or transform the minimum selected document
+only after explicit scope authorization. Upload, download, ordering, payment
+initiation, or submission requires a fresh summary of the exact document,
+official origin, destination, purpose, fee, and action-time confirmation.
+Signatures, attestations, final payment authorization, irreversible surrender of
+an original, and certification of authenticity or legal sufficiency remain with
+the user or qualified professional.

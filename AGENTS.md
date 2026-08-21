@@ -19,12 +19,29 @@ hosts, and safe for public collaboration.
 - Prefer the competent Polish authority or an official EU source, record access
   and verification dates, and preserve uncertainty and conflicts.
 - The plugin may inspect packaged data offline and probe allowlisted public
-  pages without credentials. It does not bundle an authenticated connector.
-- Never log in, read a personal record, enter personal data, submit, send, book,
-  cancel, pay, upload, download, sign, call, or change external state. Consent
-  and confirmation do not expand this boundary.
-- An exact official landing page may be opened for the user; stop immediately
-  after the handoff.
+  pages without credentials. It bundles no Browser or Computer adapter,
+  authenticated connector, credential store, or external-action executor.
+- Skill instructions may orchestrate a caller-owned Browser, Computer tool, or
+  approved connector when that capability is installed and its own policy
+  permits the task. If none is available, give semantic manual steps and stay
+  with the user through each checkpoint.
+- Public research may be autonomous. Authentication, account selection, secret
+  entry, CAPTCHA, and 2FA are user-only; pause capture and yield control before
+  they begin. Resume only after the user says the protected session is ready.
+- After explicit task-scoped authorization, inspect only the personal records
+  needed for the named task and fill only necessary, reviewable fields. Keep
+  personal values out of the bundled CLI, MCP, receipts, tests, logs, and repo.
+- Obtain fresh action-time confirmation against a visible summary before any
+  submit, send, booking change, payment initiation, upload, download, account or
+  record change, or other consequential external effect. A broad instruction at
+  task start is not confirmation for every later action.
+- Treat scenario and channel `stop_before` values as mandatory pause-and-classify
+  checkpoints. Continue only when the concrete action is allowed and its scope
+  or action-time checkpoint has completed; user-only and unresolved actions stop.
+- The user performs signatures, legal attestations, final payment authorization,
+  irreversible destructive actions, and any step whose truth or legal effect
+  only the user can accept. Never bypass controls, forge a declaration, obscure
+  costs, or claim completion without a visible official receipt or final state.
 
 ## Repository Shape
 
@@ -33,7 +50,8 @@ hosts, and safe for public collaboration.
 - `references/` contains longer source and operating guidance.
 - `lib/`, `scripts/`, and `mcp/` contain deterministic standard-library tools.
 - `tests/` contains public-safe synthetic fixtures and regression coverage.
-- `.codex-plugin/`, `.claude-plugin/`, `.cursor-plugin/`, and `package.json`
+- `.agents/plugins/marketplace.json` keeps standalone Codex discovery opt-in;
+  `.codex-plugin/`, `.claude-plugin/`, `.cursor-plugin/`, and `package.json`
   describe the same release for supported hosts.
 
 ## Authoring Rules
@@ -55,7 +73,7 @@ Run before committing:
 
 ```bash
 python scripts/validate_package.py
-python scripts/poland.py validate --as-of 2026-08-20
+python scripts/poland.py validate --as-of 2026-08-21
 python -m unittest discover -s tests
 python scripts/token_report.py
 ```

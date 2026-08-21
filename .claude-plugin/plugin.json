@@ -1,7 +1,7 @@
 {
   "name": "poland",
-  "version": "0.1.0",
-  "description": "Official-source-first Poland support for residents, immigrants, and expats: residence, work, tax, documents, healthcare, and daily administration with dated evidence, offline tools, and strict user-only action boundaries.",
+  "version": "0.2.0",
+  "description": "Official-source-first Poland support for residents, immigrants, and expats: life events, public services, residence, work, tax, health, documents, and safe human-in-the-loop portal workflows.",
   "author": {
     "name": "Xopoko",
     "email": "xopoko@users.noreply.github.com",

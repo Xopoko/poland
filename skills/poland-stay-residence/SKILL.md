@@ -18,10 +18,16 @@ Use current Office for Foreigners, MOS, Gov.pl, and competent voivodeship source
 records. Keep possible routes separate when a fact is unknown. Build phases for
 status continuity, competent authority, evidence categories, current channel,
 official landing-page handoff, and user-owned follow-up. Verify deadlines, forms,
-fees, and public channel descriptions at action time. Stop before login, personal
-record inspection, form entry, booking, upload, download, payment, signature, or
-submission; consent does not expand this boundary. Never conclude eligibility or
-predict an outcome.
+fees, and public channel descriptions at action time. Never conclude eligibility
+or predict an outcome.
+
+For requested MOS or appointment help, apply
+`../../references/automation-playbook.md`. The applicant handles authentication,
+signature, truth attestations, final payment authorization, biometrics, and
+original-passport presentation. Explicit task scope permits minimum record and
+document inspection plus necessary form filling. Draft creation, booking,
+upload, download, payment initiation, or submission requires fresh action-time
+confirmation and a visible receipt check.
 
 For filing-channel questions, use `udsc-mos-electronic-residence`: from 27 April
 2026 its public guidance makes MOS the general electronic route for temporary,
@@ -29,7 +35,9 @@ permanent, and long-term EU resident applications while preserving listed paper
 exceptions. Classify the exact purpose-of-stay branch before applying that rule.
 Keep applicant filing, any employer or university attachment, and the later
 voivode-controlled fingerprints, signature specimen, and original-passport
-stage separate. The plugin only explains these public steps.
+stage separate. Obtain authority from the actor who owns each account or
+attachment before assisting; the applicant cannot authorize actions in an
+employer or university account on that actor's behalf.
 
 For highly qualified employment, combine `mos-eu-blue-card` with the MOS channel
 and `poland-work-authorization`. Separate applicant, employer, and voivode

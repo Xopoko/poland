@@ -1,14 +1,25 @@
 {
   "name": "poland",
   "displayName": "Poland",
-  "version": "0.1.0",
-  "description": "Official-source-first AI agent skills for life and administration in Poland.",
+  "version": "0.2.0",
+  "description": "Official-source-first AI agent skills, semantic portal playbooks, and a bundled local read-only MCP companion for life and administration in Poland.",
   "author": {
     "name": "Xopoko",
     "email": "xopoko@users.noreply.github.com",
     "url": "https://github.com/Xopoko"
   },
+  "homepage": "https://github.com/Xopoko/poland",
   "repository": "https://github.com/Xopoko/poland",
   "license": "MIT",
-  "logo": "assets/icon.png"
+  "keywords": [
+    "poland",
+    "immigration",
+    "expats",
+    "official-sources",
+    "agent-skills",
+    "mcp"
+  ],
+  "logo": "assets/icon.png",
+  "skills": "./skills/",
+  "mcpServers": "./.codex-mcp.json"
 }

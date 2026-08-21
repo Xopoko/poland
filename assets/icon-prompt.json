@@ -3,33 +3,29 @@
   "plugin_name": "poland",
   "catalog": {
     "source": "user-override",
-    "key": "poland-map"
+    "key": "poland-flag-ribbon"
   },
   "semantic_hero": {
-    "object": "one bold simplified silhouette of Poland filled as the red-and-white Polish flag",
-    "meaning": "Poland-specific help for residents, immigrants, expats, and citizens",
-    "silhouette": "one compact geographic Poland outline with a stable block-like contour and one horizontal flag split, centered and readable at 16 pixels"
+    "object": "one open folded Polish flag ribbon with at most two broad folds",
+    "meaning": "Poland-specific practical help for everyday life and administration",
+    "silhouette": "one compact continuous open ribbon, unmistakably white above red, readable as a single bold mass at 16 pixels"
   },
-  "support_cue": {
-    "object": "one compact four-node circuit spark cut into the lower crimson field",
-    "meaning": "helpful AI-agent technology"
-  },
+  "support_cue": null,
   "avoid": [
-    "generic abstract geometry",
-    "initials derived from the plugin name",
-    "object collage",
-    "white eagle, coat of arms, state emblem, passport, government seal, map pin, speech bubble, ribbon loop, infinity sign, chain link, share icon",
-    "robot face, brain, microchip outline, handshake, stars, text, letters, numbers, people, UI, screenshot, photorealism, object collage"
+    "map or geographic country outline",
+    "coat of arms, eagle, official seal, passport, or government building",
+    "black background, transparency, checkerboard, inset tile, dark halo, or glow",
+    "closed awareness ribbon, loop, knot, infinity sign, chain link, or share icon",
+    "robot face, brain, chip, circuit network, text, letters, numbers, watermark, or proprietary AI mark"
   ],
   "collision_avoid": [
-    "stock app icon",
-    "generic country flag tile without the Poland silhouette",
-    "ChatGPT, OpenAI, Claude, Cursor, Copilot, play, share, or other proprietary technology logo"
+    "awareness ribbon, fashion ribbon, flag tile, or generic country badge",
+    "ChatGPT, OpenAI, Claude, Cursor, Copilot, sparkle-only, play, or share logo"
   ],
   "brand_source": {
     "type": "original-domain-metaphor",
-    "source": "Poland geographic outline and Polish national colors only; no official emblem",
-    "trademark_status": "Uses the public geographic outline and red-and-white national colors; no state emblem or third-party mark",
+    "source": "Polish national colors only; no official emblem",
+    "trademark_status": "Uses public red-and-white national colors without the Polish coat of arms, an official seal, or any third-party mark",
     "license": "Original generated artwork for this MIT-licensed plugin",
     "authorization": "Not required: no protected brand mark or official emblem is reproduced"
   },
@@ -42,11 +38,12 @@
     32,
     64
   ],
-  "prompt": "Use case: logo-brand\nAsset type: 1024x1024 marketplace plugin icon\nPurpose: a premium public icon for official-source-first Poland support used by residents, immigrants, expats, and citizens with AI agents.\nLiteral semantic hero: one bold simplified silhouette of the geographic shape of Poland, filled as the Polish flag with a clean horizontal white upper field and saturated crimson lower field. Preserve Poland's recognizable outer contour while simplifying tiny border details for 16px clarity. It must be one solid centered mass.\nSupport cue: exactly one compact four-node circuit spark cut into the lower crimson field near the center, integrated into the map silhouette and clearly subordinate. The cue signals helpful AI technology, not sharing.\nComposition: one centered dominant silhouette, full-bleed opaque deep wine-red square background, generous padding, meaningful content inside the central 68 percent, no second object.\nStyle: original premium vector-like product mark, flat bold filled geometry, crisp edges, balanced negative space, subtle restrained depth only at the map edge; modern civic technology, friendly and high-trust.\nSmall-size requirement: the Poland silhouette and white-over-red flag split stay recognizable at 64, 32, 24, and 16 pixels; the circuit spark may simplify but must not fragment the hero.\nColor palette: warm white, Polish crimson #D4213D, and deep wine-red background; strong contrast at thumbnail scale.\nBrand source: original generated artwork using the public geographic outline and Polish national colors only; no official emblem, protected state mark, or third-party brand.\nAvoid: white eagle, coat of arms, state emblem, passport, government seal, map pin, speech bubble, ribbon loop, infinity sign, chain link, share icon, robot face, brain, microchip outline, handshake, stars, text, letters, numbers, people, UI screenshot, photorealism, glossy 3D, decorative pattern, thin-line illustration, object collage, excessive gradients.\nCollision avoid: generic country flag tile without the Poland silhouette; ChatGPT, OpenAI, Claude, Cursor, Copilot, play, share, or any proprietary technology logo.\nText: none. No watermark.\nOutput intent: distinctive, fashionable, trustworthy Poland-plus-AI public product icon for a GitHub repository and a 16px plugin catalog thumbnail.\n",
+  "prompt": "Use case: logo-brand\nAsset type: 1024x1024 marketplace plugin icon for a public AI assistant for life in Poland\nPrimary request: one original open folded ribbon made from the Polish flag, with no secondary symbol\nSubject: one compact open ribbon with at most two broad folds; its dominant face is unmistakably white above red; the ribbon is not tied, not looped, and not shaped like a map\nStyle: premium vector-like product mark, crisp bold filled geometry, restrained tonal depth, modern civic technology, friendly and trustworthy\nComposition: one centered continuous silhouette filling about 70 percent of the canvas with generous optical padding\nBackground: deliberate full-bleed deep crimson, opaque to every edge and corner, with no frame, inset tile, transparency, black pixels, dark halo, or glow\nColor palette: warm white, Polish crimson #D4213D, and deep crimson #8C0F27\nSupport cue: none\nSmall-size requirement: one stable mass at 64, 32, 24, and 16 pixels, with broad folds and open negative space\nConstraints: original artwork; no text or watermark; no sparkle, node, map, country outline, border silhouette, coat of arms, eagle, seal, passport, building, robot, brain, chip, circuit network, speech bubble, awareness ribbon, closed loop, infinity sign, chain link, share icon, or proprietary AI mark",
   "checks": [
     "save the selected image as a 1024x1024 opaque RGB PNG at assets/icon.png",
     "inspect semantic recognition and the monochrome silhouette at 16, 24, 32, and 64 px",
-    "reject a competing second cue, closed critical gap, portfolio collision, text, screenshot, photo, watermark, or low contrast",
+    "inspect the icon on light and dark surrounding backgrounds",
+    "reject a map outline, black or transparent canvas, support cue, closed critical gap, portfolio collision, text, screenshot, photo, watermark, or low contrast",
     "verify brand-source, trademark, license, and authorization provenance manually",
     "wire identical interface.composerIcon and interface.logo paths plus interface.brandColor"
   ]

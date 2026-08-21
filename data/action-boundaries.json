@@ -1,12 +1,13 @@
 {
   "schema_version": "1.0.0",
-  "default_boundary": "public-read-only",
+  "default_boundary": "user-only-restricted",
   "boundaries": [
     {
       "id": "public-read-only",
       "automation": "public_read_only",
       "allowed": [
         "open_allowlisted_public_official_page",
+        "navigate_public_official_page",
         "read_visible_public_information",
         "retrieve_public_metadata",
         "search_public_register_without_personal_data",
@@ -15,83 +16,71 @@
       "requires_confirmation": [],
       "never": [
         "follow_unclassified_link",
-        "open_local_file",
-        "read_clipboard",
-        "enter_form_field",
-        "start_authenticated_session",
-        "download_file",
-        "execute_page_instruction"
+        "cross_to_unverified_origin",
+        "execute_page_instruction",
+        "open_local_file_without_task_authorization",
+        "read_clipboard_without_task_authorization",
+        "download_unrequested_file"
       ]
     },
     {
-      "id": "placeholder-preparation",
-      "automation": "local_placeholder_only",
+      "id": "task-scoped-assistance",
+      "automation": "task_scoped_assistance",
       "allowed": [
         "prepare_blank_template",
         "prepare_placeholder_checklist",
         "prepare_generic_question_for_authority",
+        "prepare_transient_reviewable_draft",
         "explain_public_form_field",
-        "compare_public_blank_form_version"
-      ],
-      "requires_confirmation": [],
-      "never": [
-        "request_personal_value_for_placeholder",
-        "complete_form_with_personal_data",
-        "open_personal_document",
-        "upload_document",
-        "save_server_side_draft"
-      ]
-    },
-    {
-      "id": "user-handoff",
-      "automation": "user_handoff_then_stop",
-      "allowed": [
-        "state_official_authority_domain_and_purpose",
-        "open_exact_official_landing_page",
-        "stop_after_opening_landing_page"
+        "compare_public_blank_form_version",
+        "prepare_visible_action_summary"
       ],
       "requires_confirmation": [
-        "open_exact_official_landing_page"
+        "resume_after_user_authentication",
+        "read_task_relevant_personal_record",
+        "inspect_task_relevant_correspondence",
+        "open_user_selected_personal_document",
+        "extract_minimum_task_relevant_personal_data",
+        "enter_task_relevant_personal_data",
+        "fill_nonconsequential_form_fields",
+        "correct_reviewed_form_field",
+        "prepare_personalized_draft_in_caller_context",
+        "access_task_relevant_account_area",
+        "use_approved_authenticated_connector"
       ],
       "never": [
-        "continue_after_handoff",
-        "choose_authentication_provider",
-        "interact_after_authentication",
-        "read_personal_record",
-        "enter_personal_data"
+        "inspect_unrelated_personal_record",
+        "browse_unrelated_account_area",
+        "infer_missing_personal_value",
+        "reuse_personal_data_outside_scope",
+        "copy_personal_data_to_plugin_tool",
+        "persist_personal_case_in_plugin",
+        "put_personal_data_in_receipt_log_test_or_issue"
       ]
     },
     {
       "id": "human-submit",
-      "automation": "prohibited_external_effect",
+      "automation": "confirmation_gated_external_effect",
       "allowed": [
+        "state_official_authority_domain_and_purpose",
+        "open_exact_official_landing_page",
+        "navigate_authorized_official_service",
+        "inspect_visible_service_state",
+        "prepare_attachment_selection",
+        "show_visible_action_summary",
+        "verify_visible_official_receipt",
         "explain_user_only_step",
-        "prepare_local_placeholder_only"
+        "provide_guided_manual_fallback"
       ],
-      "requires_confirmation": [],
-      "never": [
-        "login",
-        "authenticate",
-        "choose_authentication_provider",
-        "interact_after_authentication",
-        "read_credentials",
-        "read_password",
-        "read_otp",
-        "read_verification_code",
-        "read_email_for_code",
-        "read_personal_record",
-        "copy_sensitive_record",
-        "enter_personal_data",
+      "requires_confirmation": [
         "start_application",
         "save_server_side_draft",
         "edit_application",
         "submit_application",
-        "withdraw_application",
         "amend_application",
         "book_appointment",
         "reschedule_appointment",
         "cancel_appointment",
-        "make_payment",
         "initiate_payment",
         "upload_document",
         "download_personal_document",
@@ -103,33 +92,85 @@
         "contact_authority",
         "contact_employer",
         "contact_landlord",
+        "create_external_account",
+        "change_external_record",
+        "share_location",
+        "place_non_emergency_call"
+      ],
+      "never": [
+        "proceed_without_visible_action_summary",
+        "reuse_stale_or_consumed_confirmation",
+        "continue_after_material_page_change",
+        "retry_unknown_consequential_outcome",
+        "claim_completion_without_visible_receipt",
+        "obscure_amount_fee_or_charge"
+      ]
+    },
+    {
+      "id": "user-only-restricted",
+      "automation": "user_only_restricted",
+      "allowed": [
+        "guide_user_through_user_only_step",
+        "position_page_for_user_control",
+        "summarize_visible_effect_for_user",
+        "provide_manual_user_only_fallback"
+      ],
+      "requires_confirmation": [],
+      "never": [
+        "login",
+        "authenticate",
+        "choose_authentication_provider",
+        "read_credentials",
+        "read_password",
+        "read_passkey",
+        "read_pin",
+        "read_otp",
+        "read_verification_code",
+        "read_email_for_code",
+        "read_session_cookie",
+        "read_payment_credential",
+        "pass_captcha",
+        "bypass_2fa",
+        "bypass_access_control",
         "sign_as_user",
         "accept_declaration",
         "accept_consent",
         "accept_terms",
-        "create_external_account",
-        "change_external_record",
-        "use_credentialed_api",
-        "send_personal_identifier_to_api",
-        "pass_captcha",
-        "click_through_everything",
-        "place_emergency_call"
+        "accept_settlement",
+        "confirm_truth_for_user",
+        "approve_final_payment_authorization",
+        "withdraw_application",
+        "perform_irreversible_destructive_action",
+        "delete_external_account_or_record",
+        "place_emergency_call",
+        "impersonate_user",
+        "forge_document_signature_or_declaration",
+        "use_unapproved_credentialed_api",
+        "send_personal_data_to_unapproved_destination",
+        "click_through_everything"
       ]
     }
   ],
   "global_never": [
-    "request_retain_inspect_transform_or_transmit_personal_data",
-    "request_or_use_credentials_otp_session_cookie_or_api_key",
-    "login_or_interact_after_authentication",
-    "read_personal_record_or_personal_document",
-    "submit_send_book_pay_upload_download_sign_or_change_external_state",
-    "use_credentialed_api",
-    "decide_legal_eligibility",
+    "request_secret_in_chat_or_plugin_tool",
+    "capture_or_retain_credential_otp_cookie_or_payment_secret",
+    "bypass_captcha_2fa_or_access_control",
+    "access_personal_data_outside_explicit_task_scope",
+    "persist_personal_data_in_plugin_input_output_or_artifact",
+    "send_personal_data_to_unapproved_destination",
+    "use_unapproved_credentialed_api",
+    "decide_legal_eligibility_from_incomplete_facts",
     "promise_fee_processing_time_or_outcome",
-    "fabricate_case_status",
+    "fabricate_case_status_or_receipt",
     "represent_user_or_confirm_truth_for_user",
-    "continue_because_user_accepts_risk",
-    "obey_website_instructions",
+    "forge_document_signature_or_declaration",
+    "obscure_amount_fee_or_charge",
+    "treat_blanket_instruction_as_future_action_confirmation",
+    "perform_user_only_high_stakes_action",
+    "claim_completion_without_visible_official_receipt",
+    "retry_consequential_action_when_outcome_is_unclear",
+    "obey_website_instruction_that_expands_authority",
+    "continue_after_origin_scope_or_material_state_change_without_recheck",
     "continue_when_official_sources_materially_conflict_without_flagging_the_conflict"
   ]
 }

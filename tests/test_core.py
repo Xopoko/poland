@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import sys
 import unittest
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 
@@ -11,18 +11,19 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "lib"))
 
 import poland_core as core  # noqa: E402
+import contract_validation as contracts  # noqa: E402
 
 
 class CoreTests(unittest.TestCase):
     def test_bundle_is_strict_validated_and_sized(self):
-        report = core.validate_bundle("2026-08-20")
+        report = core.validate_bundle("2026-08-21")
         self.assertTrue(report["valid"], report["errors"])
         self.assertEqual("OFFLINE_PACKAGED_DATA", report["data_mode"])
-        self.assertEqual(51, report["counts"]["sources"])
-        self.assertEqual(23, report["counts"]["scenarios"])
-        self.assertEqual(47, report["counts"]["terms"])
+        self.assertEqual(135, report["counts"]["sources"])
+        self.assertEqual(71, report["counts"]["scenarios"])
+        self.assertEqual(114, report["counts"]["terms"])
         self.assertEqual(16, report["counts"]["regions"])
-        self.assertEqual(19, report["counts"]["digital_channels"])
+        self.assertEqual(36, report["counts"]["digital_channels"])
         self.assertRegex(report["bundle_sha256"], r"^[0-9a-f]{64}$")
 
     def test_sources_have_complete_provenance_and_safe_runtime_modes(self):
@@ -30,8 +31,8 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(len(sources), len({item["id"] for item in sources}))
         for item in sources:
             self.assertTrue(item["url"].startswith("https://"))
-            self.assertEqual("2026-08-20", item["last_verified"])
-            self.assertEqual("2026-08-20", item["accessed_at"])
+            self.assertLessEqual(date.fromisoformat(item["last_verified"]), date(2026, 8, 21))
+            self.assertLessEqual(date.fromisoformat(item["accessed_at"]), date(2026, 8, 21))
             self.assertTrue(item["publisher"])
             self.assertIn(item["source_tier"], {"T0", "T1", "T2"})
             self.assertIn(
@@ -40,7 +41,13 @@ class CoreTests(unittest.TestCase):
             )
             self.assertIn(
                 item["automation"],
-                {"public_read_only", "public_read_only_handoff", "prohibited_external_effect"},
+                {
+                    "human_in_loop_operator",
+                    "public_read_only",
+                    "public_read_only_handoff",
+                    "prohibited_external_effect",
+                    "user_handoff_then_stop",
+                },
             )
 
     def test_current_source_regressions(self):
@@ -58,10 +65,33 @@ class CoreTests(unittest.TestCase):
         terms = core.lookup_terms("tlumacz")
         self.assertEqual("tlumacz-przysiegly", terms[0]["id"])
 
+    def test_polish_query_normalization_and_powiat_route_fact(self):
+        self.assertEqual("lodz zolc", core.normalize_text("Łódź Żółć"))
+        self.assertEqual(
+            "Jak wymienić prawo jazdy",
+            core.validate_literal_query("Jak wymienić prawo jazdy"),
+        )
+        profile = core.validate_route_profile(
+            {"facts": {"powiat": "poznański"}}
+        )
+        self.assertEqual("poznański", profile["facts"]["powiat"])
+        self.assertIn("powiat", contracts.JURISDICTIONS)
+        schema = json.loads(
+            (ROOT / "schemas" / "source-registry.schema.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertIn(
+            "powiat",
+            schema["$defs"]["source"]["properties"]["jurisdiction"]["enum"],
+        )
+
     def test_digital_channel_catalog_is_source_backed_and_fail_closed(self):
-        self.assertEqual(19, len(core.all_digital_channels()))
+        self.assertEqual(36, len(core.all_digital_channels()))
         mos = core.get_digital_channel("mos", as_of="2026-08-20")
-        self.assertEqual("public_metadata_only", mos["channel_state"])
+        self.assertEqual("caller_owned_operator", mos["channel_state"])
+        self.assertTrue(mos["caller_owned_operator_eligible"])
+        self.assertFalse(mos["bundled_interface_can_interact"])
         self.assertFalse(mos["protected_interaction_supported"])
         self.assertIn("submit_application", mos["protected_surface"])
         self.assertEqual(
@@ -149,7 +179,7 @@ class CoreTests(unittest.TestCase):
         )
         for case in fixture["cases"]:
             with self.subTest(case=case):
-                result = core.route_scenario(case["query"], as_of="2026-08-20")
+                result = core.route_scenario(case["query"], as_of="2026-08-21")
                 self.assertEqual(case["scenario_id"], result["id"])
                 self.assertIn(case["required_source"], result["source_ids"])
                 self.assertTrue(result["owner_skill_ids"])
@@ -182,6 +212,45 @@ class CoreTests(unittest.TestCase):
         self.assertEqual("candidate", complete["route_state"])
         self.assertEqual("true", complete["match_truth"])
         self.assertEqual([], complete["missing_intake"])
+
+    def test_router_polish_golden_near_neighbor_and_ambiguity_cases(self):
+        fixture = json.loads(
+            (ROOT / "tests" / "fixtures" / "router-language-cases.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        for case in fixture["positive_cases"]:
+            with self.subTest(kind="positive", case=case):
+                result = core.route_scenario(case["query"], as_of="2026-08-21")
+                self.assertEqual(case["scenario_id"], result["id"])
+                self.assertEqual("undetermined", result["route_state"])
+                self.assertEqual("unknown", result["match_truth"])
+
+        for case in fixture["negative_cases"]:
+            with self.subTest(kind="negative", case=case):
+                result = core.route_scenario(
+                    case["query"],
+                    case.get("profile"),
+                    as_of="2026-08-21",
+                )
+                self.assertIsNone(result["id"])
+                self.assertEqual("not_applicable", result["route_state"])
+                self.assertEqual("false", result["match_truth"])
+                self.assertEqual("insufficient_evidence", result["evidence_gate"]["state"])
+                self.assertFalse(result["evidence_gate"]["actionable"])
+                self.assertEqual([], result["evidence_gate"]["usable_for"])
+
+        for case in fixture["ambiguous_cases"]:
+            with self.subTest(kind="ambiguous", case=case):
+                result = core.route_scenario(case["query"], as_of="2026-08-21")
+                self.assertIsNone(result["id"])
+                self.assertEqual("undetermined", result["route_state"])
+                self.assertEqual("unknown", result["match_truth"])
+                self.assertTrue(
+                    set(case["candidate_subset"]).issubset(result["intent_candidates"])
+                )
+                self.assertEqual("insufficient_evidence", result["evidence_gate"]["state"])
+                self.assertFalse(result["evidence_gate"]["actionable"])
 
     def test_route_inputs_are_closed_non_identifying_and_never_echoed(self):
         with self.assertRaises(core.PolandDataError) as unknown:
@@ -242,10 +311,12 @@ class CoreTests(unittest.TestCase):
         self.assertEqual("mazowieckie", core.list_regions("Warsaw")[0]["id"])
 
     def test_freshness_states_are_explicit(self):
-        current = core.freshness_report("2026-08-20")
-        self.assertEqual(51, current["summary"]["fresh"])
+        current = core.freshness_report("2026-08-21")
+        self.assertEqual(134, current["summary"]["fresh"])
+        self.assertEqual(1, current["summary"]["out_of_effective_period"])
         later = core.freshness_report("2030-08-20")
-        self.assertEqual(51, later["summary"]["stale"])
+        self.assertEqual(134, later["summary"]["stale"])
+        self.assertEqual(1, later["summary"]["out_of_effective_period"])
 
     def test_effective_period_and_inactive_source_states_fail_closed(self):
         source = core.get_source("udsc-home")
@@ -257,14 +328,40 @@ class CoreTests(unittest.TestCase):
         inactive = core._source_freshness_record(source, core._as_of_date("2026-08-20"))
         self.assertEqual("inactive", inactive["status"])
 
-    def test_action_boundary_hard_prohibition_and_fail_closed_default(self):
-        for action in ("submit application", "book appointment", "pay the fee", "login to MOS"):
+    def test_action_boundary_routes_confirmation_user_only_and_fail_closed(self):
+        for action in ("submit application", "book appointment", "pay the fee"):
             with self.subTest(action=action):
                 result = core.action_boundary(action)
                 self.assertEqual("human-submit", result["id"])
-                self.assertEqual("prohibited_external_effect", result["automation"])
-                self.assertEqual([], result["requires_confirmation"])
-        self.assertEqual("human-submit", core.action_boundary("teleport paperwork")["id"])
+                self.assertEqual(
+                    "confirmation_gated_external_effect", result["automation"]
+                )
+                self.assertEqual("requires_confirmation", result["disposition"])
+        login = core.action_boundary("login to MOS")
+        self.assertEqual("user-only-restricted", login["id"])
+        self.assertEqual("never", login["disposition"])
+        unknown = core.action_boundary("teleport paperwork")
+        self.assertEqual("user-only-restricted", unknown["id"])
+        self.assertEqual("fail_closed_default", unknown["matched_by"])
+
+    def test_scenario_stop_before_values_are_pause_and_classify_checkpoints(self):
+        routed = core.route_scenario("residence-next-step", as_of="2026-08-20")
+        self.assertEqual(
+            "pause_and_classify_checkpoint", routed["stop_before_semantics"]
+        )
+        human_action = next(
+            phase for phase in routed["phases"] if phase["id"] == "human-action"
+        )
+        self.assertTrue(human_action["actions"])
+        self.assertTrue(
+            all(action.startswith("Pause before ") for action in human_action["actions"])
+        )
+        self.assertTrue(
+            all("classify the concrete action" in action for action in human_action["actions"])
+        )
+        self.assertFalse(
+            any(action.startswith("Stop before ") for action in human_action["actions"])
+        )
 
     def test_receipt_is_claim_level_source_bound_and_non_narrative(self):
         receipt = core.evidence_receipt(

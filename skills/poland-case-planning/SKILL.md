@@ -21,11 +21,16 @@ profiles, ledgers, or other durable user records.
    locator, supported claim IDs, and optional content hash.
 6. Re-route after a status, job, family, locality, or official-letter change.
 
-Never request or retain PESEL, passport/document numbers, names, addresses,
-email, phone, credentials, bank data, scans, correspondence, or personal-record
-content. Do not open personal documents or write the plan to disk. The user may
-copy the generic output into storage they control without further plugin access.
+Never place PESEL, passport/document numbers, names, addresses, email, phone,
+credentials, bank data, scans, correspondence, or personal-record content in
+bundled plugin tools or a durable plan. A caller-owned tool may inspect the
+minimum relevant personal material after explicit task-scoped authorization,
+but the plan stays abstract and transient. The user may copy the generic output
+into storage they control without further plugin access.
 
 For the data and effect boundaries, read
 `../../references/operating-contract.md`. For a domain procedure, hand off to its
 focused skill; this skill owns transient planning, not eligibility or execution.
+Scenario `stop_before` values are pause-and-classify checkpoints: resolve them
+through `../../references/automation-playbook.md` rather than treating every
+listed external effect as permanently prohibited.

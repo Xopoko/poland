@@ -21,11 +21,14 @@ termination clauses, payment trace, and registration/address consequences. Use
 official municipal or consumer sources for the route; a listing or message from
 a landlord is not official evidence.
 
-The plugin must never transfer money, sign, send a complaint, make an accusation,
-upload or download a contract, or inspect personal housing records, even after
-user review or confirmation. It may prepare a generic placeholder checklist and
-hand off an exact official landing page. The user independently preserves any
-contract, protocol, photos, and receipts outside the plugin. Route PESEL or
+For requested hands-on help, use `../../references/automation-playbook.md`. A
+caller-owned tool may inspect a user-selected contract or housing record after
+explicit task scope and prepare reviewable fields or correspondence. Sending a
+complaint, uploading or downloading a contract, or changing an official record
+requires a fresh action-time confirmation. Money transfer, final bank
+authorization, signature, settlement acceptance, contract termination, and
+irreversible actions remain user-controlled. The user independently preserves
+contracts, protocols, photos, and receipts outside the plugin. Route PESEL or
 meldunek to `poland-identity`, consumer escalation to
 `poland-consumer-banking`, and local channels to `poland-local-services`. Read
 `../../references/daily-life-map.md`.

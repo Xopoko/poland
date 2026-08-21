@@ -23,8 +23,13 @@ are outside this plugin's boundary.
 
 Build a dependency graph: legal/status gate, form decision requiring advice,
 registry and identifiers, regulated-activity checks, tax/ZUS, banking/accounting,
-and post-registration duties. Prepare only generic drafts and checklists with
-placeholders. The plugin must not log in, register, change a record, declare,
-sign, pay, upload, download, or close a business even with user confirmation.
-It may hand off the exact official landing page and then stop. Read
+and post-registration duties. Prepare reviewable drafts and checklists without
+placing personal values in bundled plugin tools.
+
+Hands-on registry work follows `../../references/automation-playbook.md`. The
+authorized business actor handles authentication, secrets, signatures, legal or
+tax attestations, final payment authorization, and irreversible closure. After
+explicit task scope, the agent may inspect relevant records and fill necessary
+fields; registration, server-side draft creation, record changes, upload,
+download, and payment initiation require action-time confirmation. Read
 `../../references/work-tax-business.md`.

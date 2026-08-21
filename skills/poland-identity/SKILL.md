@@ -18,14 +18,21 @@ real identifier, address, or record content in plugin input or output.
 
 Search current Gov.pl and municipal sources, then verify the local office,
 booking channel, form version, required evidence, and whether a representative is
-allowed. Build only a generic field and evidence-category checklist with
-placeholders. The plugin must not inspect identity documents, log in, book,
-enter personal data, upload or download a file, sign, or submit a declaration.
+allowed. Build a reviewable field and evidence-category checklist without
+placing identifiers in bundled plugin tools.
+
+Hands-on service assistance follows `../../references/automation-playbook.md`.
+The user authenticates, proves identity, signs, and accepts declarations. After
+explicit task scope, a caller-owned tool may inspect only the selected identity
+document or record and fill necessary fields; booking, upload, download, or
+submission requires fresh action-time confirmation. Original-document
+surrender and biometric or in-person identity checks remain with the user.
 For a public e-government landing page use `poland-digital-government`; for
 foreign certificates, apostille, or sworn translation use
 `poland-foreign-documents`; for local offices use
 `poland-local-services`.
 
-Read `../../references/digital-government-map.md` and
+Read `../../references/digital-government-map.md`,
+`../../references/browser-safety.md`, and
 `../../references/locality-and-appointments.md` when the procedure crosses those
 boundaries.

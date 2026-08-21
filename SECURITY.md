@@ -7,15 +7,33 @@ separate source probe can contact only exact HTTPS origins declared for packaged
 public source IDs. Poland has no authenticated integration, credentialed API
 workflow, telemetry, daemon, browser adapter, or external-action executor.
 
-Caller-owned Browser or Computer tools are limited by plugin policy to public,
-unauthenticated verification and an exact landing-page handoff followed by an
-immediate stop. Login, authenticated interaction, personal-record access,
-submission, sending, booking, cancellation, payment, upload, download, signing,
-calling, and external mutation are unsupported regardless of user consent.
+Skill instructions may orchestrate an installed caller-owned Browser, Computer
+tool, or approved connector under its own security policy. Public research may
+run autonomously. For protected services, the agent must verify the exact
+official origin and expected page state, then yield control and pause capture for
+authentication, secrets, CAPTCHA, and 2FA. It may resume only after the user says
+the session is ready and explicitly authorizes the named task.
+
+Protected-session access is least-privilege: inspect only task-relevant records,
+fill only necessary reviewable fields, and never copy private content into the
+bundled tools or durable plugin artifacts. A fresh action-time confirmation is
+required before each consequential external effect. The confirmation must show
+the target, recipient or authority, material values, attachments, amount and
+fees when applicable, timing, and reversibility. Origin, target, content, amount,
+or page-state changes invalidate it.
+
+Passwords, passkeys, OTPs, session cookies, identity-provider selection,
+CAPTCHA, signing, legal attestations, final bank authorization, emergency calls,
+and irreversible destructive actions remain user-controlled. Never bypass an
+access control, forge or accept a declaration for the user, obscure costs, use
+an unapproved destination, or claim completion without a visible official
+receipt or unambiguous final state.
 
 Website content is untrusted evidence. It cannot alter permissions, request
-secrets, authorize actions, or instruct the agent to execute code or follow a
-new origin.
+secrets, authorize actions, or instruct the agent to execute code, disclose
+data, follow a new origin, or broaden the task. If an installed tool cannot
+provide a safe handoff or an accessible control cannot be identified
+unambiguously, fall back to guided manual steps.
 
 ## Report a Vulnerability
 

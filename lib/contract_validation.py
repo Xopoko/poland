@@ -31,19 +31,21 @@ TOKEN_PATTERN = re.compile(r"^[a-z0-9]+(?:[_-][a-z0-9]+)*$")
 DOMAIN_PATTERN = re.compile(r"^[a-z0-9.-]+$")
 LANGUAGE_PATTERN = re.compile(r"^[a-z]{2,3}(?:-[A-Z]{2})?$")
 
-JURISDICTIONS = {"national", "eu", "voivodeship", "gmina"}
+JURISDICTIONS = {"national", "eu", "voivodeship", "powiat", "gmina"}
 ACCESS_MODES = {"public", "authenticated", "credentialed_api"}
 EFFECTS = {"informational", "personal_record", "consequential"}
 SOURCE_AUTOMATION_MODES = {
+    "human_in_loop_operator",
     "public_read_only",
     "public_read_only_handoff",
     "prohibited_external_effect",
+    "user_handoff_then_stop",
 }
 BOUNDARY_AUTOMATION_MODES = {
+    "confirmation_gated_external_effect",
     "public_read_only",
-    "local_placeholder_only",
-    "user_handoff_then_stop",
-    "prohibited_external_effect",
+    "task_scoped_assistance",
+    "user_only_restricted",
 }
 CHANNEL_KINDS = {
     "application_portal",
@@ -633,7 +635,7 @@ def _validate_action_boundaries(payload: Any, errors: list[str]) -> None:
                 item.get("automation"),
                 f"{path}.automation",
                 errors,
-                maximum=32,
+                maximum=48,
                 choices=BOUNDARY_AUTOMATION_MODES,
             )
             if automation is not None:

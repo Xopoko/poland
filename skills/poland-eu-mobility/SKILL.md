@@ -19,8 +19,13 @@ Use the registry to join Polish authority sources with Your Europe. For a proble
 caused by an authority's possible misapplication of EU rights, explain SOLVIT's
 scope but do not promise acceptance or outcome. Build a checklist that identifies
 the competent voivodeship/municipality, supporting evidence, local appointment
-channel, exact official landing page, and user-owned follow-up. Stop before any
-login, booking, form entry, upload, download, signature, or submission.
+channel, exact official landing page, and actor-owned follow-up.
+
+For requested portal help, follow `../../references/automation-playbook.md`.
+The user authenticates and signs; explicit task scope permits minimum record
+inspection and form filling, while booking, upload, download, or submission
+requires fresh action-time confirmation. SOLVIT case statements remain drafts
+until the user reviews their factual accuracy.
 
 Do not make individualized conflict-of-law, tax-residence, or social-security
 coverage decisions from incomplete facts. Route work-access questions to
