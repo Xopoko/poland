@@ -35,6 +35,7 @@ EXPECTED_VERSIONS = {
     "channels": "1.0.0",
 }
 OFFICIAL_DOMAIN_SUFFIXES = {
+    "bfg.pl",
     "biznes.gov.pl",
     "ceidg.gov.pl",
     "edu.gov.pl",
@@ -116,6 +117,7 @@ ROUTE_FACT_FIELDS = {
     "need_type",
     "problem_type",
     "procedure",
+    "powiat",
     "purpose",
     "requested_effect",
     "receiving_authority_category",
@@ -131,7 +133,14 @@ ROUTE_FACT_FIELDS = {
 }
 ROUTE_PROFILE_KEYS = {"facts"}
 MAX_LITERAL_QUERY_LENGTH = 160
-ABSTRACT_QUERY_PATTERN = re.compile(r"^[A-Za-z][A-Za-z _-]{0,159}$")
+POLISH_LATIN_LETTERS = "A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż"
+ABSTRACT_QUERY_PATTERN = re.compile(
+    rf"^[{POLISH_LATIN_LETTERS}][{POLISH_LATIN_LETTERS} _-]{{0,159}}$"
+)
+ABSTRACT_CATEGORY_PATTERN = re.compile(
+    rf"^[{POLISH_LATIN_LETTERS}][{POLISH_LATIN_LETTERS}0-9_-]{{0,119}}$"
+)
+ROUTER_CONTEXT_TOKENS = {"poland", "polish"}
 RESPONSE_CONTRACT = "poland.response.v1"
 
 
@@ -181,7 +190,11 @@ def load_dataset(name: str) -> dict[str, Any]:
 
 def normalize_text(value: str) -> str:
     decomposed = unicodedata.normalize("NFKD", value.casefold())
-    return "".join(char for char in decomposed if not unicodedata.combining(char))
+    without_combining_marks = "".join(
+        char for char in decomposed if not unicodedata.combining(char)
+    )
+    # LATIN SMALL LETTER L WITH STROKE does not decompose under NFKD.
+    return without_combining_marks.replace("ł", "l")
 
 
 def _sensitive_text_reason(value: str) -> str | None:
@@ -239,7 +252,7 @@ def validate_literal_query(query: Any) -> str:
     literal = validate_public_literal(query, "query", allow_empty=False)
     if not ABSTRACT_QUERY_PATTERN.fullmatch(literal):
         raise PolandDataError(
-            "query must be an abstract intent using ASCII letters, spaces, hyphens, or underscores",
+            "query must be an abstract intent using Latin letters, including Polish diacritics, spaces, hyphens, or underscores",
             code="NON_ABSTRACT_INPUT_REJECTED",
             details={"field": "query"},
         )
@@ -298,8 +311,8 @@ def validate_route_profile(profile: Any) -> dict[str, Any]:
                     code="NON_ABSTRACT_INPUT_REJECTED",
                     details={"field": key},
                 )
-        elif key not in {"target_date", "intended_arrival_date"} and not re.fullmatch(
-            r"[A-Za-z][A-Za-z0-9_-]{0,119}", value
+        elif key not in {"target_date", "intended_arrival_date"} and not (
+            ABSTRACT_CATEGORY_PATTERN.fullmatch(value)
         ):
             raise PolandDataError(
                 "route facts must use abstract category identifiers",
@@ -516,11 +529,19 @@ def _scenario_view(scenario: dict[str, Any]) -> dict[str, Any]:
             },
             {
                 "id": "human-action",
-                "title": "Complete human-controlled steps",
-                "actions": [f"Stop before {item.replace('_', ' ')}" for item in stop_before]
+                "title": "Complete checkpointed steps",
+                "actions": [
+                    (
+                        f"Pause before {item.replace('_', ' ')}; classify the concrete "
+                        "action against the action boundary, then complete its task-scope, "
+                        "action-time-confirmation, or user-only handoff requirement"
+                    )
+                    for item in stop_before
+                ]
                 or ["Review any consequential action before it occurs"],
             },
         ],
+        "stop_before_semantics": "pause_and_classify_checkpoint",
     }
 
 
@@ -626,6 +647,9 @@ def evidence_gate(
     if conflict_records:
         state = "conflict"
         warning_codes = ["OFFICIAL_SOURCE_CONFLICT"]
+    elif not records:
+        state = "insufficient_evidence"
+        warning_codes = ["NO_SOURCE_EVIDENCE"]
     elif "inactive" in statuses:
         state = "unsupported_as_of"
         warning_codes = ["SOURCE_NOT_ACTIVE"]
@@ -647,10 +671,26 @@ def evidence_gate(
     actionable = state == "verified"
     if actionable:
         usable_for = ["intent_routing", "checklist_composition", "source_discovery"]
-        not_usable_for = ["eligibility_decision", "external_action"]
-    else:
+        not_usable_for = [
+            "eligibility_decision",
+            "external_action_without_task_authorization_and_confirmation",
+        ]
+    elif records:
         usable_for = ["background", "intent_routing", "source_discovery"]
         not_usable_for = [
+            "current_fee",
+            "current_deadline",
+            "submission_channel",
+            "eligibility_decision",
+            "external_action_until_live_verification",
+        ]
+    else:
+        usable_for = []
+        not_usable_for = [
+            "background",
+            "intent_routing",
+            "checklist_composition",
+            "source_discovery",
             "current_fee",
             "current_deadline",
             "submission_channel",
@@ -685,12 +725,18 @@ def _digital_channel_view(
         channel_state = "public_read_only"
     elif channel.get("agent_mode") == "public_read_only_handoff":
         channel_state = "public_read_only_handoff"
+    elif channel.get("agent_mode") == "human_in_loop_operator":
+        channel_state = "caller_owned_operator"
+    elif channel.get("agent_mode") == "user_handoff_then_stop":
+        channel_state = "user_handoff_then_stop"
     else:
-        channel_state = "public_metadata_only"
+        channel_state = "user_only_or_unsupported"
     sources = source_index()
     return {
         **channel,
         "channel_state": channel_state,
+        "caller_owned_operator_eligible": channel.get("agent_mode") == "human_in_loop_operator",
+        "bundled_interface_can_interact": False,
         "protected_interaction_supported": False,
         "evidence_gate": gate,
         "sources": [dict(sources[source_id]) for source_id in source_ids],
@@ -795,6 +841,201 @@ def search_digital_channels(
     return [item for _, item in matches[:limit]]
 
 
+def _route_tokens(value: str) -> tuple[str, ...]:
+    """Return deterministic ASCII-comparable tokens after Polish normalization."""
+    return tuple(re.findall(r"[a-z0-9]+", normalize_text(value)))
+
+
+def _contains_token_phrase(tokens: tuple[str, ...], phrase: tuple[str, ...]) -> bool:
+    if not phrase or len(phrase) > len(tokens):
+        return False
+    width = len(phrase)
+    return any(
+        tokens[index : index + width] == phrase
+        for index in range(len(tokens) - width + 1)
+    )
+
+
+def _is_acronym_variant(value: str, tokens: tuple[str, ...]) -> bool:
+    compact = "".join(char for char in value if char.isalnum())
+    return (
+        len(tokens) == 1
+        and len(compact) >= 3
+        and compact.upper() == compact
+        and any(char.isalpha() for char in compact)
+    )
+
+
+def _term_route_matches(query_tokens: tuple[str, ...]) -> list[dict[str, Any]]:
+    """Resolve glossary concepts present in a query without a language dictionary."""
+    matches: list[dict[str, Any]] = []
+    for term in _records(load_dataset("terms"), "terms", "terms"):
+        variants = [
+            str(term.get("id", "")).replace("-", " "),
+            str(term.get("polish_ascii", "")),
+            str(term.get("english", "")),
+            *map(str, term.get("aliases", [])),
+        ]
+        variant_matches: list[tuple[int, bool]] = []
+        for variant in variants:
+            phrase = _route_tokens(variant)
+            if not _contains_token_phrase(query_tokens, phrase):
+                continue
+            acronym = _is_acronym_variant(variant, phrase)
+            if len(phrase) >= 2 or acronym:
+                variant_matches.append((len(phrase), acronym))
+        if not variant_matches:
+            continue
+        best_width, acronym = max(variant_matches)
+        matches.append(
+            {
+                "id": str(term.get("id", "")),
+                "source_ids": {str(item) for item in term.get("source_ids", [])},
+                "phrase_width": best_width,
+                "acronym": acronym,
+            }
+        )
+    return matches
+
+
+def _route_match_rows(
+    raw_scenarios: list[dict[str, Any]],
+    query_tokens: tuple[str, ...],
+    normalized_query: str,
+) -> list[dict[str, Any]]:
+    """Build confidence-qualified rows; weak one-token overlap is excluded."""
+    scenario_tokens: dict[str, set[str]] = {}
+    scenario_salient_tokens: dict[str, set[str]] = {}
+    token_frequency: dict[str, int] = {}
+    for scenario in raw_scenarios:
+        scenario_id = str(scenario.get("id", ""))
+        corpus = " ".join(
+            [
+                scenario_id.replace("-", " "),
+                str(scenario.get("purpose", "")),
+                str(scenario.get("local_source_topic", "")).replace("-", " "),
+                *map(str, scenario.get("keywords", [])),
+            ]
+        )
+        tokens = set(_route_tokens(corpus))
+        scenario_tokens[scenario_id] = tokens
+        salient_corpus = " ".join(
+            [
+                scenario_id.replace("-", " "),
+                str(scenario.get("local_source_topic", "")).replace("-", " "),
+                *map(str, scenario.get("keywords", [])),
+            ]
+        )
+        scenario_salient_tokens[scenario_id] = set(_route_tokens(salient_corpus))
+        for token in tokens:
+            token_frequency[token] = token_frequency.get(token, 0) + 1
+
+    glossary_matches = _term_route_matches(query_tokens)
+    rows: list[dict[str, Any]] = []
+    query_token_set = set(query_tokens)
+    broad_token_limit = max(3, len(raw_scenarios) // 4)
+    for raw_scenario in raw_scenarios:
+        scenario_id = str(raw_scenario.get("id", ""))
+        id_phrase = normalize_text(scenario_id.replace("-", " "))
+        exact_id = normalized_query in {normalize_text(scenario_id), id_phrase}
+        direct_hits: list[tuple[int, bool]] = []
+        for phrase_value in [
+            scenario_id.replace("-", " "),
+            *map(str, raw_scenario.get("keywords", [])),
+        ]:
+            phrase = _route_tokens(phrase_value)
+            if not _contains_token_phrase(query_tokens, phrase):
+                continue
+            acronym = _is_acronym_variant(phrase_value, phrase)
+            if len(phrase) >= 2 or acronym:
+                direct_hits.append((len(phrase), acronym))
+
+        source_ids = {str(item) for item in raw_scenario.get("source_ids", [])}
+        glossary_hits: list[tuple[int, int, bool]] = []
+        for term_match in glossary_matches:
+            shared_sources = source_ids & term_match["source_ids"]
+            if shared_sources:
+                glossary_hits.append(
+                    (
+                        int(term_match["phrase_width"]),
+                        len(shared_sources),
+                        bool(term_match["acronym"]),
+                    )
+                )
+
+        informative_overlap = {
+            token
+            for token in query_token_set & scenario_tokens[scenario_id]
+            if len(token) >= 3
+            and token not in ROUTER_CONTEXT_TOKENS
+            and token_frequency.get(token, 0) <= broad_token_limit
+        }
+        salient_overlap = informative_overlap & scenario_salient_tokens[scenario_id]
+        qualifies = bool(
+            exact_id
+            or direct_hits
+            or glossary_hits
+            or len(informative_overlap) >= 2
+        )
+        if not qualifies:
+            continue
+        overlap_weight = sum(
+            max(1, broad_token_limit + 1 - token_frequency[token])
+            for token in informative_overlap
+        )
+        score = (
+            (10000 if exact_id else 0)
+            + sum(
+                40 + width * 4 + (6 if acronym else 0)
+                for width, acronym in direct_hits
+            )
+            + sum(
+                50 + width * 4 + shared_count * 8 + (6 if acronym else 0)
+                for width, shared_count, acronym in glossary_hits
+            )
+            + len(informative_overlap) * 4
+            + len(salient_overlap) * 12
+            + overlap_weight
+        )
+        rows.append(
+            {
+                "score": score,
+                "scenario": _scenario_view(raw_scenario),
+                "exact_id": exact_id,
+                "direct_hits": direct_hits,
+                "glossary_hits": glossary_hits,
+                "informative_overlap": informative_overlap,
+                "salient_overlap": salient_overlap,
+            }
+        )
+    rows.sort(key=lambda item: (-int(item["score"]), item["scenario"]["id"]))
+    return rows
+
+
+def _unresolved_route(
+    *,
+    as_of: str | date | None,
+    route_state: str,
+    match_truth: str,
+    intent_candidates: list[str] | None = None,
+    alternatives: list[str] | None = None,
+) -> dict[str, Any]:
+    return {
+        "schema_version": "poland.route.v1",
+        "id": None,
+        "route_state": route_state,
+        "match_truth": match_truth,
+        "intent_candidates": intent_candidates or [],
+        "alternatives": alternatives or [],
+        "missing_intake": [],
+        "parameter_states": {},
+        "source_ids": [],
+        "sources": [],
+        "eligibility_assessed": False,
+        "evidence_gate": evidence_gate([], as_of=as_of),
+    }
+
+
 def route_scenario(
     query: str,
     profile: dict[str, Any] | None = None,
@@ -804,42 +1045,34 @@ def route_scenario(
     literal_query = validate_literal_query(query)
     safe_profile = validate_route_profile(profile)
     normalized = normalize_text(literal_query)
-    scored: list[tuple[int, dict[str, Any]]] = []
-    for raw_scenario in _scenario_records():
-        scenario = _scenario_view(raw_scenario)
-        if scenario.get("id") == literal_query:
-            score = 1000
-        else:
-            terms = [str(scenario.get("title", "")), *map(str, scenario.get("keywords", []))]
-            score = sum(3 if normalize_text(term) in normalized else 0 for term in terms if term)
-            term_tokens = set(normalize_text(" ".join(terms)).split())
-            score += sum(
-                1
-                for token in normalized.split()
-                if token in term_tokens
-            )
-        if score:
-            scored.append((score, scenario))
-    if not scored:
-        return {
-            "schema_version": "poland.route.v1",
-            "id": None,
-            "route_state": "not_applicable",
-            "match_truth": "false",
-            "intent_candidates": [],
-            "alternatives": [],
-            "missing_intake": [],
-            "parameter_states": {},
-            "source_ids": [],
-            "sources": [],
-            "eligibility_assessed": False,
-            "evidence_gate": evidence_gate([], as_of=as_of),
-        }
-    scored.sort(key=lambda item: (-item[0], item[1]["id"]))
-    best = dict(scored[0][1])
+    query_tokens = _route_tokens(literal_query)
+    match_rows = _route_match_rows(_scenario_records(), query_tokens, normalized)
+    if not match_rows:
+        return _unresolved_route(
+            as_of=as_of,
+            route_state="not_applicable",
+            match_truth="false",
+        )
+
+    top_score = int(match_rows[0]["score"])
+    tied_rows = [row for row in match_rows if int(row["score"]) == top_score]
+    single_token_ambiguity = len(query_tokens) == 1 and len(match_rows) > 1
+    if len(tied_rows) > 1 or single_token_ambiguity:
+        candidates = [
+            str(row["scenario"]["id"])
+            for row in (match_rows if single_token_ambiguity else tied_rows)
+        ]
+        return _unresolved_route(
+            as_of=as_of,
+            route_state="undetermined",
+            match_truth="unknown",
+            intent_candidates=candidates,
+            alternatives=[str(row["scenario"]["id"]) for row in match_rows[:4]],
+        )
+
+    best = dict(match_rows[0]["scenario"])
     intake = [str(item) for item in best.get("intake", [])]
     missing_intake = [field for field in intake if _profile_value(safe_profile, field) is None]
-    tied = [item[1]["id"] for item in scored if item[0] == scored[0][0]]
     gate = evidence_gate(
         best.get("source_ids", []),
         as_of=as_of,
@@ -847,18 +1080,18 @@ def route_scenario(
     )
     best["missing_intake"] = missing_intake
     best["schema_version"] = "poland.route.v1"
-    best["alternatives"] = [item[1]["id"] for item in scored[1:4]]
+    best["alternatives"] = [str(row["scenario"]["id"]) for row in match_rows[1:4]]
     sources = source_index()
     best["sources"] = [dict(sources[source_id]) for source_id in best.get("source_ids", [])]
     best["route_state"] = (
-        "undetermined" if missing_intake or len(tied) > 1 or not gate["actionable"] else "candidate"
+        "undetermined" if missing_intake or not gate["actionable"] else "candidate"
     )
     best["match_truth"] = "true" if best["route_state"] == "candidate" else "unknown"
     best["parameter_states"] = {
         field: "known" if _profile_value(safe_profile, field) is not None else "unknown"
         for field in intake
     }
-    best["intent_candidates"] = tied
+    best["intent_candidates"] = [best["id"]]
     best["eligibility_assessed"] = False
     best["evidence_gate"] = gate
     return best
@@ -954,34 +1187,126 @@ def action_boundary(action: str) -> dict[str, Any]:
     needle = normalize_text(action)
     actions = _records(load_dataset("actions"), "boundaries", "actions")
     by_id = {item["id"]: item for item in actions}
-    prohibited = by_id["human-submit"]
     exact = next((item for item in actions if item.get("id") == action), None)
     if exact:
         return dict(exact)
     action_token = re.sub(r"[^a-z0-9]+", "_", needle).strip("_")
-    prohibited_patterns = (
-        r"\b(?:log\s*in|login|authenticat\w*|credential\w*|trusted\s+profile)\b",
-        r"\b(?:otp|verification\s+code|session\s+cookie|api\s+key)\b",
-        r"\b(?:book|reschedule|cancel)\b.*\bappointment\b",
-        r"\b(?:upload|submit|send|pay|payment|sign|withdraw|amend)\b",
-        r"\b(?:save|start|edit)\b.*\b(?:draft|application)\b",
-        r"\bdownload\b.*\b(?:personal|document|record)\b",
-        r"\b(?:read|copy)\b.*\b(?:email|record|document|code)\b",
-        r"\bclick\s+through\b",
-        r"\b(?:contact|message)\b.*\b(?:authority|employer|landlord)\b",
-        r"\bcredentialed\s+api\b",
-    )
-    if action_token in set(prohibited.get("never", [])) or any(
-        re.search(pattern, needle) for pattern in prohibited_patterns
-    ):
-        return {**prohibited, "matched_by": "hard_prohibition"}
-    exact_allowed: list[dict[str, Any]] = []
+    exact_matches: list[tuple[dict[str, Any], str]] = []
     for item in actions:
-        if action_token in set(item.get("allowed", [])) | set(item.get("requires_confirmation", [])):
-            exact_allowed.append(item)
-    if len(exact_allowed) == 1:
-        return {**exact_allowed[0], "matched_by": "exact_policy_action"}
-    return {**prohibited, "matched_by": "fail_closed_default"}
+        for disposition in ("allowed", "requires_confirmation", "never"):
+            if action_token in set(item.get(disposition, [])):
+                exact_matches.append((item, disposition))
+    if len(exact_matches) == 1:
+        item, disposition = exact_matches[0]
+        return {
+            **item,
+            "matched_by": "exact_policy_action",
+            "policy_action": action_token,
+            "disposition": disposition,
+        }
+
+    # A user-completed authentication handoff followed by a named record task is
+    # scoped assistance, not a request for the agent to authenticate.
+    if re.search(r"\bafter\s+(?:i|the\s+user)\s+(?:log\s*in|authenticate)\b", needle):
+        scoped = by_id["task-scoped-assistance"]
+        if re.search(r"\b(?:read|inspect|review|open)\b.*\brecord\b", needle):
+            policy_action = "read_task_relevant_personal_record"
+        elif re.search(r"\b(?:enter|fill|type|correct)\b.*\b(?:form|field|application)\b", needle):
+            policy_action = "enter_task_relevant_personal_data"
+        else:
+            policy_action = "resume_after_user_authentication"
+        return {
+            **scoped,
+            "matched_by": "policy_pattern",
+            "policy_action": policy_action,
+            "disposition": "requires_confirmation",
+        }
+    if re.search(r"\bapproved\b.*\b(?:authenticated|credentialed)\b.*\bconnector\b", needle):
+        scoped = by_id["task-scoped-assistance"]
+        return {
+            **scoped,
+            "matched_by": "policy_pattern",
+            "policy_action": "use_approved_authenticated_connector",
+            "disposition": "requires_confirmation",
+        }
+
+    pattern_groups = (
+        (
+            "user-only-restricted",
+            (
+                ("login", r"\b(?:log\s+in(?:to)?|login|sign\s+in|authenticat\w*)\b"),
+                ("read_credentials", r"\b(?:credential\w*|password|passkey|pin)\b"),
+                ("read_verification_code", r"\b(?:otp|verification\s+code|recovery\s+code|session\s+cookie)\b"),
+                ("pass_captcha", r"\bcaptcha\b"),
+                ("bypass_2fa", r"\b(?:2fa|two[- ]factor)\b"),
+                ("sign_as_user", r"\b(?:sign|signature)\b"),
+                ("accept_declaration", r"\b(?:accept|attest|confirm)\b.*\b(?:declaration|truth|consent|terms|settlement)\b"),
+                ("approve_final_payment_authorization", r"\b(?:approve|authorize)\b.*\b(?:bank|payment)\b"),
+                ("withdraw_application", r"\bwithdraw\b"),
+                ("perform_irreversible_destructive_action", r"\b(?:irreversible|permanent)\b.*\b(?:delete|close|destroy|erase)\b"),
+                ("delete_external_account_or_record", r"\b(?:delete|erase)\b.*\b(?:account|record)\b"),
+                ("place_emergency_call", r"\b(?:call|dial)\b.*\b(?:112|emergency)\b"),
+                ("click_through_everything", r"\bclick\s+through\b"),
+                ("use_unapproved_credentialed_api", r"\bcredentialed\s+api\b"),
+                ("forge_document_signature_or_declaration", r"\b(?:forge|fake)\b"),
+            ),
+        ),
+        (
+            "task-scoped-assistance",
+            (
+                ("resume_after_user_authentication", r"\b(?:resume|continue)\b.*\b(?:after\s+login|authenticated|logged[- ]in)\b"),
+                ("read_task_relevant_personal_record", r"\b(?:read|inspect|review|open)\b.*\b(?:personal\s+record|account\s+(?:record|balance)|case\s+(?:record|state)|medical\s+record|tax\s+(?:record|return)|contribution\s+record|insured[- ]person\s+record|certificate)\b"),
+                ("inspect_task_relevant_correspondence", r"\b(?:read|inspect|review|open)\b.*\b(?:message|letter|correspondence|inbox)\b"),
+                ("open_user_selected_personal_document", r"\b(?:read|inspect|review|open)\b.*\b(?:personal\s+document|identity\s+document|passport(?:\s+scan)?|residence\s+card|contract|statement)\b"),
+                ("enter_task_relevant_personal_data", r"\b(?:enter|fill|type|correct)\b.*\b(?:personal\s+data|form|field|application)\b"),
+            ),
+        ),
+        (
+            "human-submit",
+            (
+                ("book_appointment", r"\bbook\b.*\bappointment\b"),
+                ("reschedule_appointment", r"\breschedule\b.*\bappointment\b"),
+                ("cancel_appointment", r"\bcancel\b.*\bappointment\b"),
+                ("upload_document", r"\bupload\b"),
+                ("download_personal_document", r"\bdownload\b"),
+                ("submit_application", r"\bsubmit\b"),
+                ("send_message", r"\bsend\b"),
+                ("initiate_payment", r"\b(?:pay|payment)\b"),
+                ("amend_application", r"\bamend\b"),
+                ("save_server_side_draft", r"\bsave\b.*\bdraft\b"),
+                ("start_application", r"\bstart\b.*\bapplication\b"),
+                ("edit_application", r"\bedit\b.*\bapplication\b"),
+                ("contact_authority", r"\b(?:contact|message)\b.*\b(?:authority|employer|landlord)\b"),
+                ("create_external_account", r"\bcreate\b.*\baccount\b"),
+                ("change_external_record", r"\b(?:change|update|correct)\b.*\b(?:external|official)\s+record\b"),
+            ),
+        ),
+    )
+    for boundary_id, patterns in pattern_groups:
+        for policy_action, pattern in patterns:
+            if re.search(pattern, needle):
+                boundary = by_id[boundary_id]
+                disposition = (
+                    "requires_confirmation"
+                    if policy_action in set(boundary.get("requires_confirmation", []))
+                    else "never"
+                    if policy_action in set(boundary.get("never", []))
+                    else "allowed"
+                )
+                return {
+                    **boundary,
+                    "matched_by": "policy_pattern",
+                    "policy_action": policy_action,
+                    "disposition": disposition,
+                }
+
+    restricted = by_id["user-only-restricted"]
+    return {
+        **restricted,
+        "matched_by": "fail_closed_default",
+        "policy_action": None,
+        "disposition": "never",
+    }
 
 
 def freshness_report(as_of: str | date | None = None) -> dict[str, Any]:
@@ -1274,16 +1599,24 @@ def validate_bundle(as_of: str | date | None = None) -> dict[str, Any]:
                     not isinstance(item, str) for item in value
                 ):
                     errors.append(f"source {label}.{list_field} must be an array of strings")
-            if source["jurisdiction"] not in {"national", "eu", "voivodeship", "gmina"}:
+            if source["jurisdiction"] not in {
+                "national",
+                "eu",
+                "voivodeship",
+                "powiat",
+                "gmina",
+            }:
                 errors.append(f"source {label} has invalid jurisdiction")
             if source["access"] not in {"public", "authenticated", "credentialed_api"}:
                 errors.append(f"source {label} has invalid access")
             if source["effect"] not in {"informational", "personal_record", "consequential"}:
                 errors.append(f"source {label} has invalid effect")
             allowed_automation = {
+                "human_in_loop_operator",
                 "public_read_only",
                 "public_read_only_handoff",
                 "prohibited_external_effect",
+                "user_handoff_then_stop",
             }
             if source["automation"] not in allowed_automation:
                 errors.append(f"source {label} has invalid automation")
@@ -1380,7 +1713,7 @@ def overview() -> dict[str, Any]:
     validation = validate_bundle()
     return {
         "plugin": "poland",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "model": "official-source-first",
         "data_mode": "OFFLINE_PACKAGED_DATA",
         "counts": validation["counts"],
@@ -1391,12 +1724,13 @@ def overview() -> dict[str, Any]:
         },
         "policy_modes": [
             "public_read_only",
-            "local_placeholder_only",
-            "user_handoff_then_stop",
-            "prohibited_external_effect",
+            "task_scoped_assistance",
+            "confirmation_gated_external_effect",
+            "user_only_restricted",
         ],
         "notice": (
             "Navigation support only. Verify changing facts and competent locality at action time. "
-            "The plugin never authenticates or performs external actions."
+            "The user handles authentication and user-only controls; caller-owned tools may assist "
+            "within explicit task scope and confirmation gates."
         ),
     }

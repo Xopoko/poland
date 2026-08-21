@@ -3,6 +3,15 @@
 These examples are intentionally non-identifying. Adapt categories, not personal
 identifiers.
 
+## Install and Verify
+
+> Install the published Poland release for the agent host I am using, at user
+> scope only. Preserve the complete checkout, run the matching telemetry-free
+> doctor preflight, and show me one change plan before registration. Afterward,
+> verify 33 skills and the Poland MCP server separately in the host. Report
+> packaged, preflight-passed, and host-discovered states separately; do not claim
+> pi MCP support because its package registers skills only.
+
 ## Moving and First Weeks
 
 > Build a first-weeks Poland checklist for an EU citizen moving for work. Keep
@@ -25,6 +34,16 @@ identifiers.
 
 > Explain the roles of Trusted Profile, ePUAP, mObywatel, e-Tax Office, and eZUS.
 > Give me public navigation only and stop before login.
+
+## Operator-Assisted Official Task
+
+> Use my already installed Browser or Computer operator for this single official
+> task. Verify the exact official hostname and pause for me to authenticate in
+> the site's own UI. Inspect only the necessary record, prepare the supported
+> fields, retain and log nothing, and show a fresh action-time summary before any
+> consequential click. Continue only after my confirmation, verify the official
+> receipt, report only minimal non-sensitive status, tell me where the receipt
+> remains visible, and provide a manual fallback if the UI or evidence is unclear.
 
 ## Driving
 

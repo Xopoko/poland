@@ -15,12 +15,17 @@ routine portal workflow. Otherwise confirm only broad coverage basis, locality,
 `eu_eea_swiss` or `third_country` cross-border context, and whether the request
 concerns public access guidance or a medical decision.
 
-Use public NFZ and Pacjent.gov.pl sources. If the route reaches IKP, a login wall,
-or personal health information, provide the exact official landing page and stop.
-The plugin must not authenticate, inspect records or documents, take screenshots,
-upload, download, or enter health data even with user consent. Draft only generic
-questions with placeholders, identify evidence categories and the competent
-branch, and state what a medical professional or insurer must confirm.
+Use public NFZ and Pacjent.gov.pl sources. Identify evidence categories and the
+competent branch, and state what a medical professional or insurer must confirm.
+Do not diagnose from portal data.
+
+For requested IKP/mojeIKP help, apply
+`../../references/automation-playbook.md`. The user authenticates and explicitly
+authorizes the minimum health-record scope. A caller-owned tool may then inspect
+the relevant record and fill necessary administrative fields; booking, provider
+declaration, send, upload, or download requires fresh action-time confirmation.
+Signatures, medical consent, and treatment decisions remain user-controlled.
+Avoid screenshots and durable copies of health data.
 
 For insurance registration or contributions route to
 `poland-social-insurance`; for EU coordination also use

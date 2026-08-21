@@ -96,6 +96,42 @@
     "poland-emergency-rights": {
       "should_trigger": ["My passport was taken and I may be in danger at work in Poland."],
       "should_not_trigger": ["Make a routine appointment reminder for next month."]
+    },
+    "poland-civil-life-events": {
+      "should_trigger": ["Help me register a birth and find the competent civil registry office in Poland."],
+      "should_not_trigger": ["Choose the best temporary-residence basis for my work."]
+    },
+    "poland-disability-accessibility": {
+      "should_trigger": ["Route an adult disability determination and current PFRON support in my powiat."],
+      "should_not_trigger": ["Diagnose whether these symptoms meet a disability threshold."]
+    },
+    "poland-pensions-seniors": {
+      "should_trigger": ["Plan the official ZUS retirement and cross-border contribution-history route."],
+      "should_not_trigger": ["Calculate the exact pension I will receive without my ZUS record."]
+    },
+    "poland-justice-legal-aid": {
+      "should_trigger": ["Find the competent Polish court channel and a current free legal-aid appointment."],
+      "should_not_trigger": ["Represent me in court and sign this pleading for me."]
+    },
+    "poland-civic-participation": {
+      "should_trigger": ["Check the current Central Register of Voters and polling-place route."],
+      "should_not_trigger": ["Persuade Polish voters to support a political party."]
+    },
+    "poland-utilities-environment": {
+      "should_trigger": ["Find the owner and complaint route for my electricity and municipal-waste problem."],
+      "should_not_trigger": ["Repair my gas boiler remotely."]
+    },
+    "poland-vehicles-road": {
+      "should_trigger": ["Route vehicle registration and the sale notification to the correct Polish office."],
+      "should_not_trigger": ["Tell me whether my foreign driving licence is still valid."]
+    },
+    "poland-consular-travel": {
+      "should_trigger": ["My passport was lost abroad; find the correct consular or issuing-authority route."],
+      "should_not_trigger": ["Book the cheapest holiday flight for me."]
+    },
+    "poland-employment-services": {
+      "should_trigger": ["Help me register with the competent powiat labour office as a jobseeker."],
+      "should_not_trigger": ["My employer withheld salary; find the labour-rights complaint route."]
     }
   }
 }

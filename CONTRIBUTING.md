@@ -1,8 +1,8 @@
 # Contributing to Poland
 
 Contributions should strengthen a reusable Poland workflow while preserving
-official-source provenance, privacy, portability, and the no-external-action
-boundary.
+official-source provenance, privacy, portability, and the human-in-the-loop
+operator boundary.
 
 1. Open or reference the matching issue type: bug, source update, or workflow
    request.
@@ -31,10 +31,18 @@ release automatically.
 
 ## Capability Boundary
 
-Do not add login, authenticated-session reading, personal-record inspection,
-submission, sending, booking, cancellation, payment, upload, download, signing,
-calling, credentialed APIs, telemetry, hidden installation, background services,
-or any other external mutation. Consent does not expand this boundary.
+Do not add a credential store, authenticated connector, hidden installation,
+telemetry, background service, unattended mutation, fixed portal selector, or
+plugin-owned Browser/Computer executor. The bundled CLI and MCP server stay
+offline, read-only, and non-retentive.
+
+Skills may guide a separately installed caller-owned Browser or Computer tool
+under `references/automation-playbook.md`: explicit task scope; private
+user-controlled authentication; minimum transient record access; fresh
+action-time confirmation before every external effect; user-controlled
+signatures, attestations, CAPTCHA, and final payment authorization; and visible
+receipt verification. A new executable connector or broader authority requires
+a reviewed ADR, threat model, schemas, tests, and maintainer approval.
 
 ## Validation
 

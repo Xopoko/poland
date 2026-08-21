@@ -21,8 +21,15 @@ Use current Ministry of Finance, podatki.gov.pl, and National Revenue
 Administration records. State the period, competent office or service, known
 assumptions, missing facts, freshness, and human action boundary. Do not decide
 tax residence, choose deductions, optimize tax, calculate liability from an
-incomplete case, inspect a personal record, log in, book, pay, upload, download,
-sign, or submit a declaration. User consent does not unlock these actions.
+incomplete case, or accept a tax declaration's truth for the user.
+
+For requested e-Tax Office or filing assistance, apply
+`../../references/automation-playbook.md`. The user authenticates, signs or
+attests, and completes final payment authorization. Explicit task scope permits
+minimum relevant record inspection and form filling; booking, correction,
+server-side draft creation, payment initiation, upload, download, or submission
+requires fresh action-time confirmation. Recheck calculated values and current
+official rules before the checkpoint.
 
 Route business formation to `poland-business`, ZUS to
 `poland-social-insurance`, cross-border free movement to `poland-eu-mobility`,

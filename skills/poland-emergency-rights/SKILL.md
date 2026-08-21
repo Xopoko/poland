@@ -24,8 +24,11 @@ administrative checklist.
 4. For a time-critical letter or status issue, preserve the deadline and obtain
    qualified legal help; do not improvise an appeal.
 
-The plugin never diagnoses, dispatches, contacts a service, guarantees external
-confidentiality, or promises a legal result. Do not request or persist a
-sensitive narrative. Read `../../references/emergency-and-escalation.md`, which
-is designed to be usable offline; verify non-emergency public contact details
-when time permits.
+The plugin never diagnoses, dispatches, places an emergency call, guarantees
+external confidentiality, or promises a legal result. Do not delay immediate
+human action for automation. A non-emergency message or referral may be prepared
+under `../../references/automation-playbook.md`, but the user handles secrets and
+legal attestations and any send requires action-time confirmation. Do not request
+or persist a sensitive narrative. Read
+`../../references/emergency-and-escalation.md`, which is designed to be usable
+offline; verify non-emergency public contact details when time permits.

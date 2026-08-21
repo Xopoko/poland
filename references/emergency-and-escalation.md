@@ -18,8 +18,19 @@ Use `solvit` only for a plausible cross-border EU-rights problem involving a pub
 
 ## Data minimization
 
-Do not create or persist emergency narratives, identity numbers, exact safe addresses, medical details, third-party allegations, credentials, call details, or location shares. Any generic question list must use placeholders only; user consent does not authorize collection.
+Do not place emergency narratives, identity numbers, exact safe addresses,
+medical details, third-party allegations, credentials, call details, or location
+shares in bundled plugin tools or durable artifacts. Ask only what changes
+immediate safety. When a caller-owned tool is already being used for a requested
+non-emergency administrative follow-up, explicit task scope may permit minimum
+necessary on-screen details under `automation-playbook.md`; this never justifies
+delaying emergency help or collecting unrelated sensitive history.
 
 ## Public handoff evidence
 
-Return only the official source ID, public observation time, contact purpose, and published language. Do not record what the user chose, whether contact occurred, or whether help was received. The plugin never calls, messages, books, or shares a location.
+For the public evidence record, return only the official source ID, observation
+time, contact purpose, and published language. Do not persist what the user chose,
+whether contact occurred, or whether help was received. The user places emergency
+calls and controls emergency location sharing. A non-emergency message or booking
+may be assisted only under task scope and fresh action-time confirmation; never
+claim it occurred without a visible receipt.

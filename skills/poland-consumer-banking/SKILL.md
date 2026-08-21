@@ -24,9 +24,11 @@ Build an evidence timeline and distinguish:
 - police/emergency response for active fraud or danger.
 
 Verify the current competent body and deadline from its official source. Draft a
-generic complaint outline with placeholders. The plugin must not send it, accept
-a settlement, block a product, move money, inspect or share records, or enter an
-account even with user confirmation. It may hand off the exact official landing
-page and then stop.
+reviewable complaint outline. If the user requests hands-on account or complaint
+help, apply `../../references/automation-playbook.md`: the user authenticates;
+minimum relevant record inspection needs explicit task scope; sending, upload,
+download, or an account change needs action-time confirmation. Settlement
+acceptance, money movement, final bank authorization, signatures, and irreversible
+product closure remain user-controlled.
 Route active danger or trafficking to `poland-emergency-rights`. Read
 `../../references/daily-life-map.md`.

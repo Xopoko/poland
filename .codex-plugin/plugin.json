@@ -1,7 +1,7 @@
 {
   "name": "poland",
-  "version": "0.1.0",
-  "description": "Official-source-first Poland support for residents, immigrants, and expats: residence, work, tax, documents, healthcare, and daily administration with dated evidence, offline tools, and strict user-only action boundaries.",
+  "version": "0.2.0",
+  "description": "Official-source-first Poland support for residents, immigrants, and expats: life events, public services, residence, work, tax, health, documents, and safe human-in-the-loop portal workflows.",
   "author": {
     "name": "Xopoko",
     "email": "xopoko@users.noreply.github.com",
@@ -28,7 +28,7 @@
   "interface": {
     "displayName": "Poland",
     "shortDescription": "Official-source-first help for life and administration in Poland.",
-    "longDescription": "Help residents, immigrants, expats, and citizens navigate life in Poland with dated official-source metadata, non-identifying questions, deterministic checklists, plain-language terminology, locality-aware routing, and visible freshness warnings. Focused skills cover residence, EU mobility, identity, work, tax, ZUS, healthcare, housing, business, family, education, benefits, transport, consumer rights, foreign documents, digital government, local offices, protection, appeals, and emergencies. The offline CLI and read-only MCP server never log in, inspect personal records, submit, send, book, pay, upload, download, sign, or change external state, even with consent.",
+    "longDescription": "Help residents, immigrants, expats, and citizens navigate life in Poland with 33 focused Agent Skills, dated official-source metadata, deterministic scenarios, plain-language terminology, locality-aware routing, semantic portal playbooks, and visible freshness warnings. Coverage spans residence, work, tax, ZUS, health, family, civil events, disability, pensions, education, housing, utilities, vehicles, justice, civic life, consumer protection, consular matters, digital government, appeals, and emergencies. The bundled CLI and MCP server remain offline, read-only, and non-retentive. A separately installed caller-owned Browser or Computer capability may assist inside an explicitly authorized official-service task after private user authentication, with minimum record scope, fresh confirmation before external effects, user-controlled signatures and attestations, and visible receipt verification.",
     "developerName": "Xopoko",
     "category": "Lifestyle",
     "websiteURL": "https://github.com/Xopoko/plug-n-skills",
@@ -40,16 +40,19 @@
       "Residence, EU mobility, work authorization, and citizenship navigation",
       "PESEL, meldunek, civil records, and foreign-document orientation",
       "Tax, ZUS, healthcare, housing, business, and family-service guidance",
-      "Transport, consumer, banking, telecom, education, and benefits routing",
+      "Civil events, disability, pensions, education, utilities, and senior support",
+      "Vehicles, transport, consumer, banking, telecom, and consular routing",
+      "Courts, legal aid, public rights, elections, and victim-support ownership",
       "Municipal and voivodeship office ownership across all Polish regions",
       "Public official-page verification with exact-origin restrictions",
-      "Exact official landing-page handoff followed by an immediate stop",
+      "Semantic portal playbooks for caller-owned Browser or Computer tools",
+      "Task-scoped protected assistance with action-time confirmation gates",
       "Portable standard-library Python CLI and read-only stdio MCP tools"
     ],
     "defaultPrompt": [
-      "Help me plan this Poland procedure from official sources and show what must be verified today.",
-      "Explain this Polish term and route me to the responsible official source without using personal data.",
-      "Build a first-weeks checklist from non-identifying facts, and stop before any account or external action."
+      "Help me solve this Poland life or administration task from current official sources and show what must be verified today.",
+      "Route this problem to the responsible Polish authority, online service, focused skill, and next smallest action.",
+      "Use my Browser for this official task: pause for login, prepare fields, confirm each external effect, and verify the receipt."
     ],
     "brandColor": "#D4213D",
     "composerIcon": "./assets/icon.png",

@@ -1,0 +1,27 @@
+{
+  "schema_version": "poland.router-language-cases.v1",
+  "positive_cases": [
+    {"query": "Jak wymienić prawo jazdy", "scenario_id": "driving-or-rail-problem"},
+    {"query": "Gdzie działa powiatowy urząd pracy", "scenario_id": "unemployment-registration"},
+    {"query": "Jak sprawdzić punkty karne", "scenario_id": "penalty-points-and-vehicle-records"},
+    {"query": "Gdzie akt urodzenia dziecka", "scenario_id": "birth-registration"},
+    {"query": "Jak działa świadczenie wspierające", "scenario_id": "disability-support-and-pfron"},
+    {"query": "Chcę założyć działalność w CEIDG", "scenario_id": "start-or-verify-business"},
+    {"query": "renew Polish passport", "scenario_id": "polish-passport-and-consular-appointment"},
+    {"query": "mandatory vehicle insurance OC", "scenario_id": "vehicle-roadworthiness-and-oc"}
+  ],
+  "negative_cases": [
+    {"query": "passport"},
+    {"query": "insurance"}
+  ],
+  "ambiguous_cases": [
+    {
+      "query": "PESEL",
+      "candidate_subset": ["first-address-and-pesel", "pesel-record-and-fraud-protection"]
+    },
+    {
+      "query": "PIT",
+      "candidate_subset": ["annual-pit-route", "tax-record-check"]
+    }
+  ]
+}

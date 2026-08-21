@@ -18,10 +18,14 @@ personal-record content in plugin tools.
 
 Use current public ZUS and official EU coordination sources. Name unresolved
 coverage questions and show the competent institution and evidence categories.
-At the eZUS landing page, stop: login, authenticated reads, declarations,
-payments, filings, uploads, downloads, and record changes are prohibited even
-with user consent.
 Do not decide coverage or benefit entitlement from incomplete facts.
+
+For requested eZUS help, apply `../../references/automation-playbook.md`. The
+user authenticates and performs signatures and attestations. After explicit task
+scope, a caller-owned tool may inspect relevant contribution, insurance, or
+message records and fill necessary fields. Filing, send, booking, payment
+initiation, upload, download, or record correction requires action-time
+confirmation; final payment authorization remains with the user.
 
 Route employment rights to `poland-employment-rights`, work permission to
 `poland-work-authorization`, healthcare to `poland-healthcare`, and family or

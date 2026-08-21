@@ -21,6 +21,11 @@ The plugin does not handle emergencies. Contact the appropriate official
 emergency or crisis service directly when there is immediate danger. Do not wait
 for plugin output.
 
-The user alone decides whether and how to act. The plugin cannot log in, inspect
-personal records, submit, send, book, pay, upload, download, sign, call, or make
-any external change, even with consent.
+The user alone decides whether and how to act. The plugin itself bundles no
+authenticated connector or external-action executor. When an installed
+caller-owned Browser, Computer tool, or approved connector is available, the
+skills may guide task-scoped, user-visible assistance under the shared operator
+contract. The user enters secrets and completes signatures, legal attestations,
+final payment authorization, emergency calls, and irreversible high-stakes
+steps. Consequential agent actions require fresh action-time confirmation and a
+visible official receipt before they are reported as complete.

@@ -24,11 +24,24 @@ Prefer authority landing pages over temporary announcements. Keep a news item on
 
 ## API policy
 
-Use an API only when it is unauthenticated, officially documented by the responsible authority, and allowlisted in the source registry for public read-only access. Credentialed APIs are prohibited even with user consent. Respect rate limits and never infer that a browser backend is a supported public API.
+The bundled source probe and public-evidence workflows use only unauthenticated,
+officially documented, allowlisted APIs. Respect rate limits and never infer that
+a browser backend is a supported public API.
+
+The plugin bundles no credentialed connector. If the host separately provides
+an approved authenticated connector, its own policy and
+`automation-playbook.md` govern task-scoped operation. The user handles secrets;
+personal results stay outside public-source receipts and bundled plugin tools;
+consequential mutations require action-time confirmation. Never improvise a
+credentialed endpoint or send personal data to an unapproved API.
 
 ## Evidence receipts
 
 An evidence receipt should include source ID, exact HTTPS URL, authority, publisher, source tier, access time, structured result, stable locator, supported claim IDs, effective period when known, freshness state, and structured conflicts. Avoid free-form personal observations or inference fields. Hashing is optional; a hash proves captured content identity, not legal accuracy.
+
+Authenticated case data is not public-source evidence. It may inform the current
+task after explicit scope authorization, but it must not be copied into an
+evidence receipt or used to silently generalize a public rule.
 
 ## Registry maintenance
 

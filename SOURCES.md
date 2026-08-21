@@ -16,9 +16,24 @@ not accepted as claim records.
 
 `data/digital-channels.json` is a routing catalog layered on the source registry.
 It records public and protected surfaces, responsible access category, likely
-authentication class, agent mode, hard stop points, and fields that must be
+authentication class, agent mode, mandatory pause-and-classify checkpoints, and fields that must be
 verified live. A channel record is descriptive metadata, not authority to enter
 the service or evidence that a route applies to a particular person.
+
+The 2026-08-21 coverage ledger contains 135 official-source records, 36 digital
+channels, 71 source-backed scenarios, 114 Polish terms, and all 16 voivodeships.
+Counts are regression anchors, not a completeness score. Coverage is organized
+around resident life events: entry and stay; EU mobility and citizenship;
+identity and civil status; work, unemployment and business; tax and social
+insurance; healthcare; family, education and disability; housing, utilities and
+vehicles; consumer and banking protection; courts, legal aid and rights; civic
+participation; emergencies, victim support, death and inheritance.
+
+Every scenario preserves uncertainty and names facts needed to select the
+current authority. Every added service record is tied to an official source with
+access and verification dates. National guidance does not prove the competent
+gmina, powiat, voivode, court, provider or appointment system. Those must be
+resolved from the current local authority or BIP page at action time.
 
 Tier meanings are narrow: `T0` is official legal text, `T1` is the competent
 authority's own guidance, service, or registry, and `T2` is another official
@@ -27,6 +42,56 @@ claim; it does not prove that the claim applies to an individual.
 
 The initial registry access date is 2026-08-20. A verification date records an
 observation, not a guarantee that the page or procedure remains unchanged.
+
+`human_in_loop_operator` means a caller-owned Browser or Computer capability may
+inspect or fill the named protected surface after explicit task authorization.
+The plugin bundles no authenticated connector, credential broker or standing
+authority. Secret entry, identity-provider confirmation, signatures, legal
+declarations, final payment authorization, withdrawals, and irreversible
+invalidation stay with the user. Submit, send, book, change an official record,
+upload or download, and payment initiation pause for a visible action-time
+confirmation. `user_handoff_then_stop` is used where the user must personally
+cross the identity, signature or safety boundary. Credentialed APIs remain
+prohibited until an approved connector and contract exist.
+
+## Coverage limits and local discovery
+
+Some edges are deliberately live rather than frozen: municipal waste and PSZOK
+rules, water and district heating, social-housing stock, childcare recruitment,
+local parking and toll systems, provider slots, court calendars and local
+programme budgets. The registry records official national ownership evidence
+and the BIP discovery route, then requires current locality verification.
+
+Civil succession can involve a notary, civil court and tax office; the bundle
+therefore provides `civil-succession-route` as a source-backed classification
+path while refusing to claim a single inheritance procedure or choose heirs,
+shares, acceptance, rejection, applicable law or venue. Foreign-issued passports
+route to their issuing state's current consular authority. Recognition of a foreign school certificate stays
+undetermined until document, issuing-country, agreement, recipient and purpose
+facts separate automatic recognition from an education-superintendent route.
+Energy billing and contract disputes are not assigned to URE merely because URE
+publishes consumer guidance; provider, territorial URE, negotiation coordinator
+and consumer-ombudsman competence must be classified live.
+
+Vehicle coverage separates technical inspection, public OC lookup, e-TOLL,
+concession tolls, local public parking, private parking, non-EU customs,
+intra-EU acquisition, excise and registration. Exact route, vehicle combination
+and `target_date` stay live facts; the known e-TOLL transition source is
+effective from 2026-09-21. No frozen rate, insurer recommendation, customs or
+tax classification, valuation, exemption, coverage or roadworthiness conclusion
+is stored.
+
+The Ukrainian temporary-protection transition is intentionally split across
+procedure-specific records. `udsc-ukraine-status-transition-2026` describes the
+general change from 5 March 2026; `udsc-cukr-procedure` owns the CUKR route;
+`gov-pesel-ukr-passport-update-2026` supplies the public passport-data outreach
+notice, while `sejm-ukraine-transition-act-2026` Articles 25-26 distinguish the
+31 August declaration-based identity-confirmation group from a separate 60-day
+document route. Neither deadline may be presented as universal for every PESEL
+UKR holder. `mos-permanent-residence` separately owns national permanent
+residence and must not be replaced by EU long-term-resident or citizenship
+guidance. All dates, affected groups, form mechanics, consequences and local
+office instructions remain live-verification fields.
 
 ## Source contribution rules
 

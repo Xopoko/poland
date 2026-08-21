@@ -2,7 +2,11 @@
 
 ## Locality resolution
 
-Normalize the voivodeship with `data/regions.json`. Use `gus-teryt-api` only for territorial identifiers; it does not by itself identify the competent authority for every matter.
+Normalize the voivodeship with `data/regions.json`. Use `mswia-jst-directory`
+and `gus-teryt-api` only for territorial-unit identity and contact data; neither
+proves procedural competence. First identify the authority level from the
+national procedure, then verify the department and service channel in the
+current local BIP through `bip-directory`.
 
 Collect, as needed:
 
@@ -14,6 +18,13 @@ Collect, as needed:
 
 Do not assume that the nearest office is competent.
 
+Treat cities with powiat rights and Warsaw districts explicitly. Powiat labour
+offices, vehicle-registration authorities, disability-determination teams and
+some PFRON routes need `powiat` as a route fact; keep `gmina` only for genuinely
+municipal branches. Local parking additionally needs the current municipal
+resolution, road manager and signage, while a private car park is a separate
+counterparty branch.
+
 ## Voivodeship immigration systems
 
 The registry includes `mazowieckie-foreigners`, `wielkopolskie-foreigners`, `dolnoslaskie-foreigners`, and `malopolskie-foreigners` as examples of materially different local systems. One may expose a general calendar, another a case-state calendar, and another separate preparation and collection channels.
@@ -22,7 +33,13 @@ For other voivodeships, begin at the office's official BIP or gov.pl page and cr
 
 ## Appointment boundary
 
-Viewing public office topics or publicly visible generic availability is read-only. Stop at a login wall, account state, CAPTCHA, personalized calendar, or form. Booking, rescheduling, and cancellation are prohibited plugin actions because they change a scarce slot and bind personal details.
+Viewing public office topics or publicly visible generic availability is
+read-only. A login wall, account state, CAPTCHA, personalized calendar, or form is
+a pause-and-classify point. The user authenticates and completes CAPTCHA/2FA.
+After explicit task scope, a caller-owned tool may inspect relevant availability
+and fill necessary fields. Because booking, rescheduling, and cancellation change
+a scarce slot and bind personal details, each requires a fresh visible summary
+and action-time confirmation.
 
 For a generic handoff checklist, show:
 
@@ -33,7 +50,11 @@ For a generic handoff checklist, show:
 - categories of personal data the authority says it requires, without values;
 - cancellation or change path.
 
-Provide the exact official booking landing page and stop. Never log in, poll calendars, bypass anti-bot controls, enter data, book, reschedule, cancel, upload, download, or preserve a personal confirmation, even with user consent.
+Open the exact official booking route when a caller-owned tool is available; if
+not, give semantic manual steps. Never bypass anti-bot controls, hoard slots, or
+poll aggressively. Upload or download requires its own action-time confirmation.
+After an appointment change, verify a visible official receipt before reporting
+success and do not persist its personal details in plugin artifacts.
 
 ## Freshness
 

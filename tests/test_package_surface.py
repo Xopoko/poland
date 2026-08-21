@@ -25,9 +25,20 @@ class PackageSurfaceTests(unittest.TestCase):
 
     def test_public_onboarding_is_agent_first_and_opt_in(self):
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
-        self.assertLess(readme.index("Ask Your Agent"), readme.index("Optional Technical Tools"))
+        self.assertLess(readme.index("Ask Your Agent"), readme.index("Technical Details"))
         self.assertIn("not installed by default", readme)
         self.assertIn("Do not paste names", readme)
+
+    def test_public_install_examples_pin_the_published_release(self):
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        install = (ROOT / "docs" / "INSTALL.md").read_text(encoding="utf-8")
+        combined = readme + "\n" + install
+        self.assertIn("Xopoko/poland --ref v0.2.0", combined)
+        self.assertIn("Xopoko/poland@v0.2.0", combined)
+        self.assertIn("--branch v0.2.0 --depth 1", combined)
+        self.assertIn("git:github.com/Xopoko/poland@v0.2.0", combined)
+        self.assertNotIn("marketplace add Xopoko/poland\n", combined)
+        self.assertNotIn("git clone https://github.com/Xopoko/poland.git", combined)
 
     def test_public_issue_templates_reject_personal_data(self):
         templates = "\n".join(
@@ -44,7 +55,21 @@ class PackageSurfaceTests(unittest.TestCase):
         marketplace = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8"))
         package = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
         versions = {codex["version"], claude["version"], cursor["version"], marketplace["version"], marketplace["plugins"][0]["version"], package["version"]}
-        self.assertEqual({"0.1.0"}, versions)
+        self.assertEqual({"0.2.0"}, versions)
+
+    def test_codex_marketplace_is_explicitly_opt_in(self):
+        marketplace = json.loads(
+            (ROOT / ".agents" / "plugins" / "marketplace.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual("poland", marketplace["name"])
+        self.assertEqual(1, len(marketplace["plugins"]))
+        entry = marketplace["plugins"][0]
+        self.assertEqual("poland", entry["name"])
+        self.assertEqual({"source": "local", "path": "."}, entry["source"])
+        self.assertEqual("AVAILABLE", entry["policy"]["installation"])
+        self.assertNotEqual("INSTALLED_BY_DEFAULT", entry["policy"]["installation"])
 
 
 if __name__ == "__main__":

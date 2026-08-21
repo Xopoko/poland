@@ -90,9 +90,11 @@
         "authentication_categories": {"$ref": "#/$defs/tokenArray"},
         "agent_mode": {
           "enum": [
+            "human_in_loop_operator",
             "prohibited_external_effect",
             "public_read_only",
-            "public_read_only_handoff"
+            "public_read_only_handoff",
+            "user_handoff_then_stop"
           ]
         },
         "stop_before": {

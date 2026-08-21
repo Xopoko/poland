@@ -4,10 +4,12 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import struct
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -19,7 +21,8 @@ from contract_validation import validate_datasets  # noqa: E402
 
 
 PLUGIN_ID = "poland"
-VERSION = "0.1.0"
+VERSION = "0.2.0"
+EXPECTED_SKILL_COUNT = 33
 REPOSITORY = "https://github.com/Xopoko/poland"
 CATALOG = "https://github.com/Xopoko/plug-n-skills"
 SHARED_MANIFEST_FIELDS = (
@@ -57,6 +60,7 @@ SECRET_PATTERNS = (
     re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b"),
 )
 REQUIRED_PATHS = {
+    ".agents/plugins/marketplace.json",
     ".claude-plugin/marketplace.json",
     ".claude-plugin/plugin.json",
     ".codex-mcp.json",
@@ -235,6 +239,31 @@ def main() -> int:
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         errors.append(f".claude-plugin/marketplace.json: {exc}")
 
+    try:
+        marketplace = read_json(ROOT / ".agents" / "plugins" / "marketplace.json")
+        entries = marketplace.get("plugins")
+        entry = entries[0] if isinstance(entries, list) and len(entries) == 1 else None
+        if marketplace.get("name") != "poland":
+            errors.append("Codex marketplace name must match the standalone repository")
+        if marketplace.get("interface") != {"displayName": "Poland"}:
+            errors.append("Codex marketplace display name must remain Poland")
+        if not isinstance(entry, dict):
+            errors.append("Codex marketplace must declare exactly one plugin")
+        else:
+            if entry.get("name") != PLUGIN_ID:
+                errors.append("Codex marketplace plugin name must remain poland")
+            if entry.get("source") != {"source": "local", "path": "."}:
+                errors.append("Codex marketplace must bind poland to repository root")
+            if entry.get("policy") != {
+                "installation": "AVAILABLE",
+                "authentication": "ON_INSTALL",
+            }:
+                errors.append("Codex marketplace must keep Poland opt-in and authenticate on install")
+            if entry.get("category") != "Productivity":
+                errors.append("Codex marketplace category must remain Productivity")
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        errors.append(f".agents/plugins/marketplace.json: {exc}")
+
     skill_paths = sorted((ROOT / "skills").glob("*/SKILL.md"))
     skill_names: set[str] = set()
     for path in skill_paths:
@@ -256,8 +285,8 @@ def main() -> int:
             skill_names.add(name)
         if not isinstance(description, str) or not 1 <= len(description) <= 240:
             errors.append(f"{relative}: description must contain 1-240 characters")
-    if len(skill_names) != 24:
-        errors.append(f"expected 24 skills, found {len(skill_names)}")
+    if len(skill_names) != EXPECTED_SKILL_COUNT:
+        errors.append(f"expected {EXPECTED_SKILL_COUNT} skills, found {len(skill_names)}")
 
     try:
         cursor = read_json(ROOT / ".cursor-plugin" / "plugin.json")
@@ -265,8 +294,12 @@ def main() -> int:
             errors.append("Cursor manifest name/version differs")
         if cursor.get("repository") != REPOSITORY:
             errors.append("Cursor repository must point to standalone source")
-        if "skills" in cursor:
-            errors.append("Cursor manifest must use repository-root skills discovery")
+        if cursor.get("homepage") != REPOSITORY:
+            errors.append("Cursor homepage must point to standalone source")
+        if cursor.get("skills") != "./skills/":
+            errors.append("Cursor manifest must explicitly bind repository-root skills")
+        if cursor.get("mcpServers") != "./.codex-mcp.json":
+            errors.append("Cursor manifest must explicitly bind the bundled MCP config")
         logo = cursor.get("logo")
         if not isinstance(logo, str) or not (ROOT / logo).is_file():
             errors.append("Cursor logo must resolve to a repository file")
@@ -280,17 +313,73 @@ def main() -> int:
         pi = package.get("pi")
         pi_skills = pi.get("skills") if isinstance(pi, dict) else None
         expected_pi = {f"./skills/{name}" for name in skill_names}
-        if not isinstance(pi_skills, list) or set(pi_skills) != expected_pi or len(pi_skills) != len(expected_pi):
-            errors.append("package.json pi.skills must exactly match the 24 skill directories")
+        if (
+            not isinstance(pi_skills, list)
+            or any(not isinstance(item, str) for item in pi_skills)
+            or set(pi_skills) != expected_pi
+            or len(pi_skills) != len(expected_pi)
+        ):
+            errors.append(
+                "package.json pi.skills must exactly match "
+                f"the {EXPECTED_SKILL_COUNT} skill directories"
+            )
+        packaged_files = package.get("files")
+        required_package_entries = {
+            ".agents",
+            ".claude-plugin",
+            ".codex-mcp.json",
+            ".codex-plugin",
+            ".cursor-plugin",
+            ".mcp.json",
+            "CHANGELOG.md",
+            "CONTRIBUTING.md",
+            "DISCLAIMER.md",
+            "LICENSE",
+            "PRIVACY.md",
+            "README.md",
+            "SECURITY.md",
+            "SOURCES.md",
+            "SUPPORT.md",
+            "TERMS.md",
+            "agents",
+            "assets",
+            "data",
+            "docs",
+            "lib/*.py",
+            "mcp/*.py",
+            "references",
+            "schemas",
+            "scripts/*.py",
+            "skills",
+        }
+        packaged_file_set = (
+            set(packaged_files)
+            if isinstance(packaged_files, list)
+            and all(isinstance(item, str) for item in packaged_files)
+            else None
+        )
+        if packaged_file_set is None or not required_package_entries.issubset(packaged_file_set):
+            errors.append("package.json files must preserve the complete runtime and host companions")
+        elif {"lib", "mcp", "scripts"} & packaged_file_set:
+            errors.append("package.json must not package Python cache directories")
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         errors.append(f"package.json: {exc}")
 
     try:
         codex_mcp = read_json(ROOT / ".codex-mcp.json")["mcpServers"]["poland"]
         claude_mcp = read_json(ROOT / ".mcp.json")["mcpServers"]["poland"]
-        if codex_mcp.get("command") != "python3" or codex_mcp.get("args") != ["./mcp/server.py"] or codex_mcp.get("cwd") != ".":
-            errors.append(".codex-mcp.json does not match the portable contract")
-        if claude_mcp.get("command") != "python3" or claude_mcp.get("args") != ["${CLAUDE_PLUGIN_ROOT}/mcp/server.py"] or claude_mcp.get("cwd") != "${CLAUDE_PLUGIN_ROOT}":
+        if (
+            codex_mcp.get("command") != "python3"
+            or codex_mcp.get("args") != ["-I", "-B", "./mcp/server.py"]
+            or codex_mcp.get("cwd") != "."
+        ):
+            errors.append(".codex-mcp.json does not match the public companion contract")
+        if (
+            claude_mcp.get("command") != "${POLAND_PYTHON:-python3}"
+            or claude_mcp.get("args")
+            != ["-I", "-B", "${CLAUDE_PLUGIN_ROOT}/mcp/server.py"]
+            or claude_mcp.get("cwd") != "${CLAUDE_PLUGIN_ROOT}"
+        ):
             errors.append(".mcp.json does not match the Claude plugin-root contract")
     except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
         errors.append(f"MCP configuration: {exc}")
@@ -302,12 +391,44 @@ def main() -> int:
         prompt = read_json(ROOT / "assets" / "icon-prompt.json")
         if prompt.get("schema") != "capability_workbench.plugin_icon_prompt.v2":
             errors.append("icon prompt must use schema v2")
-        if not isinstance(prompt.get("semantic_hero"), dict) or not isinstance(prompt.get("support_cue"), dict):
-            errors.append("icon prompt must declare one hero and one support cue")
+        hero = prompt.get("semantic_hero")
+        if (
+            not isinstance(hero, dict)
+            or not hero
+            or any(not isinstance(value, str) or not value.strip() for value in hero.values())
+        ):
+            errors.append("icon prompt must declare exactly one non-empty semantic hero")
+        support_cue = prompt.get("support_cue")
+        if support_cue is not None and (
+            not isinstance(support_cue, dict)
+            or not support_cue
+            or any(not isinstance(value, str) or not value.strip() for value in support_cue.values())
+        ):
+            errors.append("icon prompt support cue must be null or one non-empty object")
         if not isinstance(prompt.get("brand_source"), dict):
             errors.append("icon prompt must declare brand provenance")
+        if prompt.get("plugin_name") != PLUGIN_ID:
+            errors.append("icon prompt plugin_name must match the package")
+        if prompt.get("recommended_asset_path") != "assets/icon.png":
+            errors.append("icon prompt must point to assets/icon.png")
+        avoid = prompt.get("avoid")
+        avoid_text = " ".join(avoid).casefold() if isinstance(avoid, list) and all(
+            isinstance(item, str) for item in avoid
+        ) else ""
+        if "map" not in avoid_text or (
+            "geographic" not in avoid_text and "country outline" not in avoid_text
+        ):
+            errors.append("icon prompt must explicitly prohibit maps and geographic outlines")
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         errors.append(f"assets/icon-prompt.json: {exc}")
+
+    try:
+        provenance = (ROOT / "assets" / "ASSET_PROVENANCE.md").read_text(encoding="utf-8").casefold()
+        for phrase in ("open folded ribbon", "support cue: none", "no map or geographic border"):
+            if phrase not in provenance:
+                errors.append(f"asset provenance must preserve icon contract: {phrase}")
+    except OSError as exc:
+        errors.append(f"assets/ASSET_PROVENANCE.md: {exc}")
 
     for schema_path in sorted((ROOT / "schemas").glob("*.schema.json")):
         try:
@@ -322,7 +443,7 @@ def main() -> int:
     errors.extend(f"data contract: {item}" for item in validate_datasets(ROOT / "data"))
 
     cli = subprocess.run(
-        [sys.executable, str(ROOT / "scripts" / "poland.py"), "validate", "--as-of", "2026-08-20"],
+        [sys.executable, str(ROOT / "scripts" / "poland.py"), "validate", "--as-of", "2026-08-21"],
         cwd=ROOT,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -331,8 +452,86 @@ def main() -> int:
     if cli.returncode != 0:
         errors.append(f"CLI bundle validation failed: {cli.stderr or cli.stdout}")
 
+    doctor_environment = os.environ.copy()
+    doctor_environment.pop("POLAND_PYTHON", None)
+
+    def invoke_doctor(host: str, *extra: str) -> tuple[dict[str, Any] | None, str | None]:
+        try:
+            preflight = subprocess.run(
+                [
+                    sys.executable,
+                    "-B",
+                    str(ROOT / "scripts" / "poland.py"),
+                    "doctor",
+                    "--host",
+                    host,
+                    "--as-of",
+                    "2026-08-21",
+                    *extra,
+                ],
+                cwd=ROOT,
+                env=doctor_environment,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=45,
+            )
+        except subprocess.TimeoutExpired:
+            return None, "timeout"
+        try:
+            preflight_payload = strict_json_loads(preflight.stdout)
+            receipt = preflight_payload["result"]
+        except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+            return None, "invalid_receipt"
+        return receipt if isinstance(receipt, dict) else None, (
+            None if isinstance(receipt, dict) else "invalid_receipt"
+        )
+
+    for host in ("codex", "claude", "cursor", "pi"):
+        receipt, failure = invoke_doctor(host)
+        receipt_valid = (
+            receipt is not None
+            and receipt.get("schema") == "poland.doctor_receipt.v1"
+            and receipt.get("valid") is True
+        )
+        if not receipt_valid and host != "pi":
+            filename = ".mcp.json" if host == "claude" else ".codex-mcp.json"
+            with tempfile.TemporaryDirectory(prefix="poland-doctor-") as directory:
+                target = str(Path(directory) / filename)
+                receipt, fallback_failure = invoke_doctor(
+                    host,
+                    "--write-mcp-config",
+                    target,
+                )
+            receipt_valid = (
+                receipt is not None
+                and receipt.get("schema") == "poland.doctor_receipt.v1"
+                and receipt.get("valid") is True
+                and receipt.get("checks", {}).get("generated_mcp_round_trip", {}).get("status")
+                == "passed"
+            )
+            if receipt_valid:
+                warnings.append(
+                    f"{host} public launcher unavailable on this runner; "
+                    "generated host-local companion preflight passed"
+                )
+            else:
+                failure = fallback_failure or failure
+        if not receipt_valid:
+            suffix = f" ({failure})" if failure else ""
+            errors.append(f"{host} package/MCP preflight failed on this runner{suffix}")
+            continue
+        if receipt.get("checks", {}).get("host_plugin_discovery") != "not_checked":
+            errors.append(f"{host} preflight must not claim native host discovery")
+
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    for phrase in ("Ask Your Agent", "codex plugin marketplace add Xopoko/poland", "/plugin install poland@poland", "not installed by default"):
+    onboarding_phrases = (
+        "Ask Your Agent",
+        "codex plugin marketplace add Xopoko/poland",
+        "/plugin install poland@poland",
+        "not installed by default",
+    )
+    for phrase in onboarding_phrases:
         if phrase not in readme:
             errors.append(f"README missing public onboarding phrase: {phrase}")
 

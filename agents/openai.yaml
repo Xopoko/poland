@@ -3,4 +3,4 @@ interface:
   short_description: "Official-source-first help for life in Poland"
   icon_small: "./assets/icon.png"
   icon_large: "./assets/icon.png"
-  default_prompt: "Use Poland to navigate residence, work, tax, documents, healthcare, and daily administration from dated official sources without personal data or external actions."
+  default_prompt: "Use Poland to solve life and administration tasks from dated official sources. Route to the responsible authority and service; when I request hands-on help, use my installed Browser or Computer under private authentication, minimum record scope, fresh action-time confirmation, and receipt verification."

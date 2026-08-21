@@ -100,6 +100,9 @@ class McpTests(unittest.TestCase):
         self.assertEqual("channels", search["command"])
         self.assertEqual(1, len(search["result"]))
         self.assertFalse(search["result"][0]["protected_interaction_supported"])
+        self.assertEqual("public_read_only_handoff", search["result"][0]["channel_state"])
+        self.assertFalse(search["result"][0]["caller_owned_operator_eligible"])
+        self.assertFalse(search["result"][0]["bundled_interface_can_interact"])
         self.assertTrue(search["citations"])
 
         channel = self.call(
@@ -110,6 +113,9 @@ class McpTests(unittest.TestCase):
         self.assertEqual("e-tax-office", channel["result"]["id"])
         self.assertEqual("authenticated", channel["result"]["access_scope"])
         self.assertFalse(channel["result"]["protected_interaction_supported"])
+        self.assertEqual("caller_owned_operator", channel["result"]["channel_state"])
+        self.assertTrue(channel["result"]["caller_owned_operator_eligible"])
+        self.assertFalse(channel["result"]["bundled_interface_can_interact"])
 
     def test_sensitive_channel_query_fails_without_echo(self):
         secret_like = "password=do-not-log-this"

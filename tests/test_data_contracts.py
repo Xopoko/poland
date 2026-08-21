@@ -106,6 +106,27 @@ class DataContractTests(unittest.TestCase):
             errors,
         )
 
+    def test_operator_and_handoff_modes_are_strictly_enumerated(self):
+        payloads = copy.deepcopy(live_payloads())
+        epuap = next(
+            item for item in payloads["digital-channels"]["channels"] if item["id"] == "epuap"
+        )
+        self.assertEqual("human_in_loop_operator", epuap["agent_mode"])
+        trusted_profile = next(
+            item
+            for item in payloads["digital-channels"]["channels"]
+            if item["id"] == "profil-zaufany"
+        )
+        self.assertEqual("user_handoff_then_stop", trusted_profile["agent_mode"])
+        self.assertEqual([], validate_payloads(payloads))
+
+        epuap["agent_mode"] = "autonomous_external_effect"
+        errors = validate_payloads(payloads)
+        self.assertTrue(
+            any(error.endswith("unsupported value") for error in errors),
+            errors,
+        )
+
     def test_interface_and_receipt_contracts_are_closed_and_provenance_complete(self):
         response = json.loads((ROOT / "schemas" / "response.schema.json").read_text(encoding="utf-8"))
         for definition in ("citation", "error"):

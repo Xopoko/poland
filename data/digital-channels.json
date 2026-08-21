@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "description": "Source-linked catalog of major Polish and EU digital public-service channels. It describes public surfaces and user-only protected capabilities without authorizing authentication or external effects.",
+  "description": "Source-linked catalog of major Polish and EU digital public-service channels. It distinguishes public use, user handoff and task-scoped human-in-the-loop operation. The catalog bundles no credential, authenticated connector or standing authority; protected work requires live user authorization and action-time confirmation.",
   "channels": [
     {
       "id": "profil-zaufany",
@@ -11,10 +11,10 @@
       "public_surface": ["read_public_guidance"],
       "protected_surface": ["authenticate", "manage_identity_profile", "sign"],
       "authentication_categories": ["bank_identity_provider", "electronic_id", "login_gov_pl", "verify_live"],
-      "agent_mode": "prohibited_external_effect",
-      "stop_before": ["account_chooser", "authentication", "personal_data", "signature"],
+      "agent_mode": "user_handoff_then_stop",
+      "stop_before": ["account_chooser", "credential_entry", "identity_provider_confirmation", "signature_confirmation"],
       "live_verify": ["available_identity_method", "current_login_flow", "signature_type"],
-      "notes": "The user owns identity selection, authentication, and every signature. Availability depends on the user's current identity and service support."
+      "notes": "The user owns identity-provider selection, secret entry and every signature action. The agent may navigate to the handoff boundary but the catalog provides no credential broker; availability depends on the current identity and target service."
     },
     {
       "id": "epuap",
@@ -25,10 +25,10 @@
       "public_surface": ["read_public_guidance", "read_public_service_catalog"],
       "protected_surface": ["download_personal_document", "receive_correspondence", "send_correspondence", "sign", "upload_document"],
       "authentication_categories": ["login_gov_pl", "trusted_profile", "verify_live"],
-      "agent_mode": "prohibited_external_effect",
-      "stop_before": ["authentication", "download", "form_field", "personal_record", "send", "signature", "upload"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "attachment_upload_confirmation", "signature_confirmation", "final_send"],
       "live_verify": ["accepted_channel", "current_service_owner", "delivery_effect", "service_availability"],
-      "notes": "Treat ePUAP as a correspondence channel, not the owner of the underlying procedure. Prepare placeholders locally and stop before the protected service."
+      "notes": "Treat ePUAP as a channel, not the procedure owner. With active authorization an available Browser or Computer operator may inspect, fill and prepare attachments. Verify recipient, locality, accepted channel and deadline; the user personally performs the signature, while attachment upload and final send require fresh action-time confirmation. No connector or credentials are bundled."
     },
     {
       "id": "e-deliveries",
@@ -39,10 +39,10 @@
       "public_surface": ["read_public_guidance"],
       "protected_surface": ["create_delivery_address", "download_personal_document", "manage_mailbox", "receive_correspondence", "send_correspondence", "sign", "upload_document"],
       "authentication_categories": ["login_gov_pl", "verify_live"],
-      "agent_mode": "prohibited_external_effect",
-      "stop_before": ["account_creation", "authentication", "download", "mailbox", "personal_record", "send", "signature", "upload"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "delivery_address_creation", "attachment_upload_confirmation", "signature_confirmation", "final_send"],
       "live_verify": ["accepted_recipient_channel", "address_requirement", "current_rollout", "delivery_effect"],
-      "notes": "e-Doreczenia and ePUAP are not interchangeable. Verify the receiving authority and current delivery rule before a user-only handoff."
+      "notes": "e-Doreczenia and ePUAP are not interchangeable. An authorized operator may inspect the mailbox and prepare correspondence through an available UI tool, but must verify recipient, locality, address status and delivery effect. The user personally performs any signature; address creation and sending require fresh action-time confirmation. No authenticated connector is bundled."
     },
     {
       "id": "mobywatel",
@@ -53,10 +53,10 @@
       "public_surface": ["read_public_guidance", "read_public_service_catalog"],
       "protected_surface": ["activate_mobile_identity", "read_personal_document", "read_personal_record", "use_personal_service"],
       "authentication_categories": ["mobile_activation", "status_dependent", "verify_live"],
-      "agent_mode": "public_read_only_handoff",
-      "stop_before": ["activation", "authentication", "personal_document", "personal_record"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "mobile_activation_confirmation", "personal_record_disclosure", "official_record_change", "final_confirmation"],
       "live_verify": ["document_availability", "foreign_national_support", "service_availability", "status_requirement"],
-      "notes": "mObywatel is not a universal foreigner-document API. Publicly describe current support, then leave app activation and all personal content to the user."
+      "notes": "mObywatel is not a universal foreigner-document API. With active user authorization a Computer operator may navigate only the requested service or record; verify document support and status live, minimize disclosure and confirm activation or any official change. The catalog bundles no mobile-control connector."
     },
     {
       "id": "mos",
@@ -67,10 +67,10 @@
       "public_surface": ["read_public_faq", "read_public_guidance"],
       "protected_surface": ["create_account", "download_personal_document", "edit_server_side_draft", "submit_application", "upload_document"],
       "authentication_categories": ["login_gov_pl", "personal_signature", "qualified_signature", "trusted_profile", "verify_live"],
-      "agent_mode": "prohibited_external_effect",
-      "stop_before": ["account_creation", "authentication", "download", "form_field", "personal_data", "server_side_draft", "signature", "submission", "upload"],
-      "live_verify": ["current_exception", "current_form", "effective_date", "employer_attachment", "in_person_follow_up", "signature_method"],
-      "notes": "The catalog can explain the public MOS process and exact handoff page. The user alone creates the account, enters data, uploads, signs, sends, and handles the later in-person request."
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "account_creation_confirmation", "sensitive_attachment_upload", "signature_confirmation", "final_submission"],
+      "live_verify": ["applicant_group", "current_exception", "current_form", "effective_date", "filing_window", "in_person_follow_up", "signature_method", "status_transition"],
+      "notes": "With active authorization an available Browser or Computer operator may create or fill a MOS draft and prepare evidence. Verify the exact purpose and applicant group, including any CUKR transition or permanent-residence basis, current filing window, exception, voivodeship locality, appointment or fingerprint follow-up and form version. Secrets and signatures stay with the user; account creation, sensitive upload, download, payment initiation and submission require fresh action-time confirmation. No connector is bundled."
     },
     {
       "id": "praca-gov-pl",
@@ -81,10 +81,10 @@
       "public_surface": ["read_public_guidance", "read_public_job_listings", "read_public_service_catalog"],
       "protected_surface": ["create_account", "edit_server_side_draft", "submit_application", "submit_employer_notification", "upload_document"],
       "authentication_categories": ["portal_account", "trusted_profile", "verify_live"],
-      "agent_mode": "prohibited_external_effect",
-      "stop_before": ["account_creation", "authentication", "form_field", "personal_data", "server_side_draft", "submission", "upload"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "account_creation_confirmation", "employer_authority_declaration", "sensitive_attachment_upload", "final_submission"],
       "live_verify": ["applicant_role", "competent_labour_office", "current_form", "service_availability"],
-      "notes": "Public listings and descriptions are separate from employer or jobseeker transactions. Do not infer that the worker is the applicant for an employer-side procedure."
+      "notes": "Public listings are separate from jobseeker and employer transactions. An authorized operator may inspect or fill the selected route, but must verify applicant role, work-status facts, competent local labour office, appointment availability and form version. The authorized user personally performs authority declarations; uploads and submission require fresh action-time confirmation. No connector is bundled."
     },
     {
       "id": "e-tax-office",
@@ -95,10 +95,10 @@
       "public_surface": ["read_public_faq", "read_public_guidance", "read_public_service_catalog"],
       "protected_surface": ["download_personal_document", "file_tax_document", "make_payment", "read_personal_record", "request_certificate"],
       "authentication_categories": ["login_gov_pl", "tax_data_authorization", "verify_live"],
-      "agent_mode": "prohibited_external_effect",
-      "stop_before": ["authentication", "download", "filing", "payment", "personal_record", "submission"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "tax_position_confirmation", "filing_confirmation", "correction_confirmation", "certificate_request_confirmation", "payment_confirmation"],
       "live_verify": ["current_login_method", "current_tax_year", "filing_channel", "service_availability"],
-      "notes": "Public tax guidance is in scope. Returns, certificates, payments, corrections, and personal tax data remain entirely user-controlled."
+      "notes": "With active authorization an available UI operator may inspect the requested tax record and prepare a supported return, correction or certificate request. Verify tax year, form, office, deadline and amount; do not infer correctness, and require confirmation before filing, correction, request or payment. No connector or credentials are bundled."
     },
     {
       "id": "tax-office-appointments",
@@ -109,10 +109,10 @@
       "public_surface": ["search_public_directory"],
       "protected_surface": ["book_appointment", "cancel_appointment", "reschedule_appointment"],
       "authentication_categories": ["verify_live"],
-      "agent_mode": "prohibited_external_effect",
-      "stop_before": ["appointment_selection", "booking", "personal_data"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["contact_data_confirmation", "booking_confirmation", "reschedule_confirmation", "cancellation_confirmation"],
       "live_verify": ["competent_office", "current_booking_flow", "service_topic"],
-      "notes": "The plugin may identify the public office and topic. It never inspects slots or creates, changes, or cancels a booking."
+      "notes": "An authorized Browser operator may inspect current slots and prepare a booking, reschedule or cancellation. Verify the competent office, locality and service topic, then show the exact office, time, contact data and resulting change for confirmation. The catalog itself provides no booking connector."
     },
     {
       "id": "ezus",
@@ -123,10 +123,10 @@
       "public_surface": ["read_public_faq", "read_public_guidance", "read_public_service_catalog"],
       "protected_surface": ["book_appointment", "download_personal_document", "file_insurance_document", "read_personal_record", "send_correspondence"],
       "authentication_categories": ["login_gov_pl", "portal_account", "verify_live"],
-      "agent_mode": "prohibited_external_effect",
-      "stop_before": ["authentication", "booking", "download", "personal_record", "send", "submission"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "personal_record_disclosure", "booking_confirmation", "document_submission", "final_send"],
       "live_verify": ["current_interface_name", "current_login_method", "record_owner", "service_availability"],
-      "notes": "PUE and eZUS naming is transitional. Verify public terminology live and never inspect contribution, benefit, or insurance records."
+      "notes": "PUE and eZUS naming is transitional. With active authorization an operator may inspect only the requested contribution, benefit or insurance record and prepare a supported document or appointment; verify record owner, locality and current form, then confirm submission, send or booking. No connector is bundled."
     },
     {
       "id": "ikp",
@@ -137,10 +137,10 @@
       "public_surface": ["read_public_guidance", "search_public_provider_directory"],
       "protected_surface": ["book_health_service", "read_medical_record", "read_personal_record", "use_prescription_or_referral"],
       "authentication_categories": ["login_gov_pl", "verify_live"],
-      "agent_mode": "prohibited_external_effect",
-      "stop_before": ["authentication", "booking", "medical_record", "personal_record"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "medical_record_disclosure", "delegation_or_authorization_change", "provider_contact", "booking_confirmation"],
       "live_verify": ["coverage_owner", "current_login_method", "service_availability"],
-      "notes": "General NFZ and patient guidance is public. Individual coverage, prescriptions, referrals, and medical data are sensitive and unsupported."
+      "notes": "Medical and personal data are sensitive. With active authorization an operator may inspect only the requested record or service, verify coverage owner, locality and current provider route, and minimize disclosure; delegation changes, provider contact and booking require confirmation. The catalog bundles no health connector."
     },
     {
       "id": "ceidg",
@@ -151,10 +151,10 @@
       "public_surface": ["read_public_guidance", "search_public_registry"],
       "protected_surface": ["change_official_record", "register_business", "sign", "submit_application"],
       "authentication_categories": ["login_gov_pl", "qualified_signature", "trusted_profile", "verify_live"],
-      "agent_mode": "prohibited_external_effect",
-      "stop_before": ["authentication", "business_decision", "official_record_change", "signature", "submission"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "legal_or_tax_form_decision", "official_record_change_confirmation", "signature_confirmation", "final_submission"],
       "live_verify": ["foreign_national_eligibility", "legal_form", "registration_effect", "service_availability"],
-      "notes": "Public registry and guidance use is separate from formation or record changes. The plugin does not choose a legal or tax form."
+      "notes": "Public registry use is separate from formation or record changes. An authorized operator may prepare the chosen CEIDG route, but must not choose legal or tax form. Verify foreign-national basis, locality, current form and effect; the authorized user personally performs every signature and legal declaration, while each official change and final submission requires fresh action-time confirmation. No connector is bundled."
     },
     {
       "id": "krs-search",
@@ -235,10 +235,10 @@
       "public_surface": ["read_public_guidance", "read_public_service_catalog"],
       "protected_surface": ["edit_server_side_draft", "read_personal_record", "submit_application", "upload_document"],
       "authentication_categories": ["login_gov_pl", "verify_live"],
-      "agent_mode": "prohibited_external_effect",
-      "stop_before": ["authentication", "entitlement_decision", "personal_record", "server_side_draft", "submission", "upload"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "entitlement_conclusion", "sensitive_attachment_upload", "bank_data_confirmation", "final_submission"],
       "live_verify": ["competent_local_authority", "current_form", "service_availability", "status_requirement"],
-      "notes": "Use public information to identify a benefit or local authority. Never conclude entitlement or interact with a personal application."
+      "notes": "Use public information to identify a benefit and competent local authority. With active authorization an operator may inspect or fill a selected application, but may not conclude entitlement; verify current period, status, locality and form and confirm bank data, sensitive uploads and submission. No connector is bundled."
     },
     {
       "id": "your-europe",
@@ -263,10 +263,248 @@
       "public_surface": ["read_public_guidance"],
       "protected_surface": ["create_case", "read_personal_record", "send_correspondence", "upload_document"],
       "authentication_categories": ["portal_account", "verify_live"],
-      "agent_mode": "prohibited_external_effect",
-      "stop_before": ["account_creation", "authentication", "case_creation", "personal_record", "send", "upload"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "cross_border_scope_conclusion", "case_creation_confirmation", "sensitive_attachment_upload", "final_send"],
       "live_verify": ["cross_border_scope", "public_authority_scope", "service_availability"],
-      "notes": "First verify that the problem concerns cross-border EU rights and a public authority. The user alone creates or manages a case."
+      "notes": "First verify that the problem concerns cross-border EU rights and a public authority. With active authorization an operator may prepare or inspect the case through an available UI tool; account creation, sensitive evidence and sending require confirmation. The catalog bundles no SOLVIT connector and never guarantees acceptance."
+    },
+    {
+      "id": "pesel-services",
+      "name": "PESEL register and reservation services",
+      "channel_kind": "personal_account",
+      "source_ids": ["gov-pesel-register-data", "gov-pesel-reservation", "mobywatel"],
+      "access_scope": "authenticated",
+      "public_surface": ["read_public_guidance"],
+      "protected_surface": ["read_personal_record", "reserve_pesel", "withdraw_pesel_reservation"],
+      "authentication_categories": ["login_gov_pl", "mobile_activation", "verify_live"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "personal_record_disclosure", "reservation_change_confirmation"],
+      "live_verify": ["current_channel", "current_consequence", "identity_access_method", "service_availability"],
+      "notes": "An authorized UI operator may inspect only the requested PESEL data or prepare a reservation change. Verify current consequences, service availability and any competent-gmina correction or appointment route; show the exact state change for confirmation. The catalog bundles no identity connector."
+    },
+    {
+      "id": "your-e-pit",
+      "name": "Your e-PIT",
+      "channel_kind": "personal_account",
+      "source_ids": ["tax-your-e-pit", "tax-pit", "e-tax-office"],
+      "access_scope": "authenticated",
+      "public_surface": ["read_public_guidance", "read_public_service_catalog"],
+      "protected_surface": ["edit_tax_return", "read_personal_record", "accept_tax_return", "correct_tax_return", "make_payment"],
+      "authentication_categories": ["login_gov_pl", "tax_data_authorization", "verify_live"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "tax_position_confirmation", "return_acceptance", "correction_confirmation", "payment_confirmation"],
+      "live_verify": ["current_tax_year", "filing_deadline", "form_scope", "tax_office", "service_availability"],
+      "notes": "An authorized operator may inspect the requested prepared return and enter user-provided facts, but cannot infer tax residence or correctness. Verify year, form, office, deadline and locality-specific appointment need. The user personally accepts or attests to the return; correction filing and payment initiation require fresh action-time confirmation. No tax connector is bundled."
+    },
+    {
+      "id": "pfron-sow",
+      "name": "PFRON Support Services System",
+      "channel_kind": "application_portal",
+      "source_ids": ["pfron-sow", "bip-directory"],
+      "access_scope": "authenticated",
+      "public_surface": ["read_public_guidance", "read_public_service_catalog"],
+      "protected_surface": ["edit_server_side_draft", "read_personal_record", "submit_application", "upload_document"],
+      "authentication_categories": ["login_gov_pl", "verify_live"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "programme_selection_without_live_call", "sensitive_attachment_upload", "final_submission"],
+      "live_verify": ["active_programme", "competent_local_authority", "current_call", "document_window", "service_availability"],
+      "notes": "SOW programmes and budgets vary by local authority and call. An authorized operator may inspect or fill a selected application after verifying the competent PCPR, MOPR or other owner, active deadline and appointment path; sensitive uploads and submission require confirmation. No SOW connector is bundled."
+    },
+    {
+      "id": "nfz-treatment-dates",
+      "name": "NFZ treatment-date search",
+      "channel_kind": "public_registry",
+      "source_ids": ["nfz-treatment-dates", "nfz-patient"],
+      "access_scope": "public",
+      "public_surface": ["search_public_provider_directory", "read_public_waiting_time"],
+      "protected_surface": [],
+      "authentication_categories": [],
+      "agent_mode": "public_read_only",
+      "stop_before": ["clinical_recommendation", "provider_contact", "appointment_booking", "personal_or_sensitive_query"],
+      "live_verify": ["data_update_date", "provider_contact", "referral_requirement", "service_name", "locality"],
+      "notes": "Search publicly by service and locality; reported availability is uncertain and is not a booking or clinical recommendation. Verify update date, referral need and provider details live. Contact and appointment require a separate authorized channel and confirmation."
+    },
+    {
+      "id": "court-information-portal",
+      "name": "Common Courts Information Portal",
+      "channel_kind": "personal_account",
+      "source_ids": ["justice-court-information-portal", "e-deliveries"],
+      "access_scope": "authenticated",
+      "public_surface": ["read_public_guidance"],
+      "protected_surface": ["read_case_record", "receive_correspondence", "file_court_document", "upload_document"],
+      "authentication_categories": ["portal_account", "verify_live"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "representation_or_party_declaration", "delivery_acknowledgement", "sensitive_attachment_upload", "court_filing"],
+      "live_verify": ["case_and_party_role", "court_locality", "current_effective_rule", "deadline", "filing_support"],
+      "notes": "2026 portal functions vary by role, case and court. An authorized operator may inspect the requested case or prepare a supported filing, but must verify court locality, service effect, deadline and any local appointment fallback. The user personally performs acknowledgements and declarations; uploads and filing require fresh action-time confirmation. No court connector is bundled."
+    },
+    {
+      "id": "criminal-record-certificate",
+      "name": "National Criminal Register certificate service",
+      "channel_kind": "application_portal",
+      "source_ids": ["gov-criminal-record-certificate"],
+      "access_scope": "mixed",
+      "public_surface": ["read_public_guidance", "read_public_service_catalog"],
+      "protected_surface": ["edit_server_side_draft", "request_certificate", "make_payment", "download_personal_document"],
+      "authentication_categories": ["portal_account", "qualified_signature", "verify_live"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "certificate_scope_confirmation", "signature_confirmation", "request_confirmation", "payment_confirmation"],
+      "live_verify": ["current_fee", "output_acceptance", "recipient_requirement", "service_availability", "foreign_use"],
+      "notes": "An authorized operator may prepare the request only after the recipient and purpose define the required scope and output. Verify electronic acceptance, fee, foreign-use steps, local paper appointment if needed and current processing. The user personally performs any signature; request and payment initiation require fresh action-time confirmation. No KRK connector is bundled."
+    },
+    {
+      "id": "land-registers",
+      "name": "Electronic Land and Mortgage Registers",
+      "channel_kind": "public_registry",
+      "source_ids": ["gov-land-registers"],
+      "access_scope": "mixed",
+      "public_surface": ["read_public_guidance", "search_public_registry"],
+      "protected_surface": ["request_paid_document", "make_payment"],
+      "authentication_categories": ["verify_live"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["title_or_risk_conclusion", "paid_document_request", "payment_confirmation", "personal_or_sensitive_query"],
+      "live_verify": ["land_register_number", "registry_currency", "pending_entry", "document_type", "court_locality"],
+      "notes": "Public viewing is permitted with the correct register number, but it is not legal due diligence. Verify currency, pending entries, court locality, any local appointment and requested document type; an authorized operator may prepare a paid request, which requires confirmation. No registry connector is bundled."
+    },
+    {
+      "id": "cepik",
+      "name": "CEPiK vehicle and driver services",
+      "channel_kind": "public_registry",
+      "source_ids": ["cepik-services", "gov-penalty-points", "mobywatel", "mobywatel-check-oc", "gov-vehicle-technical-inspections"],
+      "access_scope": "mixed",
+      "public_surface": ["read_public_guidance", "search_public_registry", "check_public_oc"],
+      "protected_surface": ["read_personal_driver_record", "read_personal_vehicle_record"],
+      "authentication_categories": ["login_gov_pl", "mobile_activation", "verify_live"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "personal_record_disclosure", "licence_validity_conclusion", "external_effect"],
+      "live_verify": ["identifier_requirement", "record_date", "record_scope", "service_availability", "vehicle_or_driver_role", "oc_check_date", "inspection_scope"],
+      "notes": "Separate public vehicle history and OC checks from authenticated personal records and physical technical inspection. An authorized operator may inspect only the requested record after verifying identifiers, scope and data date; do not infer ownership, insurance coverage, roadworthiness, safety or licence validity. Local office correction or appointment routes vary, and no CEPiK connector is bundled."
+    },
+    {
+      "id": "central-voter-register",
+      "name": "Central Register of Voters services",
+      "channel_kind": "personal_account",
+      "source_ids": ["gov-central-voter-register", "gov-change-voting-place", "bip-directory"],
+      "access_scope": "authenticated",
+      "public_surface": ["read_public_guidance"],
+      "protected_surface": ["read_personal_record", "request_voting_place_change"],
+      "authentication_categories": ["login_gov_pl", "verify_live"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "electoral_eligibility_conclusion", "personal_record_disclosure", "register_change_confirmation"],
+      "live_verify": ["citizenship_and_election_scope", "election_calendar", "gmina", "register_status", "submission_deadline"],
+      "notes": "Never infer eligibility from residence. An authorized operator may inspect the requested record or prepare a voting-place change only after verifying citizenship, election, date and gmina; the register change requires confirmation. Local appointment or office fallback varies, and no voter connector is bundled."
+    },
+    {
+      "id": "civil-status-services",
+      "name": "gov.pl civil-status services",
+      "channel_kind": "application_portal",
+      "source_ids": ["gov-birth-registration", "gov-civil-record-copy", "gov-civil-marriage", "gov-name-change"],
+      "access_scope": "mixed",
+      "public_surface": ["read_public_guidance", "read_public_service_catalog"],
+      "protected_surface": ["edit_server_side_draft", "request_civil_record", "register_birth", "make_declaration"],
+      "authentication_categories": ["login_gov_pl", "trusted_profile", "verify_live"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "parentage_or_civil_status_conclusion", "name_or_status_declaration", "signature_confirmation", "final_submission"],
+      "live_verify": ["competent_usc", "current_form", "foreign_document_requirement", "local_appointment", "service_availability"],
+      "notes": "An authorized operator may prepare a supported civil-status service after verifying the competent USC, locality, foreign documents and appointment or online availability. The user personally performs parentage, name and civil-status declarations and every signature; submission requires a fresh action-time confirmation. No civil-register connector is bundled."
+    },
+    {
+      "id": "vehicle-services",
+      "name": "gov.pl vehicle services",
+      "channel_kind": "application_portal",
+      "source_ids": ["gov-vehicle-registration", "gov-vehicle-transfer-notice", "cepik-services"],
+      "access_scope": "mixed",
+      "public_surface": ["read_public_guidance", "read_public_service_catalog"],
+      "protected_surface": ["edit_server_side_draft", "submit_vehicle_notice", "upload_document"],
+      "authentication_categories": ["login_gov_pl", "trusted_profile", "verify_live"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "ownership_or_duty_conclusion", "sensitive_attachment_upload", "final_submission", "payment_confirmation"],
+      "live_verify": ["competent_local_authority", "current_deadline", "current_form", "local_appointment", "transaction_type"],
+      "notes": "Registration and acquisition or disposal notices are distinct. An authorized operator may prepare the selected route after verifying transaction, date, owner role, competent powiat office and appointment or online support. The user personally performs declarations; uploads, submission and payment initiation require fresh action-time confirmation. No vehicle connector is bundled."
+    },
+    {
+      "id": "victim-support-directory",
+      "name": "Crime Victim Support Network directory",
+      "channel_kind": "information_portal",
+      "source_ids": ["justice-victim-support", "emergency-112"],
+      "access_scope": "public",
+      "public_surface": ["search_public_directory", "read_public_guidance"],
+      "protected_surface": [],
+      "authentication_categories": [],
+      "agent_mode": "public_read_only_handoff",
+      "stop_before": ["call", "message", "location_share", "appointment_booking"],
+      "live_verify": ["current_contact_method", "language", "locality", "opening_hours", "safe_to_contact"],
+      "notes": "Use the public directory to find current local support. Immediate danger belongs to 112. Verify safe-to-contact preference, locality, language, opening and appointment requirements; do not transmit location or contact a centre through an unapproved connector."
+    },
+    {
+      "id": "free-legal-aid-booking",
+      "name": "Free legal aid information and booking",
+      "channel_kind": "appointment_portal",
+      "source_ids": ["free-legal-aid-general", "free-legal-aid", "bip-directory"],
+      "access_scope": "mixed",
+      "public_surface": ["read_public_guidance", "search_public_directory"],
+      "protected_surface": ["book_appointment", "cancel_appointment", "reschedule_appointment"],
+      "authentication_categories": ["verify_live"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["legal_scope_conclusion", "contact_data_confirmation", "booking_confirmation", "reschedule_confirmation", "cancellation_confirmation"],
+      "live_verify": ["current_eligibility_scope", "local_provider", "appointment_format", "language_or_accessibility", "slot_availability"],
+      "notes": "An authorized Browser operator may inspect local appointment slots and prepare a booking after verifying current service scope, powiat or city provider, language, accessibility and remote or in-person format. Show the exact provider, time and contact data for confirmation. No booking connector is bundled."
+    },
+    {
+      "id": "waste-recipient-search",
+      "name": "Public waste-recipient and municipal ownership search",
+      "channel_kind": "public_registry",
+      "source_ids": ["gios-waste-recipients", "bip-directory"],
+      "access_scope": "public",
+      "public_surface": ["search_public_registry", "search_public_directory", "read_public_guidance"],
+      "protected_surface": [],
+      "authentication_categories": [],
+      "agent_mode": "public_read_only",
+      "stop_before": ["provider_contact", "waste_delivery", "contract_acceptance", "appointment_booking", "payment"],
+      "live_verify": ["waste_code_or_type", "gmina", "recipient_authorisation", "pszok_rules", "opening_and_appointment"],
+      "notes": "The public BDO search and a resident's municipal PSZOK route are different. Verify waste type or code, gmina, authorisation, local limits, opening and appointment requirements; do not infer that a listed private recipient is the municipal owner or that delivery is free."
+    },
+    {
+      "id": "e-konsulat",
+      "name": "e-Konsulat consular appointment portal",
+      "channel_kind": "appointment_portal",
+      "source_ids": ["e-konsulat-portal", "mfa-passports-abroad", "gov-passport-adult", "gov-temporary-passport"],
+      "access_scope": "mixed",
+      "public_surface": ["read_public_guidance", "inspect_public_categories"],
+      "protected_surface": ["inspect_personal_availability", "prepare_appointment", "book_appointment", "cancel_appointment", "reschedule_appointment"],
+      "authentication_categories": ["portal_account", "captcha", "verify_live"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_or_captcha_entry", "personal_data_confirmation", "booking_confirmation", "cancellation_confirmation", "payment_confirmation", "user_only_attestation_or_biometric_step"],
+      "live_verify": ["mission_competence", "service_category", "appointment_availability", "document_requirements", "personal_attendance", "current_payment_method"],
+      "notes": "The user handles credentials and CAPTCHA. An authorized operator may inspect the scoped mission category and prepare a booking, but must show mission, service, time and disclosed data for fresh confirmation. Ordinary passport biometrics and attestations stay with the user. Foreign passports belong to the issuing state, and no e-Konsulat connector is bundled."
+    },
+    {
+      "id": "etoll",
+      "name": "e-TOLL road charging services",
+      "channel_kind": "application_portal",
+      "source_ids": ["etoll-system", "etoll-vehicle-classifier", "etoll-light-vehicle-transition-2026", "gov-road-toll-payments"],
+      "access_scope": "mixed",
+      "public_surface": ["read_public_guidance", "use_public_vehicle_classifier"],
+      "protected_surface": ["inspect_account", "prepare_registration", "prepare_declaration", "initiate_payment"],
+      "authentication_categories": ["portal_account", "verify_live"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "vehicle_classification_conclusion", "registration_confirmation", "declaration_confirmation", "payment_confirmation"],
+      "live_verify": ["target_date", "exact_route", "vehicle_combination", "current_transition_rule", "concession_operator_branch", "current_rate_and_method"],
+      "notes": "Always verify target date, exact road and vehicle or trailer combination. A known rule changes on 2026-09-21, and e-TOLL is not every concession motorway toll. Registration, declarations and payment initiation require fresh confirmation; the user owns credentials and final payment authorization. No e-TOLL connector is bundled."
+    },
+    {
+      "id": "puesc",
+      "name": "PUESC customs and passenger-car excise services",
+      "channel_kind": "application_portal",
+      "source_ids": ["puesc-import", "puesc-car-excise-service", "podatki-car-excise"],
+      "access_scope": "mixed",
+      "public_surface": ["read_public_guidance", "inspect_service_requirements"],
+      "protected_surface": ["inspect_scoped_account", "prepare_declaration", "prepare_attachment", "submit_declaration", "initiate_payment"],
+      "authentication_categories": ["portal_account", "qualified_signature", "verify_live"],
+      "agent_mode": "human_in_loop_operator",
+      "stop_before": ["credential_entry", "classification_valuation_or_exemption_conclusion", "sensitive_attachment_upload", "user_only_signature_or_attestation", "submission_confirmation", "payment_confirmation"],
+      "live_verify": ["non_eu_or_intra_eu_branch", "vehicle_classification", "current_form", "current_deadline", "attachment_requirements", "payment_confirmation_method"],
+      "notes": "Separate non-EU import, intra-EU acquisition, registration and excise. Do not decide tariff or vehicle classification, valuation, exemption, tax base or liability. The user authenticates and personally signs attestations; upload, submission and payment initiation require fresh confirmation. No PUESC connector is bundled."
     }
   ]
 }

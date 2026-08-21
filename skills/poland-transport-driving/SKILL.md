@@ -18,9 +18,11 @@ Use `drivers-act-consolidated` for the legal recognition and ordinary-residence
 distinction, then `gov-driving-licence-exchange` and the competent local authority
 for the service route. Verify treaty/EU context, required translations or
 verification, any medical or examination step, appointment channel, fee, and
-form at action time. Draft the checklist but stop before booking with a
-consequence, paying, submitting, uploading, downloading, signing, or surrendering
-a document. Consent does not expand this boundary.
+form at action time. For hands-on portal help, apply
+`../../references/automation-playbook.md`: the user authenticates, signs,
+attests, and handles original-document surrender; task-scoped record inspection
+and form filling are allowed, while booking, payment initiation, submission,
+upload, download, or record change requires fresh action-time confirmation.
 
 Do not merge the foreign-licence clocks. The six-month recognition period in
 the current Act on Vehicle Drivers applies to the foreign-licence categories it
