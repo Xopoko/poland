@@ -61,7 +61,7 @@ class ContractTests(unittest.TestCase):
         self.assertEqual("0.2.0", codex["version"])
         self.assertEqual("./.codex-mcp.json", codex["mcpServers"])
         self.assertLessEqual(len(codex["description"]), 240)
-        self.assertEqual("https://github.com/Xopoko/plug-n-skills", codex["interface"]["websiteURL"])
+        self.assertEqual("https://github.com/Xopoko/poland", codex["interface"]["websiteURL"])
 
     def test_dual_mcp_configs_are_host_neutral_and_overrideable(self):
         codex = json.loads((ROOT / ".codex-mcp.json").read_text(encoding="utf-8"))["mcpServers"]["poland"]

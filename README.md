@@ -107,8 +107,8 @@ workflows.
 
 **Poland is opt-in.** Adding its marketplace or catalog makes it discoverable;
 it does not install the plugin. Poland is not installed by default. The
-project-maintained Poland and Plug'n Skills distributions never include it in a
-default bundle. Installation occurs only after you explicitly select `poland`.
+project-maintained distributions never include it in a default bundle.
+Installation occurs only after you explicitly select `poland`.
 
 ### Easiest: Ask Your Agent
 
@@ -233,14 +233,6 @@ python scripts/poland.py checklist settling-in-first-weeks --citizenship-group t
 python scripts/poland.py freshness --as-of 2026-08-21
 python scripts/poland.py validate
 ```
-
-## Plug'n Skills
-
-[Plug'n Skills](https://github.com/Xopoko/plug-n-skills) advertises a reviewed,
-immutable Poland revision with `selection.default: false`. Its normal default
-and `--include-first-party` installation paths exclude Poland; only an explicit
-`--plugin poland` selection includes it. The catalog pin may lag the newest
-standalone release while a revision is audited.
 
 ## Support and Contributions
 

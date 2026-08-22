@@ -8,8 +8,9 @@ hosts, and safe for public collaboration.
 ## Repository Role
 
 - This repository owns the editable plugin source and releases.
-- `https://github.com/Xopoko/plug-n-skills` may advertise and install an
-  immutable reviewed revision, but must not maintain a second editable copy.
+- Public metadata, installation, support, and provenance must point only to
+  this standalone repository. Private build environments may pin immutable
+  revisions without becoming public dependencies.
 - Personal cases, documents, credentials, screenshots, and account data never
   belong in this repository.
 

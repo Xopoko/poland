@@ -216,19 +216,6 @@ files in the repository, but does not register the MCP server with pi. Do not
 claim MCP availability in pi without separate host-specific configuration and a
 real discovery check.
 
-## Plug'n Skills
-
-The [Plug'n Skills](https://github.com/Xopoko/plug-n-skills) catalog carries a
-reviewed immutable Poland pin. It never installs Poland in a default or
-`--include-first-party` run. Select it explicitly:
-
-```bash
-python scripts/install-codex-plugins.py --plugin poland
-```
-
-Use this standalone repository for the newest source. Use Plug'n Skills when you
-want the catalog's reviewed commit and receipt.
-
 ## Validate a Checkout
 
 From the repository root:

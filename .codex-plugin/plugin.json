@@ -31,7 +31,7 @@
     "longDescription": "Help residents, immigrants, expats, and citizens navigate life in Poland with 33 focused Agent Skills, dated official-source metadata, deterministic scenarios, plain-language terminology, locality-aware routing, semantic portal playbooks, and visible freshness warnings. Coverage spans residence, work, tax, ZUS, health, family, civil events, disability, pensions, education, housing, utilities, vehicles, justice, civic life, consumer protection, consular matters, digital government, appeals, and emergencies. The bundled CLI and MCP server remain offline, read-only, and non-retentive. A separately installed caller-owned Browser or Computer capability may assist inside an explicitly authorized official-service task after private user authentication, with minimum record scope, fresh confirmation before external effects, user-controlled signatures and attestations, and visible receipt verification.",
     "developerName": "Xopoko",
     "category": "Lifestyle",
-    "websiteURL": "https://github.com/Xopoko/plug-n-skills",
+    "websiteURL": "https://github.com/Xopoko/poland",
     "privacyPolicyURL": "https://github.com/Xopoko/poland/blob/main/PRIVACY.md",
     "termsOfServiceURL": "https://github.com/Xopoko/poland/blob/main/TERMS.md",
     "capabilities": [

@@ -24,7 +24,6 @@ PLUGIN_ID = "poland"
 VERSION = "0.2.0"
 EXPECTED_SKILL_COUNT = 33
 REPOSITORY = "https://github.com/Xopoko/poland"
-CATALOG = "https://github.com/Xopoko/plug-n-skills"
 SHARED_MANIFEST_FIELDS = (
     "name",
     "version",
@@ -208,8 +207,8 @@ def main() -> int:
         if not isinstance(interface, dict):
             errors.append("Codex interface is missing")
         else:
-            if interface.get("websiteURL") != CATALOG:
-                errors.append("Codex Website must point to the Plug'n Skills catalog")
+            if interface.get("websiteURL") != REPOSITORY:
+                errors.append("Codex Website must point to the standalone source")
             if interface.get("privacyPolicyURL") != f"{REPOSITORY}/blob/main/PRIVACY.md":
                 errors.append("privacyPolicyURL must point to standalone PRIVACY.md")
             if interface.get("termsOfServiceURL") != f"{REPOSITORY}/blob/main/TERMS.md":
