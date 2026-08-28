@@ -67,6 +67,7 @@ class CliTests(unittest.TestCase):
             ("terms", ("terms", "eZUS")),
             ("regions", ("regions", "Warsaw")),
             ("freshness", ("freshness", "--as-of", "2026-08-20")),
+            ("ontology", ("ontology", "--layer", "services", "--as-of", "2026-08-20")),
             ("boundary", ("boundary", "submit application")),
         ):
             self.assert_success_envelope(run_cli(*arguments), operation)
@@ -84,7 +85,57 @@ class CliTests(unittest.TestCase):
         payload = json.loads(result.stdout)
         self.assertTrue(payload["ok"])
         self.assertEqual("validate", payload["command"])
-        self.assertTrue(set(payload["warnings"]).issubset(set(payload["result"]["warnings"])))
+        expected_codes = {
+            warning.partition(":")[0] for warning in payload["result"]["warnings"]
+        }
+        self.assertEqual(expected_codes, set(payload["warnings"]))
+
+    def test_freshness_filters_summary_and_problem_ids_are_bounded(self):
+        payload = self.assert_success_envelope(
+            run_cli(
+                "freshness",
+                "--as-of",
+                "2026-08-28",
+                "--status",
+                "review_due",
+                "--topic",
+                "residence",
+                "--limit",
+                "2",
+            ),
+            "freshness",
+        )
+        self.assertLessEqual(len(payload["result"]["sources"]), 2)
+        self.assertLessEqual(len(payload["citations"]), 2)
+        self.assertTrue(payload["result"]["problem_source_ids"])
+        self.assertTrue(
+            all(item["status"] == "review_due" for item in payload["result"]["sources"])
+        )
+
+        summary = self.assert_success_envelope(
+            run_cli("freshness", "--as-of", "2026-08-28", "--summary-only"),
+            "freshness",
+        )
+        self.assertEqual([], summary["result"]["sources"])
+        self.assertEqual([], summary["result"]["repair_queue"])
+        self.assertEqual([], summary["citations"])
+
+    def test_ontology_layer_projection_is_machine_readable(self):
+        payload = self.assert_success_envelope(
+            run_cli(
+                "ontology",
+                "--layer",
+                "evidence",
+                "--detail",
+                "full",
+                "--as-of",
+                "2026-08-28",
+            ),
+            "ontology",
+        )
+        self.assertEqual("poland.ontology-map.v1", payload["result"]["schema"])
+        self.assertEqual(["evidence"], [item["id"] for item in payload["result"]["layers"]])
+        self.assertEqual(0, payload["result"]["summary"]["broken_edges"])
 
     def test_route_citations_and_input_are_not_echoed(self):
         payload = self.assert_success_envelope(
@@ -193,7 +244,7 @@ class CliTests(unittest.TestCase):
         self.assertTrue(receipt["checks"]["bundle_validation"]["valid"])
         self.assertEqual(0, receipt["checks"]["bundle_validation"]["error_count"])
         self.assertEqual("passed", receipt["checks"]["bundled_mcp_round_trip"]["status"])
-        self.assertEqual(11, receipt["checks"]["bundled_mcp_round_trip"]["tool_count"])
+        self.assertEqual(12, receipt["checks"]["bundled_mcp_round_trip"]["tool_count"])
         self.assertEqual(
             "poland_overview",
             receipt["checks"]["bundled_mcp_round_trip"]["read_only_tool_call"],
@@ -234,7 +285,7 @@ class CliTests(unittest.TestCase):
             self.assertTrue(receipt["valid"], host)
             configured = receipt["checks"]["configured_mcp_round_trip"]
             self.assertEqual("passed", configured["status"], host)
-            self.assertEqual(11, configured["tool_count"], host)
+            self.assertEqual(12, configured["tool_count"], host)
             self.assertEqual("passed", configured["launcher"]["status"], host)
 
         pi = self.assert_success_envelope(

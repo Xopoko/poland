@@ -7,6 +7,7 @@ import hashlib
 import json
 import re
 import unicodedata
+from collections import Counter
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
@@ -106,6 +107,7 @@ ROUTE_FACT_FIELDS = {
     "document_type",
     "education_stage",
     "employer_location",
+    "eu_efta_family_member_status",
     "gmina",
     "household_context",
     "insurance_context",
@@ -115,6 +117,7 @@ ROUTE_FACT_FIELDS = {
     "matter",
     "move_basis",
     "need_type",
+    "pesel_status",
     "problem_type",
     "procedure",
     "powiat",
@@ -142,6 +145,25 @@ ABSTRACT_CATEGORY_PATTERN = re.compile(
 )
 ROUTER_CONTEXT_TOKENS = {"poland", "polish"}
 RESPONSE_CONTRACT = "poland.response.v1"
+FRESHNESS_STATUSES = (
+    "fresh",
+    "review_due",
+    "stale",
+    "future",
+    "inactive",
+    "out_of_effective_period",
+)
+MAX_REPAIR_QUEUE_PROJECTION = 64
+ONTOLOGY_LAYERS = (
+    "services",
+    "evidence",
+    "channels",
+    "vocabulary",
+    "geography",
+    "safety",
+    "ownership",
+    "authorities",
+)
 
 
 class PolandDataError(ValueError):
@@ -332,6 +354,12 @@ def validate_route_profile(profile: Any) -> dict[str, Any]:
             "citizenship_group must use a supported abstract category",
             details={"field": "citizenship_group"},
         )
+    for field in ("eu_efta_family_member_status", "pesel_status"):
+        if validated.get(field) not in (None, "present", "absent", "unknown"):
+            raise PolandDataError(
+                f"{field} must use present, absent, or unknown",
+                details={"field": field},
+            )
     for field in ("urgent", "safe_to_speak"):
         if field in validated and validated[field] not in {True, False, None}:
             raise PolandDataError(
@@ -576,6 +604,107 @@ def _profile_value(profile: dict[str, Any], field: str) -> Any:
     return None
 
 
+def _scenario_channel_selection(
+    scenario: dict[str, Any],
+    profile: dict[str, Any],
+) -> tuple[dict[str, Any], list[dict[str, Any]]] | None:
+    """Resolve explicit source-bound channel rules without deciding eligibility."""
+    rules = scenario.get("channel_rules")
+    if not isinstance(rules, list) or not rules:
+        return None
+    compatible: list[tuple[dict[str, Any], list[str]]] = []
+    matches: list[dict[str, Any]] = []
+    for rule in rules:
+        when = rule.get("when", {})
+        if not isinstance(when, dict):
+            raise PolandDataError("scenario channel rule has invalid conditions")
+        missing: list[str] = []
+        contradicted = False
+        for field, allowed_values in when.items():
+            if field not in ROUTE_FACT_FIELDS or not isinstance(allowed_values, list):
+                raise PolandDataError("scenario channel rule uses an unsupported fact")
+            value = _profile_value(profile, str(field))
+            if value is None:
+                missing.append(str(field))
+            elif value not in allowed_values:
+                contradicted = True
+                break
+        if contradicted:
+            continue
+        compatible.append((rule, missing))
+        if not missing:
+            matches.append(rule)
+
+    if matches:
+        specificity = max(len(rule.get("when", {})) for rule in matches)
+        most_specific = sorted(
+            (rule for rule in matches if len(rule.get("when", {})) == specificity),
+            key=lambda item: str(item.get("id", "")),
+        )
+        if len(most_specific) > 1:
+            return (
+                {
+                    "state": "unresolved",
+                    "matched_rule_id": None,
+                    "missing_facts": [],
+                    "requirements": [],
+                    "channel_ids": [],
+                    "warnings": ["CHANNEL_RULES_AMBIGUOUS"],
+                },
+                [],
+            )
+        selected = most_specific[0]
+        state = str(selected["state"])
+        warning_by_state = {
+            "verification_required": "CHANNEL_LIVE_VERIFICATION_REQUIRED",
+            "unavailable": "REQUESTED_CHANNEL_UNAVAILABLE_FOR_PROFILE",
+        }
+        channel_ids = [str(item) for item in selected.get("channel_ids", [])]
+        channel_by_id = {
+            str(channel["id"]): channel for channel in all_digital_channels()
+        }
+        unknown_channels = sorted(set(channel_ids) - set(channel_by_id))
+        if unknown_channels:
+            raise PolandDataError("scenario channel rule references an unknown channel")
+        selection = {
+            "state": state,
+            "matched_rule_id": str(selected["id"]),
+            "missing_facts": [],
+            "requirements": [str(item) for item in selected.get("requirements", [])],
+            "channel_ids": channel_ids,
+            "warnings": [warning_by_state[state]] if state in warning_by_state else [],
+        }
+        return selection, [dict(channel_by_id[channel_id]) for channel_id in channel_ids]
+
+    if compatible:
+        smallest_gap = min(len(missing) for _, missing in compatible)
+        missing_facts = sorted(
+            {
+                field
+                for _, missing in compatible
+                if len(missing) == smallest_gap
+                for field in missing
+            }
+        )
+        state = "unresolved"
+        warning = "CHANNEL_APPLICABILITY_UNRESOLVED"
+    else:
+        missing_facts = []
+        state = "unavailable"
+        warning = "REQUESTED_CHANNEL_UNAVAILABLE_FOR_PROFILE"
+    return (
+        {
+            "state": state,
+            "matched_rule_id": None,
+            "missing_facts": missing_facts,
+            "requirements": [],
+            "channel_ids": [],
+            "warnings": [warning],
+        },
+        [],
+    )
+
+
 def _as_of_date(as_of: str | date | None) -> date:
     if as_of is None:
         return datetime.now(timezone.utc).date()
@@ -600,9 +729,15 @@ def _source_freshness_record(source: dict[str, Any], target: date) -> dict[str, 
         if source.get("effective_to")
         else None
     )
+    if effective_from and target < effective_from:
+        effective_state = "not_yet_effective"
+    elif effective_to and target > effective_to:
+        effective_state = "expired"
+    else:
+        effective_state = "in_effect"
     if source.get("status") != "active":
         status = "inactive"
-    elif (effective_from and target < effective_from) or (effective_to and target > effective_to):
+    elif effective_state != "in_effect":
         status = "out_of_effective_period"
     elif age < 0:
         status = "future"
@@ -621,6 +756,7 @@ def _source_freshness_record(source: dict[str, Any], target: date) -> dict[str, 
         "record_status": source.get("status"),
         "effective_from": source.get("effective_from"),
         "effective_to": source.get("effective_to"),
+        "effective_state": effective_state,
         "effect": source["effect"],
     }
 
@@ -1118,6 +1254,14 @@ def route_scenario(
     best = dict(match_rows[0]["scenario"])
     intake = [str(item) for item in best.get("intake", [])]
     missing_intake = [field for field in intake if _profile_value(safe_profile, field) is None]
+    channel_selection_result = _scenario_channel_selection(best, safe_profile)
+    if channel_selection_result is not None:
+        channel_selection, selected_channels = channel_selection_result
+        best["channel_selection"] = channel_selection
+        best["digital_channels"] = selected_channels
+        missing_intake = list(
+            dict.fromkeys([*missing_intake, *channel_selection["missing_facts"]])
+        )
     gate = evidence_gate(
         best.get("source_ids", []),
         as_of=as_of,
@@ -1128,13 +1272,26 @@ def route_scenario(
     best["alternatives"] = [str(row["scenario"]["id"]) for row in match_rows[1:4]]
     sources = source_index()
     best["sources"] = [dict(sources[source_id]) for source_id in best.get("source_ids", [])]
+    channel_state = (
+        best.get("channel_selection", {}).get("state")
+        if isinstance(best.get("channel_selection"), dict)
+        else None
+    )
+    channel_blocks = channel_state in {
+        "unavailable",
+        "unresolved",
+        "verification_required",
+    }
     best["route_state"] = (
-        "undetermined" if missing_intake or not gate["actionable"] else "candidate"
+        "undetermined"
+        if missing_intake or not gate["actionable"] or channel_blocks
+        else "candidate"
     )
     best["match_truth"] = "true" if best["route_state"] == "candidate" else "unknown"
+    parameter_fields = list(dict.fromkeys([*intake, *missing_intake]))
     best["parameter_states"] = {
         field: "known" if _profile_value(safe_profile, field) is not None else "unknown"
-        for field in intake
+        for field in parameter_fields
     }
     best["intent_candidates"] = [best["id"]]
     best["eligibility_assessed"] = False
@@ -1360,27 +1517,717 @@ def action_boundary(action: str) -> dict[str, Any]:
     }
 
 
-def freshness_report(as_of: str | date | None = None) -> dict[str, Any]:
-    target = _as_of_date(as_of)
-    records = []
-    summary = {
-        "fresh": 0,
-        "review_due": 0,
-        "stale": 0,
-        "future": 0,
-        "inactive": 0,
-        "out_of_effective_period": 0,
+def _verification_route(source: dict[str, Any]) -> str:
+    automation = source.get("automation")
+    if source.get("access") == "public" and automation == "public_read_only":
+        return "source_probe"
+    if source.get("access") == "public" and automation == "public_read_only_handoff":
+        return "browser"
+    return "manual_authority_review"
+
+
+def _repair_next_step(issue_code: str) -> str:
+    steps = {
+        "SOURCE_VERIFICATION_DATE_IN_FUTURE": "correct_verification_metadata",
+        "SOURCE_STALE": "reverify_material_claims",
+        "SOURCE_REVIEW_DUE": "reverify_material_claims",
+        "SOURCE_NOT_YET_EFFECTIVE": "defer_current_use_and_recheck_effective_date",
+        "SOURCE_EXPIRED": "review_successor_or_mark_superseded",
+        "SOURCE_INACTIVE": "review_active_references",
+        "SCENARIO_SOURCE_CONFLICT": "compare_all_scenario_sources_and_preserve_unresolved_conflict",
+        "SOURCE_ORPHANED": "review_discovery_link_or_remove_record",
     }
-    for source in all_sources():
-        record = _source_freshness_record(source, target)
-        status = record["status"]
-        summary[status] += 1
-        records.append(record)
+    return steps[issue_code]
+
+
+def _source_discovery_paths(
+    sources: list[dict[str, Any]],
+    scenarios: list[dict[str, Any]],
+    terms: list[dict[str, Any]],
+    channels: list[dict[str, Any]],
+) -> tuple[set[str], set[str]]:
+    direct = {
+        str(source_id)
+        for records in (scenarios, terms, channels)
+        for record in records
+        for source_id in record.get("source_ids", [])
+    }
+    discovery_topics = {
+        str(scenario.get("local_source_topic"))
+        for scenario in scenarios
+        if scenario.get("local_source_topic")
+    }
+    topic_discovered = {
+        str(source["id"])
+        for source in sources
+        if discovery_topics & {str(topic) for topic in source.get("topics", [])}
+    }
+    return direct, topic_discovered
+
+
+def source_reality_audit(as_of: str | date | None = None) -> dict[str, Any]:
+    """Build the full deterministic maintenance state without making a network request."""
+    target = _as_of_date(as_of)
+    sources = all_sources()
+    scenarios = _scenario_records()
+    terms = _records(load_dataset("terms"), "terms", "terms")
+    channels = all_digital_channels()
+    source_by_id = {str(source["id"]): source for source in sources}
+    records = [
+        _source_freshness_record(source, target)
+        for source in sorted(sources, key=lambda item: str(item["id"]))
+    ]
+    summary = {status: 0 for status in FRESHNESS_STATUSES}
+    effective_summary = {
+        "in_effect": 0,
+        "not_yet_effective": 0,
+        "expired": 0,
+    }
+    queue: list[dict[str, Any]] = []
+    issue_specs = {
+        "stale": ("SOURCE_STALE", 0),
+        "review_due": ("SOURCE_REVIEW_DUE", 1),
+        "inactive": ("SOURCE_INACTIVE", 0),
+    }
+    for record in records:
+        summary[record["status"]] += 1
+        effective_summary[record["effective_state"]] += 1
+        record_issues: list[tuple[str, int]] = []
+        if record["age_days"] < 0:
+            record_issues.append(("SOURCE_VERIFICATION_DATE_IN_FUTURE", 0))
+        if record["status"] == "out_of_effective_period":
+            if record["effective_state"] == "not_yet_effective":
+                record_issues.append(("SOURCE_NOT_YET_EFFECTIVE", 1))
+            else:
+                record_issues.append(("SOURCE_EXPIRED", 0))
+        elif record["status"] in issue_specs:
+            record_issues.append(issue_specs[record["status"]])
+        source = source_by_id[record["source_id"]]
+        for issue_code, priority in record_issues:
+            queue.append(
+                {
+                    "issue_code": issue_code,
+                    "priority": priority,
+                    "status": record["status"],
+                    "source_id": record["source_id"],
+                    "scenario_id": None,
+                    "conflict_type": None,
+                    "related_source_ids": [],
+                    "topics": sorted(str(topic) for topic in source.get("topics", [])),
+                    "blocks_current_claim_use": True,
+                    "verification_route": _verification_route(source),
+                    "next_step": _repair_next_step(issue_code),
+                    "automatic_update_allowed": False,
+                }
+            )
+    for scenario in scenarios:
+        for conflict in scenario.get("conflicts", []):
+            source_id = str(conflict["source_id"])
+            source = source_by_id[source_id]
+            queue.append(
+                {
+                    "issue_code": "SCENARIO_SOURCE_CONFLICT",
+                    "priority": 0,
+                    "status": "conflict",
+                    "source_id": source_id,
+                    "scenario_id": str(scenario["id"]),
+                    "conflict_type": str(conflict["conflict_type"]),
+                    "related_source_ids": sorted(
+                        str(item) for item in scenario.get("source_ids", [])
+                    ),
+                    "topics": sorted(str(topic) for topic in source.get("topics", [])),
+                    "blocks_current_claim_use": True,
+                    "verification_route": _verification_route(source),
+                    "next_step": _repair_next_step("SCENARIO_SOURCE_CONFLICT"),
+                    "automatic_update_allowed": False,
+                }
+            )
+    direct_references, topic_discovered = _source_discovery_paths(
+        sources,
+        scenarios,
+        terms,
+        channels,
+    )
+    for source_id in sorted(set(source_by_id) - direct_references - topic_discovered):
+        source = source_by_id[source_id]
+        queue.append(
+            {
+                "issue_code": "SOURCE_ORPHANED",
+                "priority": 2,
+                "status": "orphaned",
+                "source_id": source_id,
+                "scenario_id": None,
+                "conflict_type": None,
+                "related_source_ids": [],
+                "topics": sorted(str(topic) for topic in source.get("topics", [])),
+                "blocks_current_claim_use": False,
+                "verification_route": _verification_route(source),
+                "next_step": _repair_next_step("SOURCE_ORPHANED"),
+                "automatic_update_allowed": False,
+            }
+        )
+    queue.sort(
+        key=lambda item: (
+            item["priority"],
+            item["issue_code"],
+            item["source_id"],
+            item["scenario_id"] or "",
+        )
+    )
+    repair_summary = dict(sorted(Counter(item["issue_code"] for item in queue).items()))
+    problem_source_ids_by_issue = {
+        issue_code: sorted(
+            {item["source_id"] for item in queue if item["issue_code"] == issue_code}
+        )
+        for issue_code in repair_summary
+    }
     return {
         "data_mode": "OFFLINE_PACKAGED_DATA",
         "as_of": target.isoformat(),
         "summary": summary,
+        "effective_summary": effective_summary,
+        "repair_summary": repair_summary,
+        "problem_source_ids_by_issue": problem_source_ids_by_issue,
+        "problem_source_ids": sorted({item["source_id"] for item in queue}),
+        "problem_scenario_ids": sorted(
+            {item["scenario_id"] for item in queue if item["scenario_id"] is not None}
+        ),
         "sources": records,
+        "repair_queue": queue,
+        "discovery": {
+            "directly_referenced_source_ids": sorted(direct_references & set(source_by_id)),
+            "topic_discovered_source_ids": sorted(topic_discovered),
+            "orphaned_source_ids": sorted(set(source_by_id) - direct_references - topic_discovered),
+        },
+    }
+
+
+def freshness_report(
+    as_of: str | date | None = None,
+    *,
+    statuses: Iterable[str] | str | None = None,
+    topic: str | None = None,
+    limit: int = 50,
+    summary_only: bool = False,
+) -> dict[str, Any]:
+    if statuses is None:
+        requested_statuses = []
+    elif isinstance(statuses, str):
+        requested_statuses = [statuses]
+    else:
+        if isinstance(statuses, (bytes, dict)):
+            raise PolandDataError(
+                "status must be a string or iterable of strings",
+                details={"field": "status"},
+            )
+        try:
+            requested_statuses = list(statuses)
+        except TypeError as exc:
+            raise PolandDataError(
+                "status must be a string or iterable of strings",
+                details={"field": "status"},
+            ) from exc
+        if any(not isinstance(item, str) for item in requested_statuses):
+            raise PolandDataError(
+                "status values must be strings",
+                details={"field": "status"},
+            )
+    invalid_statuses = sorted(set(requested_statuses) - set(FRESHNESS_STATUSES))
+    if invalid_statuses:
+        raise PolandDataError(
+            "status must be a supported freshness state",
+            details={"field": "status"},
+        )
+    if not isinstance(limit, int) or isinstance(limit, bool) or not 1 <= limit <= 100:
+        raise PolandDataError("limit must be an integer from 1 to 100", details={"field": "limit"})
+    if not isinstance(summary_only, bool):
+        raise PolandDataError("summary_only must be a boolean", details={"field": "summary_only"})
+    safe_topic = validate_public_literal(topic or "", "topic", max_length=80)
+    normalized_topic = normalize_text(safe_topic)
+    audit = source_reality_audit(as_of)
+    sources = source_index()
+    selected = []
+    for record in audit["sources"]:
+        source = sources[record["source_id"]]
+        if requested_statuses and record["status"] not in requested_statuses:
+            continue
+        if normalized_topic and normalized_topic not in {
+            normalize_text(str(item)) for item in source.get("topics", [])
+        }:
+            continue
+        selected.append(record)
+    total_matched = len(selected)
+    matched_source_ids = {record["source_id"] for record in selected}
+    matched_queue = [
+        item
+        for item in audit["repair_queue"]
+        if item["source_id"] in matched_source_ids
+    ]
+    priority_source_ids = list(
+        dict.fromkeys(item["source_id"] for item in matched_queue)
+    )
+    priority_source_id_set = set(priority_source_ids)
+    selected_by_id = {record["source_id"]: record for record in selected}
+    ordered_selected = [selected_by_id[source_id] for source_id in priority_source_ids]
+    ordered_selected.extend(
+        record for record in selected if record["source_id"] not in priority_source_id_set
+    )
+    returned_records = [] if summary_only else ordered_selected[:limit]
+    returned_ids = {record["source_id"] for record in returned_records}
+    projected_queue = (
+        []
+        if summary_only
+        else [
+            item
+            for item in matched_queue
+            if item["source_id"] in returned_ids
+        ][:MAX_REPAIR_QUEUE_PROJECTION]
+    )
+    warnings = sorted({item["issue_code"] for item in audit["repair_queue"]})
+    return {
+        "schema": "poland.source-reality-report.v1",
+        "data_mode": "OFFLINE_PACKAGED_DATA",
+        "as_of": audit["as_of"],
+        "summary": audit["summary"],
+        "effective_summary": audit["effective_summary"],
+        "repair_summary": audit["repair_summary"],
+        "problem_source_ids_by_issue": audit["problem_source_ids_by_issue"],
+        "problem_source_ids": audit["problem_source_ids"],
+        "problem_scenario_ids": audit["problem_scenario_ids"],
+        "projection": {
+            "statuses": sorted(set(requested_statuses)),
+            "topic": safe_topic or None,
+            "limit": limit,
+            "summary_only": summary_only,
+            "total_matched": total_matched,
+            "returned": len(returned_records),
+            "truncated": total_matched > len(returned_records),
+            "queue_total_matched": len(matched_queue),
+            "queue_returned": len(projected_queue),
+            "queue_truncated": len(matched_queue) > len(projected_queue),
+        },
+        "warnings": warnings,
+        "sources": returned_records,
+        "repair_queue": projected_queue,
+    }
+
+
+def _dimension_counts(
+    records: Iterable[dict[str, Any]],
+    field: str,
+    *,
+    multi: bool = False,
+) -> dict[str, int]:
+    values: Counter[str] = Counter()
+    for record in records:
+        raw = record.get(field)
+        if multi:
+            for value in raw or []:
+                values[str(value)] += 1
+        elif raw is not None:
+            values[str(raw)] += 1
+    return dict(sorted(values.items()))
+
+
+def ontology_map(
+    *,
+    layer: str | None = None,
+    detail: str = "summary",
+    as_of: str | date | None = None,
+) -> dict[str, Any]:
+    """Describe the live registry graph without materializing a second fact store."""
+    if layer is not None and layer not in ONTOLOGY_LAYERS:
+        raise PolandDataError("unknown ontology layer", details={"field": "layer"})
+    if detail not in {"summary", "full"}:
+        raise PolandDataError("detail must be summary or full", details={"field": "detail"})
+    target = _as_of_date(as_of)
+    sources = all_sources()
+    scenarios = _scenario_records()
+    terms = _records(load_dataset("terms"), "terms", "terms")
+    regions = _records(load_dataset("regions"), "regions", "regions")
+    boundaries = _records(load_dataset("actions"), "boundaries", "action-boundaries")
+    channels = all_digital_channels()
+    skills = sorted(path.parent.name for path in (PLUGIN_ROOT / "skills").glob("*/SKILL.md"))
+    authorities = sorted({str(source["authority"]) for source in sources})
+    source_ids = {str(source["id"]) for source in sources}
+    channel_ids = {str(channel["id"]) for channel in channels}
+    skill_ids = set(skills)
+    authority_ids = set(authorities)
+
+    layers = [
+        {
+            "id": "services",
+            "entity_type": "scenario",
+            "origin": "data/scenarios.json",
+            "record_count": len(scenarios),
+            "dimensions": {
+                "composition": _dimension_counts(scenarios, "composition"),
+                "local_source_topic": _dimension_counts(scenarios, "local_source_topic"),
+                "owner_skill_ids": _dimension_counts(scenarios, "owner_skill_ids", multi=True),
+                "applicability_declared": {
+                    "yes": sum("applicability" in scenario for scenario in scenarios),
+                    "no": sum("applicability" not in scenario for scenario in scenarios),
+                },
+                "conflict_declared": {
+                    "yes": sum(bool(scenario.get("conflicts")) for scenario in scenarios),
+                    "no": sum(not scenario.get("conflicts") for scenario in scenarios),
+                },
+                "channel_rules_declared": {
+                    "yes": sum(bool(scenario.get("channel_rules")) for scenario in scenarios),
+                    "no": sum(not scenario.get("channel_rules") for scenario in scenarios),
+                },
+                "channel_rule_state": dict(
+                    sorted(
+                        Counter(
+                            str(rule["state"])
+                            for scenario in scenarios
+                            for rule in scenario.get("channel_rules", [])
+                        ).items()
+                    )
+                ),
+            },
+        },
+        {
+            "id": "evidence",
+            "entity_type": "official_source",
+            "origin": "data/sources.json",
+            "record_count": len(sources),
+            "dimensions": {
+                field: _dimension_counts(sources, field)
+                for field in (
+                    "access",
+                    "automation",
+                    "effect",
+                    "jurisdiction",
+                    "source_kind",
+                    "source_tier",
+                    "status",
+                )
+            },
+        },
+        {
+            "id": "channels",
+            "entity_type": "digital_channel",
+            "origin": "data/digital-channels.json",
+            "record_count": len(channels),
+            "dimensions": {
+                field: _dimension_counts(channels, field)
+                for field in ("channel_kind", "access_scope", "agent_mode")
+            },
+        },
+        {
+            "id": "vocabulary",
+            "entity_type": "administrative_term",
+            "origin": "data/terms.json",
+            "record_count": len(terms),
+            "dimensions": {},
+        },
+        {
+            "id": "geography",
+            "entity_type": "voivodeship",
+            "origin": "data/regions.json",
+            "record_count": len(regions),
+            "dimensions": {},
+        },
+        {
+            "id": "safety",
+            "entity_type": "action_boundary",
+            "origin": "data/action-boundaries.json",
+            "record_count": len(boundaries),
+            "dimensions": {"automation": _dimension_counts(boundaries, "automation")},
+        },
+        {
+            "id": "ownership",
+            "entity_type": "focused_skill",
+            "origin": "skills/*/SKILL.md",
+            "record_count": len(skills),
+            "dimensions": {},
+        },
+        {
+            "id": "authorities",
+            "entity_type": "competent_or_publishing_authority",
+            "origin": "derived:data/sources.json.authority",
+            "record_count": len(authorities),
+            "dimensions": {},
+        },
+    ]
+
+    def direct_relation(
+        relation_id: str,
+        from_layer: str,
+        to_layer: str,
+        records: list[dict[str, Any]],
+        field: str,
+        targets: set[str],
+    ) -> dict[str, Any]:
+        values = [str(value) for record in records for value in record.get(field, [])]
+        resolved = sum(value in targets for value in values)
+        return {
+            "id": relation_id,
+            "from_layer": from_layer,
+            "to_layer": to_layer,
+            "kind": "direct",
+            "field": field,
+            "edge_count": len(values),
+            "resolved": resolved,
+            "unresolved": len(values) - resolved,
+        }
+
+    relationships = [
+        direct_relation(
+            "service-references-evidence",
+            "services",
+            "evidence",
+            scenarios,
+            "source_ids",
+            source_ids,
+        ),
+        direct_relation(
+            "term-references-evidence",
+            "vocabulary",
+            "evidence",
+            terms,
+            "source_ids",
+            source_ids,
+        ),
+        direct_relation(
+            "channel-references-evidence",
+            "channels",
+            "evidence",
+            channels,
+            "source_ids",
+            source_ids,
+        ),
+        direct_relation(
+            "service-owned-by-skill",
+            "services",
+            "ownership",
+            scenarios,
+            "owner_skill_ids",
+            skill_ids,
+        ),
+    ]
+    authority_edges = [str(source["authority"]) for source in sources]
+    relationships.append(
+        {
+            "id": "evidence-attributed-to-authority",
+            "from_layer": "evidence",
+            "to_layer": "authorities",
+            "kind": "derived",
+            "field": "authority",
+            "edge_count": len(authority_edges),
+            "resolved": sum(value in authority_ids for value in authority_edges),
+            "unresolved": 0,
+            "derivation": "distinct authority labels from source records",
+        }
+    )
+    conflict_values = [
+        str(conflict["source_id"])
+        for scenario in scenarios
+        for conflict in scenario.get("conflicts", [])
+    ]
+    relationships.append(
+        {
+            "id": "service-records-evidence-conflict",
+            "from_layer": "services",
+            "to_layer": "evidence",
+            "kind": "direct",
+            "field": "conflicts.source_id",
+            "edge_count": len(conflict_values),
+            "resolved": sum(value in source_ids for value in conflict_values),
+            "unresolved": sum(value not in source_ids for value in conflict_values),
+        }
+    )
+    channel_rule_values = [
+        str(channel_id)
+        for scenario in scenarios
+        for rule in scenario.get("channel_rules", [])
+        for channel_id in rule.get("channel_ids", [])
+    ]
+    relationships.append(
+        {
+            "id": "service-selects-channel-by-rule",
+            "from_layer": "services",
+            "to_layer": "channels",
+            "kind": "direct",
+            "field": "channel_rules.channel_ids",
+            "edge_count": len(channel_rule_values),
+            "resolved": sum(value in channel_ids for value in channel_rule_values),
+            "unresolved": sum(value not in channel_ids for value in channel_rule_values),
+        }
+    )
+    channel_sources: dict[str, set[str]] = {}
+    for channel in channels:
+        for source_id in channel.get("source_ids", []):
+            channel_sources.setdefault(str(source_id), set()).add(str(channel["id"]))
+    scenario_channel_edges = {
+        (str(scenario["id"]), channel_id)
+        for scenario in scenarios
+        for source_id in scenario.get("source_ids", [])
+        for channel_id in channel_sources.get(str(source_id), set())
+        if channel_id in channel_ids
+    }
+    relationships.append(
+        {
+            "id": "service-discoverable-through-channel",
+            "from_layer": "services",
+            "to_layer": "channels",
+            "kind": "derived",
+            "field": "shared source_ids",
+            "edge_count": len(scenario_channel_edges),
+            "resolved": len(scenario_channel_edges),
+            "unresolved": 0,
+            "derivation": "scenario and channel share at least one evidence source",
+        }
+    )
+
+    direct_references, topic_discovered = _source_discovery_paths(
+        sources,
+        scenarios,
+        terms,
+        channels,
+    )
+    scenarios_with_channel = {service_id for service_id, _ in scenario_channel_edges}
+    freshness = source_reality_audit(target)
+    coverage = [
+        {
+            "id": "direct-source-linkage",
+            "layer": "evidence",
+            "classification": "partial" if len(direct_references & source_ids) < len(sources) else "linked",
+            "observed": len(direct_references & source_ids),
+            "total": len(sources),
+            "ids": sorted(source_ids - direct_references),
+        },
+        {
+            "id": "source-discovery-reachability",
+            "layer": "evidence",
+            "classification": "unlinked"
+            if source_ids - direct_references - topic_discovered
+            else "linked",
+            "observed": len((direct_references | topic_discovered) & source_ids),
+            "total": len(sources),
+            "ids": sorted(source_ids - direct_references - topic_discovered),
+        },
+        {
+            "id": "explicit-service-applicability",
+            "layer": "services",
+            "classification": "partial"
+            if any("applicability" not in scenario for scenario in scenarios)
+            else "linked",
+            "observed": sum("applicability" in scenario for scenario in scenarios),
+            "total": len(scenarios),
+            "ids": sorted(
+                str(scenario["id"])
+                for scenario in scenarios
+                if "applicability" not in scenario
+            ),
+        },
+        {
+            "id": "derived-service-channel-coverage",
+            "layer": "services",
+            "classification": "partial" if len(scenarios_with_channel) < len(scenarios) else "linked",
+            "observed": len(scenarios_with_channel),
+            "total": len(scenarios),
+            "ids": sorted(
+                str(scenario["id"])
+                for scenario in scenarios
+                if str(scenario["id"]) not in scenarios_with_channel
+            ),
+        },
+        {
+            "id": "explicit-service-channel-rules",
+            "layer": "services",
+            "classification": "partial"
+            if any(not scenario.get("channel_rules") for scenario in scenarios)
+            else "linked",
+            "observed": sum(bool(scenario.get("channel_rules")) for scenario in scenarios),
+            "total": len(scenarios),
+            "ids": sorted(
+                str(scenario["id"])
+                for scenario in scenarios
+                if not scenario.get("channel_rules")
+            ),
+        },
+        {
+            "id": "current-source-evidence",
+            "layer": "evidence",
+            "classification": "partial"
+            if freshness["summary"]["fresh"] < len(sources)
+            else "current",
+            "observed": freshness["summary"]["fresh"],
+            "total": len(sources),
+            "ids": sorted(
+                str(record["source_id"])
+                for record in freshness["sources"]
+                if record["status"] != "fresh"
+            ),
+        },
+    ]
+    if detail == "summary":
+        coverage = [
+            {key: value for key, value in item.items() if key != "ids"}
+            for item in coverage
+        ]
+    unmodeled = [
+        {
+            "id": "topic-taxonomy",
+            "reason": "source topics and scenario local_source_topic are discovery tags, not one governed taxonomy",
+            "observed_values": len(
+                {str(topic) for source in sources for topic in source.get("topics", [])}
+            ),
+        },
+        {
+            "id": "locality-to-region",
+            "reason": "source localities may name gmina or cities and are not typed voivodeship edges",
+            "observed_values": len(
+                {str(locality) for source in sources for locality in source.get("localities", [])}
+            ),
+        },
+        {
+            "id": "checkpoint-to-action-boundary",
+            "reason": "scenario stop_before values are checkpoints, not asserted boundary identifiers",
+            "observed_values": len(
+                {str(value) for scenario in scenarios for value in scenario.get("stop_before", [])}
+            ),
+        },
+    ]
+    visible_layers = [item for item in layers if layer is None or item["id"] == layer]
+    visible_relationships = [
+        item
+        for item in relationships
+        if layer is None or layer in {item["from_layer"], item["to_layer"]}
+    ]
+    visible_coverage = [
+        item for item in coverage if layer is None or item["layer"] == layer
+    ]
+    return {
+        "schema": "poland.ontology-map.v1",
+        "data_mode": "OFFLINE_PACKAGED_DATA",
+        "as_of": target.isoformat(),
+        "projection": {"layer": layer, "detail": detail},
+        "summary": {
+            "layers": len(layers),
+            "relationships": len(relationships),
+            "direct_edges": sum(
+                item["edge_count"] for item in relationships if item["kind"] == "direct"
+            ),
+            "derived_edges": sum(
+                item["edge_count"] for item in relationships if item["kind"] == "derived"
+            ),
+            "broken_edges": sum(item["unresolved"] for item in relationships),
+            "coverage_observations": len(coverage),
+            "unmodeled_boundaries": len(unmodeled),
+        },
+        "layers": visible_layers,
+        "relationships": visible_relationships,
+        "coverage": visible_coverage,
+        "unmodeled": unmodeled if layer is None else [],
+        "limitations": [
+            "Counts describe the packaged graph as of the requested date; they do not prove legal completeness.",
+            "Evidence edges mean that a registry record references a source; they do not prove claim-level sufficiency or eligibility.",
+            "Derived service-channel edges indicate discoverability through shared evidence, not executable availability.",
+            "Unlinked and unmodeled observations are not validation failures without an owner-authored coverage policy.",
+        ],
     }
 
 
@@ -1526,11 +2373,12 @@ def _warning_codes(result: Any) -> list[str]:
         if isinstance(value, dict):
             candidate = value.get("warnings")
             if isinstance(candidate, list):
-                warnings.update(
-                    item
-                    for item in candidate
-                    if isinstance(item, str) and re.fullmatch(r"[A-Z0-9_]+", item)
-                )
+                for item in candidate:
+                    if not isinstance(item, str):
+                        continue
+                    code = item.partition(":")[0]
+                    if re.fullmatch(r"[A-Z0-9_]+", code):
+                        warnings.add(code)
             for child in value.values():
                 visit(child)
         elif isinstance(value, list):
@@ -1606,6 +2454,8 @@ def validate_bundle(as_of: str | date | None = None) -> dict[str, Any]:
         "action-boundary.schema.json",
         "digital-channel.schema.json",
         "evidence-receipt.schema.json",
+        "ontology-map.schema.json",
+        "source-reality-report.schema.json",
         "response.schema.json",
     )
     for schema_name in schema_names:
@@ -1719,6 +2569,13 @@ def validate_bundle(as_of: str | date | None = None) -> dict[str, Any]:
                         f"scenario {item_id} uses unsupported route parameters: "
                         + ", ".join(sorted(unknown_parameters))
                     )
+                for rule in item.get("channel_rules", []):
+                    unknown_rule_facts = set(rule.get("when", {})) - ROUTE_FACT_FIELDS
+                    if unknown_rule_facts:
+                        errors.append(
+                            f"scenario {item_id} channel rule uses unsupported facts: "
+                            + ", ".join(sorted(unknown_rule_facts))
+                        )
                 for owner in item.get("owner_skill_ids", []):
                     if not (PLUGIN_ROOT / "skills" / owner / "SKILL.md").is_file():
                         errors.append(f"scenario {item_id} references unknown owner skill: {owner}")
@@ -1729,13 +2586,36 @@ def validate_bundle(as_of: str | date | None = None) -> dict[str, Any]:
                 errors.append(f"regions.json must contain 16 voivodeships, found {region_count}")
         except PolandDataError:
             pass
+    reality: dict[str, Any] | None = None
     if not errors:
         try:
-            freshness = freshness_report(as_of)
-            if freshness["summary"]["future"]:
-                errors.append("source verification dates cannot be in the future")
-            if freshness["summary"]["stale"]:
-                warnings.append(f"{freshness['summary']['stale']} sources are stale")
+            reality = source_reality_audit(as_of)
+            future_ids = reality["problem_source_ids_by_issue"].get(
+                "SOURCE_VERIFICATION_DATE_IN_FUTURE",
+                [],
+            )
+            if future_ids:
+                errors.append(
+                    "SOURCE_VERIFICATION_DATE_IN_FUTURE: " + ", ".join(future_ids)
+                )
+            for issue_code in (
+                "SOURCE_STALE",
+                "SOURCE_REVIEW_DUE",
+                "SOURCE_NOT_YET_EFFECTIVE",
+                "SOURCE_EXPIRED",
+                "SOURCE_INACTIVE",
+                "SCENARIO_SOURCE_CONFLICT",
+                "SOURCE_ORPHANED",
+            ):
+                issue_ids = sorted(
+                    {
+                        item["source_id"]
+                        for item in reality["repair_queue"]
+                        if item["issue_code"] == issue_code
+                    }
+                )
+                if issue_ids:
+                    warnings.append(f"{issue_code}: {', '.join(issue_ids)}")
         except PolandDataError as exc:
             errors.append(str(exc))
     counts = {
@@ -1756,6 +2636,15 @@ def validate_bundle(as_of: str | date | None = None) -> dict[str, Any]:
         "errors": sorted(set(errors)),
         "warnings": sorted(set(warnings)),
         "counts": counts,
+        "reality": {
+            "summary": reality["summary"] if reality else {},
+            "repair_summary": reality["repair_summary"] if reality else {},
+            "problem_source_ids_by_issue": (
+                reality["problem_source_ids_by_issue"] if reality else {}
+            ),
+            "problem_source_ids": reality["problem_source_ids"] if reality else [],
+            "problem_scenario_ids": reality["problem_scenario_ids"] if reality else [],
+        },
         "bundle_sha256": digest,
     }
 
@@ -1764,7 +2653,7 @@ def overview() -> dict[str, Any]:
     validation = validate_bundle()
     return {
         "plugin": "poland",
-        "version": "0.2.2",
+        "version": "0.3.0",
         "model": "official-source-first",
         "data_mode": "OFFLINE_PACKAGED_DATA",
         "counts": validation["counts"],

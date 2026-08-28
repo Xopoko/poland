@@ -112,17 +112,68 @@
     },
     {
       "id": "first-address-and-pesel",
-      "purpose": "Prepare a foreigner's route for address registration, PESEL, or related identity administration.",
-      "keywords": ["PESEL", "meldunek", "address registration", "identity record"],
+      "purpose": "Prepare a foreigner's address-registration or PESEL route while separating EU/EFTA and third-country document rules, PESEL presence, online availability, personal appearance, and competent-gmina requirements.",
+      "keywords": ["PESEL", "meldunek cudzoziemca", "foreigner address registration", "identity record"],
       "owner_skill_ids": ["poland-identity"],
       "composition": "single",
-      "required_parameters": ["citizenship_group", "gmina", "procedure", "residence_status"],
-      "optional_parameters": ["document_type", "target_date"],
-      "source_ids": ["gov-pesel-foreigners", "gov-meldunek-foreigners", "profil-zaufany"],
+      "required_parameters": ["citizenship_group", "gmina", "procedure", "residence_status", "pesel_status"],
+      "optional_parameters": ["delivery_channel", "document_type", "eu_efta_family_member_status", "target_date"],
+      "source_ids": ["gov-pesel-foreigners", "gov-meldunek-foreigners", "mobywatel-web", "profil-zaufany"],
       "applicability": {"citizenship_group": ["eu_eea_swiss", "third_country", "stateless_or_unknown"]},
+      "channel_rules": [
+        {
+          "id": "office-default",
+          "when": {"delivery_channel": ["in_person"]},
+          "channel_ids": [],
+          "state": "not_applicable",
+          "requirements": ["competent_gmina_office"]
+        },
+        {
+          "id": "third-country-office-no-pesel",
+          "when": {"delivery_channel": ["in_person"], "citizenship_group": ["third_country", "stateless_or_unknown"], "eu_efta_family_member_status": ["absent"], "pesel_status": ["absent"]},
+          "channel_ids": [],
+          "state": "candidate",
+          "requirements": ["competent_gmina_office", "personal_appearance"]
+        },
+        {
+          "id": "third-country-office-with-pesel",
+          "when": {"delivery_channel": ["in_person"], "citizenship_group": ["third_country", "stateless_or_unknown"], "eu_efta_family_member_status": ["absent"], "pesel_status": ["present"]},
+          "channel_ids": [],
+          "state": "candidate",
+          "requirements": ["competent_gmina_office", "verify_representative_acceptance"]
+        },
+        {
+          "id": "eu-efta-online",
+          "when": {"delivery_channel": ["online"], "citizenship_group": ["eu_eea_swiss"]},
+          "channel_ids": ["mobywatel-web", "profil-zaufany"],
+          "state": "candidate",
+          "requirements": ["verify_current_authentication_method"]
+        },
+        {
+          "id": "eu-family-online",
+          "when": {"delivery_channel": ["online"], "citizenship_group": ["third_country", "stateless_or_unknown"], "eu_efta_family_member_status": ["present"]},
+          "channel_ids": ["mobywatel-web", "profil-zaufany"],
+          "state": "verification_required",
+          "requirements": ["possible_office_document_presentation", "verify_current_authentication_method"]
+        },
+        {
+          "id": "other-third-country-online",
+          "when": {"delivery_channel": ["online"], "citizenship_group": ["third_country", "stateless_or_unknown"], "eu_efta_family_member_status": ["absent"]},
+          "channel_ids": [],
+          "state": "unavailable",
+          "requirements": ["office_filing"]
+        },
+        {
+          "id": "third-country-online-family-unknown",
+          "when": {"delivery_channel": ["online"], "citizenship_group": ["third_country", "stateless_or_unknown"], "eu_efta_family_member_status": ["unknown"]},
+          "channel_ids": [],
+          "state": "verification_required",
+          "requirements": ["clarify_eu_efta_family_member_status"]
+        }
+      ],
       "local_source_topic": "identity",
-      "stop_before": ["application_submission", "identity_verification", "trusted_profile_confirmation"],
-      "escalate_when": ["housing_document_disputed", "competent_gmina_unclear", "identity_data_mismatch"]
+      "stop_before": ["authentication", "identity_document_presentation", "application_submission", "official_record_change"],
+      "escalate_when": ["housing_document_disputed", "competent_gmina_unclear", "identity_data_mismatch", "online_route_unclear"]
     },
     {
       "id": "polish-citizen-address-registration",
@@ -420,7 +471,7 @@
       "composition": "multi",
       "required_parameters": ["problem_type", "current_location_category", "system"],
       "optional_parameters": ["gmina", "target_date"],
-      "source_ids": ["gov-pesel-register-data", "gov-pesel-reservation", "gov-pesel-foreigners", "mobywatel"],
+      "source_ids": ["gov-pesel-register-data", "gov-pesel-reservation", "gov-pesel-foreigners", "mobywatel-web"],
       "local_source_topic": "identity",
       "stop_before": ["authentication", "personal_record_disclosure", "official_record_change", "final_confirmation"],
       "escalate_when": ["identity_mismatch", "fraud_in_progress", "local_authority_or_appointment_unclear", "service_unavailable"]
@@ -732,7 +783,7 @@
       "composition": "multi",
       "required_parameters": ["matter", "requested_effect"],
       "optional_parameters": ["system", "gmina", "target_date"],
-      "source_ids": ["gov-penalty-points", "cepik-services", "mobywatel"],
+      "source_ids": ["gov-penalty-points", "cepik-services", "mobywatel-web", "mobywatel-mobile"],
       "local_source_topic": "transport",
       "stop_before": ["authentication", "personal_record_disclosure", "licence_validity_conclusion", "external_effect"],
       "escalate_when": ["record_discrepancy", "sanction_or_deadline_near", "service_scope_unclear", "local_authority_or_appointment_unclear"]

@@ -1,6 +1,6 @@
 {
   "name": "poland",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Official-source-first Poland support for residents, immigrants, and expats: life events, public services, residence, work, tax, health, documents, and safe human-in-the-loop portal workflows.",
   "author": {
     "name": "Xopoko",
@@ -36,7 +36,8 @@
     "termsOfServiceURL": "https://github.com/Xopoko/poland/blob/main/TERMS.md",
     "capabilities": [
       "Non-identifying route planning for life and administration in Poland",
-      "Dated official-source provenance, freshness gates, and conflict warnings",
+      "Derived ontology layers, relationship sizes, coverage gaps, and unmodeled boundaries",
+      "Dated official-source provenance, bounded Reality Repair queue, and conflict warnings",
       "Residence, EU mobility, work authorization, and citizenship navigation",
       "PESEL, meldunek, civil records, and foreign-document orientation",
       "Tax, ZUS, healthcare, housing, business, and family-service guidance",

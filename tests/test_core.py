@@ -19,11 +19,11 @@ class CoreTests(unittest.TestCase):
         report = core.validate_bundle("2026-08-28")
         self.assertTrue(report["valid"], report["errors"])
         self.assertEqual("OFFLINE_PACKAGED_DATA", report["data_mode"])
-        self.assertEqual(138, report["counts"]["sources"])
+        self.assertEqual(141, report["counts"]["sources"])
         self.assertEqual(72, report["counts"]["scenarios"])
         self.assertEqual(114, report["counts"]["terms"])
         self.assertEqual(16, report["counts"]["regions"])
-        self.assertEqual(36, report["counts"]["digital_channels"])
+        self.assertEqual(37, report["counts"]["digital_channels"])
         self.assertRegex(report["bundle_sha256"], r"^[0-9a-f]{64}$")
 
     def test_sources_have_complete_provenance_and_safe_runtime_modes(self):
@@ -87,7 +87,13 @@ class CoreTests(unittest.TestCase):
         )
 
     def test_digital_channel_catalog_is_source_backed_and_fail_closed(self):
-        self.assertEqual(36, len(core.all_digital_channels()))
+        self.assertEqual(37, len(core.all_digital_channels()))
+        web = core.get_digital_channel("mobywatel-web", as_of="2026-08-28")
+        mobile = core.get_digital_channel("mobywatel-mobile", as_of="2026-08-28")
+        self.assertEqual("personal_account", web["channel_kind"])
+        self.assertEqual("caller_owned_operator", web["channel_state"])
+        self.assertEqual("mobile_app", mobile["channel_kind"])
+        self.assertEqual("user_handoff_then_stop", mobile["channel_state"])
         mos = core.get_digital_channel("mos", as_of="2026-08-20")
         self.assertEqual("caller_owned_operator", mos["channel_state"])
         self.assertTrue(mos["caller_owned_operator_eligible"])
@@ -155,7 +161,7 @@ class CoreTests(unittest.TestCase):
                     "voivodeship": "mazowieckie",
                 }
             },
-            as_of="2026-08-20",
+            as_of="2026-08-28",
         )
         self.assertEqual("candidate", first_weeks["route_state"])
         self.assertEqual("multi", first_weeks["composition"])
@@ -351,12 +357,12 @@ class CoreTests(unittest.TestCase):
 
     def test_freshness_states_are_explicit(self):
         current = core.freshness_report("2026-08-28")
-        self.assertEqual(116, current["summary"]["fresh"])
+        self.assertEqual(119, current["summary"]["fresh"])
         self.assertEqual(21, current["summary"]["review_due"])
         self.assertEqual(0, current["summary"]["stale"])
         self.assertEqual(1, current["summary"]["out_of_effective_period"])
         later = core.freshness_report("2030-08-20")
-        self.assertEqual(136, later["summary"]["stale"])
+        self.assertEqual(139, later["summary"]["stale"])
         self.assertEqual(2, later["summary"]["out_of_effective_period"])
 
     def test_effective_period_and_inactive_source_states_fail_closed(self):
@@ -364,7 +370,13 @@ class CoreTests(unittest.TestCase):
         source["effective_from"] = "2027-01-01"
         future = core._source_freshness_record(source, core._as_of_date("2026-08-20"))
         self.assertEqual("out_of_effective_period", future["status"])
+        self.assertEqual("not_yet_effective", future["effective_state"])
         source["effective_from"] = None
+        source["effective_to"] = "2026-08-19"
+        expired = core._source_freshness_record(source, core._as_of_date("2026-08-20"))
+        self.assertEqual("out_of_effective_period", expired["status"])
+        self.assertEqual("expired", expired["effective_state"])
+        source["effective_to"] = None
         source["status"] = "superseded"
         inactive = core._source_freshness_record(source, core._as_of_date("2026-08-20"))
         self.assertEqual("inactive", inactive["status"])

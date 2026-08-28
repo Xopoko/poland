@@ -100,7 +100,7 @@ SCENARIO_FIELDS = {
     "stop_before",
     "escalate_when",
 }
-SCENARIO_OPTIONAL_FIELDS = {"applicability", "conflicts"}
+SCENARIO_OPTIONAL_FIELDS = {"applicability", "channel_rules", "conflicts"}
 CITIZENSHIP_GROUPS = {
     "polish",
     "eu_eea_swiss",
@@ -594,6 +594,81 @@ def _validate_scenarios(payload: Any, errors: list[str]) -> None:
                     maximum=120,
                     pattern=SLUG_PATTERN,
                 )
+        if "channel_rules" in item:
+            channel_rules = _object_array(
+                item.get("channel_rules"),
+                f"{path}.channel_rules",
+                errors,
+                minimum=1,
+                maximum=32,
+            )
+            for rule_index, rule in enumerate(channel_rules or []):
+                rule_path = f"{path}.channel_rules[{rule_index}]"
+                rule_item = _object(
+                    rule,
+                    rule_path,
+                    {"id", "when", "channel_ids", "state", "requirements"},
+                    errors,
+                )
+                if rule_item is None:
+                    continue
+                _string(
+                    rule_item.get("id"),
+                    f"{rule_path}.id",
+                    errors,
+                    maximum=80,
+                    pattern=SLUG_PATTERN,
+                )
+                when = rule_item.get("when")
+                if not isinstance(when, dict) or not 1 <= len(when) <= 8:
+                    _error(errors, f"{rule_path}.when", "expected object with 1 to 8 facts")
+                else:
+                    for fact, allowed_values in when.items():
+                        if not isinstance(fact, str) or TOKEN_PATTERN.fullmatch(fact) is None:
+                            _error(errors, f"{rule_path}.when", "fact keys must be tokens")
+                            continue
+                        _string_array(
+                            allowed_values,
+                            f"{rule_path}.when.{fact}",
+                            errors,
+                            minimum=1,
+                            maximum=8,
+                            item_maximum=120,
+                            pattern=TOKEN_PATTERN,
+                        )
+                        declared_parameters = set(required or []) | set(optional or [])
+                        if fact not in declared_parameters:
+                            _error(
+                                errors,
+                                f"{rule_path}.when.{fact}",
+                                "fact must be declared as a scenario parameter",
+                            )
+                _string_array(
+                    rule_item.get("channel_ids"),
+                    f"{rule_path}.channel_ids",
+                    errors,
+                    minimum=0,
+                    maximum=16,
+                    item_maximum=80,
+                    pattern=SLUG_PATTERN,
+                )
+                _string(
+                    rule_item.get("state"),
+                    f"{rule_path}.state",
+                    errors,
+                    maximum=32,
+                    choices={"candidate", "not_applicable", "unavailable", "verification_required"},
+                )
+                _string_array(
+                    rule_item.get("requirements"),
+                    f"{rule_path}.requirements",
+                    errors,
+                    minimum=1,
+                    maximum=16,
+                    item_maximum=120,
+                    pattern=TOKEN_PATTERN,
+                )
+            _unique_record_ids(channel_rules or [], f"{path}.channel_rules", errors)
         if required is not None and optional is not None and set(required) & set(optional):
             _error(errors, path, "required and optional parameters must be disjoint")
         if owners is not None and composition == "single" and len(owners) != 1:
@@ -877,6 +952,30 @@ def _source_ids(payload: Any) -> set[str]:
     }
 
 
+def _channel_ids(payload: Any) -> set[str]:
+    if not isinstance(payload, dict) or not isinstance(payload.get("channels"), list):
+        return set()
+    return {
+        item["id"]
+        for item in payload["channels"]
+        if isinstance(item, dict) and isinstance(item.get("id"), str)
+    }
+
+
+def _channel_sources(payload: Any) -> dict[str, set[str]]:
+    if not isinstance(payload, dict) or not isinstance(payload.get("channels"), list):
+        return {}
+    return {
+        item["id"]: {
+            source_id
+            for source_id in item.get("source_ids", [])
+            if isinstance(source_id, str)
+        }
+        for item in payload["channels"]
+        if isinstance(item, dict) and isinstance(item.get("id"), str)
+    }
+
+
 def _validate_source_references(
     payload: Any,
     *,
@@ -927,6 +1026,50 @@ def _validate_scenario_conflicts(
                 _error(errors, path, "conflict source must also appear in source_ids")
 
 
+def _validate_scenario_channel_rules(
+    payload: Any,
+    *,
+    known_channels: set[str],
+    channel_sources: dict[str, set[str]],
+    errors: list[str],
+) -> None:
+    if not isinstance(payload, dict) or not isinstance(payload.get("scenarios"), list):
+        return
+    for scenario_index, scenario in enumerate(payload["scenarios"]):
+        if not isinstance(scenario, dict) or not isinstance(scenario.get("channel_rules"), list):
+            continue
+        scenario_sources = {
+            source_id
+            for source_id in scenario.get("source_ids", [])
+            if isinstance(source_id, str)
+        }
+        for rule_index, rule in enumerate(scenario["channel_rules"]):
+            if not isinstance(rule, dict) or not isinstance(rule.get("channel_ids"), list):
+                continue
+            for channel_index, channel_id in enumerate(rule["channel_ids"]):
+                if isinstance(channel_id, str) and channel_id not in known_channels:
+                    _error(
+                        errors,
+                        (
+                            f"scenarios.json.scenarios[{scenario_index}]."
+                            f"channel_rules[{rule_index}].channel_ids[{channel_index}]"
+                        ),
+                        "unknown digital-channel reference",
+                    )
+                elif (
+                    isinstance(channel_id, str)
+                    and not scenario_sources.intersection(channel_sources.get(channel_id, set()))
+                ):
+                    _error(
+                        errors,
+                        (
+                            f"scenarios.json.scenarios[{scenario_index}]."
+                            f"channel_rules[{rule_index}].channel_ids[{channel_index}]"
+                        ),
+                        "channel rule must share an official source with the scenario",
+                    )
+
+
 def validate_dataset_payload(name: str, payload: Any) -> list[str]:
     """Validate one parsed dataset payload and return deterministic errors."""
 
@@ -951,6 +1094,8 @@ def validate_payloads(payloads: Mapping[str, Any]) -> list[str]:
             VALIDATORS[name](payloads[name], errors)
 
     known_sources = _source_ids(payloads.get("sources"))
+    known_channels = _channel_ids(payloads.get("digital-channels"))
+    channel_sources = _channel_sources(payloads.get("digital-channels"))
     _validate_source_references(
         payloads.get("scenarios"),
         dataset_file="scenarios.json",
@@ -961,6 +1106,12 @@ def validate_payloads(payloads: Mapping[str, Any]) -> list[str]:
     _validate_scenario_conflicts(
         payloads.get("scenarios"),
         known_sources=known_sources,
+        errors=errors,
+    )
+    _validate_scenario_channel_rules(
+        payloads.get("scenarios"),
+        known_channels=known_channels,
+        channel_sources=channel_sources,
         errors=errors,
     )
     _validate_source_references(

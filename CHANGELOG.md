@@ -5,6 +5,18 @@ their own access and verification dates; this file describes release behavior.
 
 ## [Unreleased]
 
+- Added a derived eight-layer ontology map with relationship sizes, observed
+  dimensions, coverage gaps, and explicit unmodeled boundaries through CLI and
+  MCP; no duplicate fact registry is materialized.
+- Added bounded freshness filters and a deterministic Reality Repair queue with
+  exact source/scenario IDs, conflict preservation, effective-period reasons,
+  and safe probe/Browser/manual verification routing.
+- Split mObywatel browser and mobile channels with distinct authentication and
+  protected surfaces and separate activation/terms provenance. Completed the
+  foreigner-meldunek route with source-bound citizenship, family-member,
+  PESEL-presence, personal-appearance, and delivery-channel rules.
+- Corrected source-probe guidance so Browser-handoff sources fail before network
+  access with a stable diagnostic instead of being treated as probeable.
 - Split Polish-citizen address registration from foreigner permanent-residence
   permits with citizenship applicability enforced by the router.
 - Refreshed the CUKR and PESEL UKR deadline evidence and preserved the official

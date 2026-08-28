@@ -189,3 +189,46 @@ contract, a service publishes a stable machine interface, a recurring workflow
 cannot be expressed by semantic phases, measured routing failures show that the
 portfolio split is wrong, or a new threat invalidates the current separation.
 Review it before every major release.
+
+## ADR-003: Derived ontology and explicit Reality Repair
+
+- Contract: `architecture_intelligence.decision.v1`
+- Status: accepted
+- Owner: Poland plugin maintainers
+- Decision date: 2026-08-28
+
+### Context
+
+The six registries already formed a graph, but agents could not inspect its
+layers, relationship sizes, coverage gaps, or maintenance state. Adding a second
+hand-maintained ontology would duplicate facts and create another freshness
+problem.
+
+### Decision
+
+Derive an on-demand ontology map from canonical registries and focused-skill
+inventory. It exposes services, evidence, channels, vocabulary, geography,
+safety, ownership, and authorities; direct and derived edges; observed
+dimensions; and factual `partial`, `unlinked`, or `unmodeled` coverage. These
+labels never claim legal completeness.
+
+Scenario-to-channel applicability remains explicit only where an official
+source proves a harmful branch distinction. The first such rule set separates
+foreigner meldunek office and online paths by citizenship/family-member and
+PESEL facts. Shared-source edges remain discoverability hints, not applicability.
+
+Derive Reality Repair from the same records. Freshness, effective-period state,
+explicit conflicts, and true orphan detection produce a bounded queue with exact
+IDs and a safe verification route. Filters change only the projection, never the
+global counts. HTTP reachability cannot advance legal freshness, resolve a
+conflict, or authorize an automatic source edit.
+
+### Fitness and revisit
+
+- CLI/MCP projections are closed, bounded, read-only, networkless, and equal.
+- Relationship counts are recomputed from live records; unresolved references
+  remain validation failures, while unlinked/unmodeled observations do not.
+- Validation names affected IDs; conflict and stale evidence stay fail-closed.
+- Revisit before adding claim-level temporal assertions, expanding explicit
+  channel rules beyond demonstrated source-bound branches, or any automated
+  refresh worker.

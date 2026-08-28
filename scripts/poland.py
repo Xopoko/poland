@@ -21,6 +21,8 @@ PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PLUGIN_ROOT / "lib"))
 
 from poland_core import (  # noqa: E402
+    FRESHNESS_STATUSES,
+    ONTOLOGY_LAYERS,
     ROUTE_FACT_FIELDS,
     PolandDataError,
     action_boundary,
@@ -31,6 +33,7 @@ from poland_core import (  # noqa: E402
     get_source,
     list_regions,
     lookup_terms,
+    ontology_map,
     overview,
     response_envelope,
     route_scenario,
@@ -55,6 +58,7 @@ COMMANDS = {
     "terms",
     "regions",
     "freshness",
+    "ontology",
     "boundary",
     "doctor",
 }
@@ -132,6 +136,12 @@ def add_profile_arguments(parser: argparse.ArgumentParser) -> None:
                 flag,
                 choices=["polish", "eu_eea_swiss", "third_country", "stateless_or_unknown"],
                 help="Abstract nationality category; never enter a document number.",
+            )
+        elif field in {"eu_efta_family_member_status", "pesel_status"}:
+            parser.add_argument(
+                flag,
+                choices=["present", "absent", "unknown"],
+                help="Abstract presence category only; never enter an identifier.",
             )
         elif field in BOOLEAN_FACT_FIELDS:
             parser.add_argument(flag, action=argparse.BooleanOptionalAction, default=None)
@@ -731,6 +741,24 @@ def build_parser() -> argparse.ArgumentParser:
 
     freshness = sub.add_parser("freshness", help="Report bundled source freshness")
     freshness.add_argument("--as-of")
+    freshness.add_argument(
+        "--status",
+        dest="statuses",
+        action="append",
+        choices=FRESHNESS_STATUSES,
+        help="Filter returned records; repeat for more than one status.",
+    )
+    freshness.add_argument("--topic")
+    freshness.add_argument("--limit", type=int, choices=range(1, 101), default=50)
+    freshness.add_argument("--summary-only", action="store_true")
+
+    ontology = sub.add_parser(
+        "ontology",
+        help="Map packaged layers, relationships, dimensions, and coverage",
+    )
+    ontology.add_argument("--layer", choices=ONTOLOGY_LAYERS)
+    ontology.add_argument("--detail", choices=["summary", "full"], default="summary")
+    ontology.add_argument("--as-of")
 
     boundary = sub.add_parser("boundary", help="Classify an intended action boundary")
     boundary.add_argument("action")
@@ -793,7 +821,15 @@ def execute(args: argparse.Namespace) -> Any:
     if args.command == "regions":
         return list_regions(_safe_optional_literal(args.query, field="query") or "")
     if args.command == "freshness":
-        return freshness_report(args.as_of)
+        return freshness_report(
+            args.as_of,
+            statuses=args.statuses,
+            topic=_safe_optional_literal(args.topic, field="topic"),
+            limit=args.limit,
+            summary_only=args.summary_only,
+        )
+    if args.command == "ontology":
+        return ontology_map(layer=args.layer, detail=args.detail, as_of=args.as_of)
     if args.command == "boundary":
         return action_boundary(validate_public_literal(args.action, "action", allow_empty=False))
     if args.command == "doctor":

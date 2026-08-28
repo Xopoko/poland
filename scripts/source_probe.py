@@ -31,6 +31,13 @@ SAFE_GET_CONTENT_TYPES = {
     "text/html",
     "text/plain",
 }
+HANDOFF_ERROR_CODE = "SOURCE_PROBE_HANDOFF_REQUIRED"
+HANDOFF_ERROR_MESSAGE = (
+    "public_read_only_handoff sources are not probeable; "
+    "use Browser or manual official-page verification"
+)
+NOT_PROBEABLE_ERROR_CODE = "SOURCE_PROBE_NOT_ALLOWED"
+NOT_PROBEABLE_ERROR_MESSAGE = "source probe supports public_read_only sources only"
 
 
 def normalize_hostname(host: str) -> str:
@@ -115,8 +122,20 @@ def probe(
     if not 1024 <= max_bytes <= 1048576:
         raise PolandDataError("max_bytes must be from 1024 to 1048576")
     source = get_source(source_id)
+    if source["access"] == "public" and source["automation"] == "public_read_only_handoff":
+        raise PolandDataError(
+            HANDOFF_ERROR_MESSAGE,
+            code=HANDOFF_ERROR_CODE,
+            details={
+                "source_id": source_id,
+                "verification_route": "browser_or_manual_official_page",
+            },
+        )
     if source["access"] != "public" or source["automation"] != "public_read_only":
-        raise PolandDataError("source probe supports public_read_only sources only")
+        raise PolandDataError(
+            NOT_PROBEABLE_ERROR_MESSAGE,
+            code=NOT_PROBEABLE_ERROR_CODE,
+        )
     redirect_policy = OriginBoundRedirect(declared_origin_inputs(source))
     redirect_policy.ensure_allowed(source["url"])
     opener = build_opener(redirect_policy)
@@ -196,7 +215,10 @@ def main(argv: list[str] | None = None) -> int:
         for source_id in args.source_ids:
             results.append(probe(source_id, method=args.method, timeout=args.timeout, max_bytes=args.max_bytes))
     except PolandDataError as exc:
-        print(json.dumps({"error": str(exc)}, sort_keys=True), file=sys.stderr)
+        print(
+            json.dumps({"code": exc.code, "error": str(exc)}, sort_keys=True),
+            file=sys.stderr,
+        )
         return 2
     print(json.dumps({"results": results}, ensure_ascii=False, indent=2, sort_keys=True))
     return 0 if all(item.get("status") is not None and item.get("status", 500) < 500 for item in results) else 1

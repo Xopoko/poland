@@ -230,8 +230,9 @@ route.
 
 ## mObywatel and Central Register of Voters
 
-Evidence: `mobywatel`, `gov-central-voter-register`, and current PKW guidance
-for the specific election.
+Evidence: `mobywatel-web`, `mobywatel-mobile`,
+`gov-central-voter-register`, and current PKW guidance for the specific
+election.
 
 Expected phases:
 

@@ -16,6 +16,8 @@ PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PLUGIN_ROOT / "lib"))
 
 from poland_core import (  # noqa: E402
+    FRESHNESS_STATUSES,
+    ONTOLOGY_LAYERS,
     ROUTE_FACT_FIELDS,
     PolandDataError,
     action_boundary,
@@ -26,6 +28,7 @@ from poland_core import (  # noqa: E402
     get_source,
     list_regions,
     lookup_terms,
+    ontology_map,
     overview,
     response_envelope,
     route_scenario,
@@ -63,6 +66,11 @@ def _fact_schema(field: str) -> dict[str, Any]:
         return {
             "type": ["string", "null"],
             "enum": ["polish", "eu_eea_swiss", "third_country", "stateless_or_unknown", None],
+        }
+    if field in {"eu_efta_family_member_status", "pesel_status"}:
+        return {
+            "type": ["string", "null"],
+            "enum": ["present", "absent", "unknown", None],
         }
     if field in BOOLEAN_FACT_FIELDS:
         return {"type": ["boolean", "null"]}
@@ -206,8 +214,38 @@ TOOLS: dict[str, dict[str, Any]] = {
     },
     "poland_freshness_report": {
         "title": "Poland Source Freshness",
-        "description": "Compare packaged source review dates with an as-of date.",
-        "inputSchema": object_schema({"as_of": {"type": "string", "format": "date"}}),
+        "description": (
+            "Compare packaged source review dates with an as-of date and expose a bounded, "
+            "non-automatic Reality Repair queue."
+        ),
+        "inputSchema": object_schema(
+            {
+                "as_of": {"type": "string", "format": "date"},
+                "statuses": {
+                    "type": "array",
+                    "maxItems": len(FRESHNESS_STATUSES),
+                    "uniqueItems": True,
+                    "items": {"type": "string", "enum": list(FRESHNESS_STATUSES)},
+                },
+                "topic": {"type": "string", "maxLength": 80},
+                "limit": {"type": "integer", "minimum": 1, "maximum": 100, "default": 50},
+                "summary_only": {"type": "boolean", "default": False},
+            }
+        ),
+    },
+    "poland_ontology_map": {
+        "title": "Map Poland Ontology",
+        "description": (
+            "Describe packaged knowledge layers, relationships, observed dimensions, and factual "
+            "coverage without claiming legal completeness."
+        ),
+        "inputSchema": object_schema(
+            {
+                "layer": {"type": "string", "enum": list(ONTOLOGY_LAYERS)},
+                "detail": {"type": "string", "enum": ["summary", "full"], "default": "summary"},
+                "as_of": {"type": "string", "format": "date"},
+            }
+        ),
     },
     "poland_action_boundary": {
         "title": "Classify Poland Action",
@@ -238,6 +276,7 @@ TOOL_OPERATIONS = {
     "poland_lookup_term": "terms",
     "poland_list_regions": "regions",
     "poland_freshness_report": "freshness",
+    "poland_ontology_map": "ontology",
     "poland_action_boundary": "boundary",
 }
 
@@ -260,6 +299,8 @@ def _matches_type(value: Any, expected: str) -> bool:
         return isinstance(value, int) and not isinstance(value, bool)
     if expected == "boolean":
         return isinstance(value, bool)
+    if expected == "array":
+        return isinstance(value, list)
     if expected == "null":
         return value is None
     return False
@@ -286,6 +327,18 @@ def validate_schema_value(value: Any, schema: dict[str, Any], *, path: str = "ar
         for key, child in value.items():
             if key in properties:
                 validate_schema_value(child, properties[key], path=f"{path}.{key}")
+        return
+    if isinstance(value, list):
+        if len(value) < schema.get("minItems", 0) or len(value) > schema.get("maxItems", len(value)):
+            _schema_error(path, "items")
+        if schema.get("uniqueItems"):
+            canonical = [json.dumps(item, sort_keys=True, separators=(",", ":")) for item in value]
+            if len(canonical) != len(set(canonical)):
+                _schema_error(path, "uniqueItems")
+        item_schema = schema.get("items")
+        if isinstance(item_schema, dict):
+            for index, child in enumerate(value):
+                validate_schema_value(child, item_schema, path=f"{path}[{index}]")
         return
     if isinstance(value, str):
         safe_field = re.sub(r"[^a-z0-9_]+", "_", path.casefold()).strip("_")[:80] or "arguments"
@@ -371,7 +424,19 @@ def _execute_tool(name: str, arguments: dict[str, Any]) -> Any:
     if name == "poland_list_regions":
         return list_regions(_safe_optional_literal(arguments.get("query", ""), field="query") or "")
     if name == "poland_freshness_report":
-        return freshness_report(arguments.get("as_of"))
+        return freshness_report(
+            arguments.get("as_of"),
+            statuses=arguments.get("statuses"),
+            topic=_safe_optional_literal(arguments.get("topic"), field="topic"),
+            limit=arguments.get("limit", 50),
+            summary_only=arguments.get("summary_only", False),
+        )
+    if name == "poland_ontology_map":
+        return ontology_map(
+            layer=arguments.get("layer"),
+            detail=arguments.get("detail", "summary"),
+            as_of=arguments.get("as_of"),
+        )
     if name == "poland_action_boundary":
         action = validate_public_literal(arguments["action"], "action", allow_empty=False)
         return action_boundary(action)

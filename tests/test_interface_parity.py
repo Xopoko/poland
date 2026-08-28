@@ -100,6 +100,46 @@ class InterfaceParityTests(unittest.TestCase):
         self.assertEqual(cli, mcp)
         self.assertEqual(citations_for(cli["result"]), cli["citations"])
 
+    def test_freshness_projection_parity(self):
+        cli = cli_envelope(
+            "freshness",
+            "--as-of",
+            "2026-08-28",
+            "--status",
+            "review_due",
+            "--topic",
+            "residence",
+            "--limit",
+            "2",
+        )
+        mcp = mcp_envelope(
+            "poland_freshness_report",
+            {
+                "as_of": "2026-08-28",
+                "statuses": ["review_due"],
+                "topic": "residence",
+                "limit": 2,
+                "summary_only": False,
+            },
+        )
+        self.assertEqual(cli, mcp)
+
+    def test_ontology_projection_parity(self):
+        cli = cli_envelope(
+            "ontology",
+            "--layer",
+            "services",
+            "--detail",
+            "summary",
+            "--as-of",
+            "2026-08-28",
+        )
+        mcp = mcp_envelope(
+            "poland_ontology_map",
+            {"layer": "services", "detail": "summary", "as_of": "2026-08-28"},
+        )
+        self.assertEqual(cli, mcp)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -72,6 +72,41 @@ class DataContractTests(unittest.TestCase):
             errors,
         )
 
+    def test_scenario_channel_rules_are_closed_and_reference_known_channels(self):
+        payloads = copy.deepcopy(live_payloads())
+        scenario = next(
+            item
+            for item in payloads["scenarios"]["scenarios"]
+            if item["id"] == "first-address-and-pesel"
+        )
+        scenario["channel_rules"][0]["channel_ids"] = ["missing-channel"]
+        errors = validate_payloads(payloads)
+        self.assertTrue(
+            any(error.endswith("unknown digital-channel reference") for error in errors),
+            errors,
+        )
+
+        payloads = copy.deepcopy(live_payloads())
+        scenario = next(
+            item
+            for item in payloads["scenarios"]["scenarios"]
+            if item["id"] == "first-address-and-pesel"
+        )
+        scenario["channel_rules"][0]["channel_ids"] = ["mos"]
+        scenario["channel_rules"][0]["when"]["matter"] = ["residence"]
+        errors = validate_payloads(payloads)
+        self.assertTrue(
+            any(
+                error.endswith("channel rule must share an official source with the scenario")
+                for error in errors
+            ),
+            errors,
+        )
+        self.assertTrue(
+            any(error.endswith("fact must be declared as a scenario parameter") for error in errors),
+            errors,
+        )
+
     def test_nested_action_value_with_wrong_type_is_rejected(self):
         payloads = copy.deepcopy(live_payloads())
         payloads["action-boundaries"]["boundaries"][0]["allowed"][0] = {

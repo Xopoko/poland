@@ -20,7 +20,7 @@ authentication class, agent mode, mandatory pause-and-classify checkpoints, and 
 verified live. A channel record is descriptive metadata, not authority to enter
 the service or evidence that a route applies to a particular person.
 
-The 2026-08-28 coverage ledger contains 138 official-source records, 36 digital
+The 2026-08-28 coverage ledger contains 141 official-source records, 37 digital
 channels, 72 source-backed scenarios, 114 Polish terms, and all 16 voivodeships.
 Counts are regression anchors, not a completeness score. Coverage is organized
 around resident life events: entry and stay; EU mobility and citizenship;
@@ -127,8 +127,10 @@ other substantial external content without a documented reuse right and review.
 ## Runtime behavior
 
 Lookup uses packaged data offline. The optional source probe performs a bounded,
-unauthenticated check of a packaged public source ID. It does not crawl, discover
-new origins, update data, save a page body, or access a protected service.
+unauthenticated check only when a packaged source is `public_read_only`.
+`public_read_only_handoff` is routed to Browser or manual official-page review.
+Neither route crawls, updates registry facts, saves a page body, or treats HTTP
+success as semantic or legal revalidation.
 
 Fast-changing channel facts include accepted filing route, actor, login and
 signature method, attachments, exceptions, service availability, and transition

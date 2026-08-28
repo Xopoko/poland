@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import importlib.util
 from http.client import RemoteDisconnected
+from io import StringIO
+import json
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -77,9 +79,49 @@ class SourceProbeTests(unittest.TestCase):
 
     def test_authenticated_source_is_rejected_before_network(self):
         with patch.object(PROBE, "build_opener") as opener:
-            with self.assertRaises(PROBE.PolandDataError):
+            with self.assertRaises(PROBE.PolandDataError) as caught:
                 PROBE.probe("mos-residence")
             opener.assert_not_called()
+        self.assertEqual("SOURCE_PROBE_NOT_ALLOWED", caught.exception.code)
+        self.assertEqual(
+            "source probe supports public_read_only sources only",
+            str(caught.exception),
+        )
+
+    def test_public_handoff_source_routes_to_browser_before_network(self):
+        with patch.object(PROBE, "build_opener") as opener:
+            with self.assertRaises(PROBE.PolandDataError) as caught:
+                PROBE.probe("gov-meldunek-polish-citizens")
+            opener.assert_not_called()
+        self.assertEqual("SOURCE_PROBE_HANDOFF_REQUIRED", caught.exception.code)
+        self.assertEqual(
+            "public_read_only_handoff sources are not probeable; "
+            "use Browser or manual official-page verification",
+            str(caught.exception),
+        )
+        self.assertEqual(
+            "browser_or_manual_official_page",
+            caught.exception.details["verification_route"],
+        )
+
+    def test_public_handoff_cli_error_has_stable_code_and_message(self):
+        stderr = StringIO()
+        with patch.object(PROBE, "build_opener") as opener, patch.object(
+            PROBE.sys, "stderr", stderr
+        ):
+            status = PROBE.main(["gov-meldunek-polish-citizens"])
+            opener.assert_not_called()
+        self.assertEqual(2, status)
+        self.assertEqual(
+            {
+                "code": "SOURCE_PROBE_HANDOFF_REQUIRED",
+                "error": (
+                    "public_read_only_handoff sources are not probeable; "
+                    "use Browser or manual official-page verification"
+                ),
+            },
+            json.loads(stderr.getvalue()),
+        )
 
     def test_arbitrary_url_and_unsafe_limits_are_not_supported(self):
         with self.assertRaises(PROBE.PolandDataError):

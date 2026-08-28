@@ -46,6 +46,7 @@ class McpTests(unittest.TestCase):
                 "poland_get_source",
                 "poland_list_regions",
                 "poland_lookup_term",
+                "poland_ontology_map",
                 "poland_overview",
                 "poland_route_scenario",
                 "poland_search_channels",
@@ -65,6 +66,12 @@ class McpTests(unittest.TestCase):
         self.assertFalse(profile["additionalProperties"])
         self.assertFalse(facts["additionalProperties"])
         self.assertIn("citizenship_group", facts["properties"])
+        self.assertIn("eu_efta_family_member_status", facts["properties"])
+        self.assertIn("pesel_status", facts["properties"])
+        self.assertEqual(
+            ["present", "absent", "unknown", None],
+            facts["properties"]["pesel_status"]["enum"],
+        )
         self.assertNotIn("passport_number", facts["properties"])
 
     def test_tool_result_uses_contract_envelope_and_citations(self):
@@ -116,6 +123,40 @@ class McpTests(unittest.TestCase):
         self.assertEqual("caller_owned_operator", channel["result"]["channel_state"])
         self.assertTrue(channel["result"]["caller_owned_operator_eligible"])
         self.assertFalse(channel["result"]["bundled_interface_can_interact"])
+
+    def test_ontology_and_reality_tools_are_closed_bounded_and_fail_closed(self):
+        reality_schema = SERVER.TOOLS["poland_freshness_report"]["inputSchema"]
+        self.assertFalse(reality_schema["additionalProperties"])
+        self.assertEqual(100, reality_schema["properties"]["limit"]["maximum"])
+        self.assertEqual(
+            list(__import__("poland_core").FRESHNESS_STATUSES),
+            reality_schema["properties"]["statuses"]["items"]["enum"],
+        )
+        reality = self.call(
+            "poland_freshness_report",
+            {
+                "as_of": "2026-08-28",
+                "statuses": ["review_due"],
+                "topic": "residence",
+                "limit": 2,
+                "summary_only": False,
+            },
+        )["result"]["structuredContent"]
+        self.assertEqual("freshness", reality["command"])
+        self.assertLessEqual(len(reality["result"]["sources"]), 2)
+
+        ontology = self.call(
+            "poland_ontology_map",
+            {"layer": "services", "detail": "summary", "as_of": "2026-08-28"},
+        )["result"]["structuredContent"]
+        self.assertEqual("ontology", ontology["command"])
+        self.assertEqual(["services"], [item["id"] for item in ontology["result"]["layers"]])
+
+        invalid = self.call(
+            "poland_freshness_report",
+            {"statuses": ["not-a-state"]},
+        )
+        self.assertEqual(-32602, invalid["error"]["code"])
 
     def test_sensitive_channel_query_fails_without_echo(self):
         secret_like = "password=do-not-log-this"

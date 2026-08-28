@@ -15,8 +15,10 @@ a new legal or policy conclusion.
 2. Inspect `last_verified`, `freshness_days`, language, jurisdiction, and notes.
 3. Prefer the competent authority's current Polish page. Use translated pages as
    navigation aids and disclose if they appear older or less specific.
-4. For a public source, open it in Browser or use the separate source probe. The
-   probe accepts stable source IDs only and enforces the declared HTTPS origins.
+4. Check both `access` and `automation`. Use the source probe only when they are
+   `public` and `public_read_only`; it accepts stable source IDs and enforces the
+   declared HTTPS origins. For `public_read_only_handoff`, open the official page
+   in Browser or route it to manual official-page verification instead of probing.
 5. Compare public visible metadata with the claim actually needed. Capture a
    claim-level receipt using source metadata and a stable locator only.
 6. If a source moved, conflicts, or is inaccessible, report the gap and route to

@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Xopoko/poland/blob/main/schemas/source-reality-report.schema.json",
+  "title": "Poland source freshness and Reality Repair report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "data_mode",
+    "as_of",
+    "summary",
+    "effective_summary",
+    "repair_summary",
+    "problem_source_ids_by_issue",
+    "problem_source_ids",
+    "problem_scenario_ids",
+    "projection",
+    "warnings",
+    "sources",
+    "repair_queue"
+  ],
+  "properties": {
+    "schema": {"const": "poland.source-reality-report.v1"},
+    "data_mode": {"const": "OFFLINE_PACKAGED_DATA"},
+    "as_of": {"type": "string", "format": "date"},
+    "summary": {"$ref": "#/$defs/freshnessCounts"},
+    "effective_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["in_effect", "not_yet_effective", "expired"],
+      "properties": {
+        "in_effect": {"type": "integer", "minimum": 0},
+        "not_yet_effective": {"type": "integer", "minimum": 0},
+        "expired": {"type": "integer", "minimum": 0}
+      }
+    },
+    "repair_summary": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 1}
+    },
+    "problem_source_ids_by_issue": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[A-Z0-9_]+$"},
+      "additionalProperties": {"$ref": "#/$defs/idList"}
+    },
+    "problem_source_ids": {"$ref": "#/$defs/idList"},
+    "problem_scenario_ids": {"$ref": "#/$defs/idList"},
+    "projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "statuses",
+        "topic",
+        "limit",
+        "summary_only",
+        "total_matched",
+        "returned",
+        "truncated",
+        "queue_total_matched",
+        "queue_returned",
+        "queue_truncated"
+      ],
+      "properties": {
+        "statuses": {
+          "type": "array",
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/freshnessStatus"}
+        },
+        "topic": {"type": ["string", "null"], "maxLength": 80},
+        "limit": {"type": "integer", "minimum": 1, "maximum": 100},
+        "summary_only": {"type": "boolean"},
+        "total_matched": {"type": "integer", "minimum": 0},
+        "returned": {"type": "integer", "minimum": 0},
+        "truncated": {"type": "boolean"},
+        "queue_total_matched": {"type": "integer", "minimum": 0},
+        "queue_returned": {"type": "integer", "minimum": 0, "maximum": 64},
+        "queue_truncated": {"type": "boolean"}
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Z0-9_]+$"}
+    },
+    "sources": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {"$ref": "#/$defs/freshnessRecord"}
+    },
+    "repair_queue": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {"$ref": "#/$defs/repairItem"}
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+    },
+    "idList": {
+      "type": "array",
+      "maxItems": 512,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/id"}
+    },
+    "freshnessStatus": {
+      "enum": [
+        "fresh",
+        "review_due",
+        "stale",
+        "future",
+        "inactive",
+        "out_of_effective_period"
+      ]
+    },
+    "freshnessCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fresh",
+        "review_due",
+        "stale",
+        "future",
+        "inactive",
+        "out_of_effective_period"
+      ],
+      "properties": {
+        "fresh": {"type": "integer", "minimum": 0},
+        "review_due": {"type": "integer", "minimum": 0},
+        "stale": {"type": "integer", "minimum": 0},
+        "future": {"type": "integer", "minimum": 0},
+        "inactive": {"type": "integer", "minimum": 0},
+        "out_of_effective_period": {"type": "integer", "minimum": 0}
+      }
+    },
+    "freshnessRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "last_verified",
+        "age_days",
+        "freshness_days",
+        "status",
+        "record_status",
+        "effective_from",
+        "effective_to",
+        "effective_state",
+        "effect"
+      ],
+      "properties": {
+        "source_id": {"$ref": "#/$defs/id"},
+        "last_verified": {"type": "string", "format": "date"},
+        "age_days": {"type": "integer"},
+        "freshness_days": {"type": "integer", "minimum": 1},
+        "status": {"$ref": "#/$defs/freshnessStatus"},
+        "record_status": {"enum": ["active", "superseded", "unavailable"]},
+        "effective_from": {"type": ["string", "null"], "format": "date"},
+        "effective_to": {"type": ["string", "null"], "format": "date"},
+        "effective_state": {"enum": ["in_effect", "not_yet_effective", "expired"]},
+        "effect": {"enum": ["informational", "personal_record", "consequential"]}
+      }
+    },
+    "repairItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issue_code",
+        "priority",
+        "status",
+        "source_id",
+        "scenario_id",
+        "conflict_type",
+        "related_source_ids",
+        "topics",
+        "blocks_current_claim_use",
+        "verification_route",
+        "next_step",
+        "automatic_update_allowed"
+      ],
+      "properties": {
+        "issue_code": {"type": "string", "pattern": "^[A-Z0-9_]+$"},
+        "priority": {"type": "integer", "minimum": 0, "maximum": 3},
+        "status": {"type": "string", "minLength": 1, "maxLength": 40},
+        "source_id": {"$ref": "#/$defs/id"},
+        "scenario_id": {"anyOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]},
+        "conflict_type": {"anyOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]},
+        "related_source_ids": {"$ref": "#/$defs/idList"},
+        "topics": {"$ref": "#/$defs/idList"},
+        "blocks_current_claim_use": {"type": "boolean"},
+        "verification_route": {"enum": ["source_probe", "browser", "manual_authority_review"]},
+        "next_step": {"$ref": "#/$defs/id"},
+        "automatic_update_allowed": {"const": false}
+      }
+    }
+  }
+}

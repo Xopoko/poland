@@ -50,7 +50,7 @@ verified again before action.
 | Civic and digital services | Trusted Profile, ePUAP, e-Deliveries, mObywatel, elections, MOS, praca.gov.pl, eZUS, IKP and CEIDG |
 
 The 33 skills are intentionally concise: one router selects among 32 focused
-owners. The deeper knowledge lives in 138 dated official-source records, 36
+owners. The deeper knowledge lives in 141 dated official-source records, 37
 digital-channel profiles, 72 composable scenarios, 114 plain-language terms, 16
 regional records, strict schemas, shared references, and semantic portal
 playbooks. This progressive-disclosure design gives the agent breadth without
@@ -230,7 +230,9 @@ python scripts/poland.py sources --query residence --topic immigration
 python scripts/poland.py channels MOS --as-of 2026-08-21
 python scripts/poland.py route "moving for work" --citizenship-group third_country
 python scripts/poland.py checklist settling-in-first-weeks --citizenship-group third_country
-python scripts/poland.py freshness --as-of 2026-08-21
+python scripts/poland.py ontology --layer services --detail summary
+python scripts/poland.py freshness --status review_due --topic residence --limit 20
+python scripts/poland.py freshness --summary-only
 python scripts/poland.py validate
 ```
 

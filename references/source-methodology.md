@@ -46,3 +46,15 @@ evidence receipt or used to silently generalize a public rule.
 ## Registry maintenance
 
 When a URL, authority, access method, or effect changes, update the source record and its verification date together. Review references for source-ID drift. Keep superseded procedural claims out of hot guidance.
+
+## Reality Repair
+
+Use `freshness --summary-only` for the global state, then filter by status or
+topic. A repair item names the affected source/scenario, whether current claim
+use is blocked, and one verification route. It never selects the legally correct
+interpretation or updates `last_verified` automatically.
+
+`source_probe` proves only bounded transport and captured representation state.
+Browser/manual review must compare the material claim, authority, applicability,
+effective period, and conflict wording. Preserve unresolved official conflicts;
+repair the canonical registry and its regression together only after that review.

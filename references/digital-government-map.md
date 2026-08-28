@@ -21,11 +21,13 @@ itself prove that Trusted Profile or every digital service is available.
 
 ## Service aggregation
 
-`mobywatel` aggregates selected documents and public services. Treat it as a user
-interface, not a universal identity or records API. Personal documents and
-service records may be inspected only to the minimum extent needed for the
-explicitly authorized task in a caller-owned tool; they never become public
-source evidence or plugin data.
+`mobywatel-web` and `mobywatel-mobile` expose overlapping documents and public
+services through separate browser and smartphone surfaces. Treat neither as a
+universal identity or records API. Personal documents and service records may
+be inspected only to the minimum extent needed for the explicitly authorized
+task in a caller-owned tool; they never become public source evidence or plugin
+data. Mobile activation, biometrics, document presentation, and app-local
+secrets remain user-controlled.
 
 Do not infer that a residence card, status, or right is represented in
 mObywatel. Route the underlying residence question to the competent authority

@@ -21,7 +21,7 @@ from contract_validation import validate_datasets  # noqa: E402
 
 
 PLUGIN_ID = "poland"
-VERSION = "0.2.2"
+VERSION = "0.3.0"
 EXPECTED_SKILL_COUNT = 33
 REPOSITORY = "https://github.com/Xopoko/poland"
 SHARED_MANIFEST_FIELDS = (

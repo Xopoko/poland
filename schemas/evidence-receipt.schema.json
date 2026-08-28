@@ -90,7 +90,7 @@
     "freshnessRecord": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["source_id", "last_verified", "age_days", "freshness_days", "status", "record_status", "effective_from", "effective_to", "effect"],
+      "required": ["source_id", "last_verified", "age_days", "freshness_days", "status", "record_status", "effective_from", "effective_to", "effective_state", "effect"],
       "properties": {
         "source_id": {"$ref": "#/$defs/sourceId"},
         "last_verified": {"type": "string", "format": "date"},
@@ -100,6 +100,7 @@
         "record_status": {"enum": ["active", "superseded", "unavailable"]},
         "effective_from": {"type": ["string", "null"], "format": "date"},
         "effective_to": {"type": ["string", "null"], "format": "date"},
+        "effective_state": {"enum": ["in_effect", "not_yet_effective", "expired"]},
         "effect": {"enum": ["informational", "personal_record", "consequential"]}
       }
     },

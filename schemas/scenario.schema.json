@@ -71,6 +71,48 @@
         "conflict_type": {"$ref": "#/$defs/slug"}
       }
     },
+    "channelRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "when", "channel_ids", "state", "requirements"],
+      "properties": {
+        "id": {"$ref": "#/$defs/slug"},
+        "when": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 8,
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-z0-9]+(?:[_-][a-z0-9]+)*$"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 8,
+            "uniqueItems": true,
+            "items": {"$ref": "#/$defs/token"}
+          }
+        },
+        "channel_ids": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/slug"}
+        },
+        "state": {
+          "enum": ["candidate", "not_applicable", "unavailable", "verification_required"]
+        },
+        "requirements": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/token"}
+        }
+      }
+    },
     "scenario": {
       "type": "object",
       "additionalProperties": false,
@@ -126,6 +168,12 @@
           "maxItems": 16,
           "uniqueItems": true,
           "items": {"$ref": "#/$defs/conflict"}
+        },
+        "channel_rules": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": {"$ref": "#/$defs/channelRule"}
         },
         "local_source_topic": {"$ref": "#/$defs/slug"},
         "stop_before": {"$ref": "#/$defs/actionList"},
