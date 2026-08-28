@@ -21,7 +21,7 @@ from contract_validation import validate_datasets  # noqa: E402
 
 
 PLUGIN_ID = "poland"
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 EXPECTED_SKILL_COUNT = 33
 REPOSITORY = "https://github.com/Xopoko/poland"
 SHARED_MANIFEST_FIELDS = (
@@ -284,6 +284,28 @@ def main() -> int:
             skill_names.add(name)
         if not isinstance(description, str) or not 1 <= len(description) <= 240:
             errors.append(f"{relative}: description must contain 1-240 characters")
+
+        agent_manifest = path.parent / "agents" / "openai.yaml"
+        expected_policy = (
+            "  allow_implicit_invocation: true"
+            if path.parent.name == "poland"
+            else "  allow_implicit_invocation: false"
+        )
+        try:
+            agent_lines = agent_manifest.read_text(encoding="utf-8").splitlines()
+        except OSError as exc:
+            errors.append(f"{agent_manifest.relative_to(ROOT).as_posix()}: {exc}")
+        else:
+            policy_lines = [
+                line
+                for line in agent_lines
+                if "allow_implicit_invocation:" in line
+            ]
+            if "policy:" not in agent_lines or policy_lines != [expected_policy]:
+                errors.append(
+                    f"{agent_manifest.relative_to(ROOT).as_posix()}: "
+                    "only the Poland router may be implicitly invoked in Codex"
+                )
     if len(skill_names) != EXPECTED_SKILL_COUNT:
         errors.append(f"expected {EXPECTED_SKILL_COUNT} skills, found {len(skill_names)}")
 

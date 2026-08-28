@@ -5,6 +5,10 @@ their own access and verification dates; this file describes release behavior.
 
 ## [Unreleased]
 
+- Kept the Poland router implicitly discoverable in Codex while making the 32
+  focused skills explicit-only catalog entries, reducing startup metadata
+  pressure without removing any skill.
+
 ## [0.2.0] - 2026-08-21
 
 - Replaced the map-shaped icon with a full-bleed open Polish flag ribbon and
