@@ -21,15 +21,19 @@ For a reported PESEL UKR or CUKR matter, classify these as separate routes:
 - `udsc-ukraine-status-transition-2026` owns the general 5 March 2026 transition.
   It does not make every extension or exception applicable to every Ukrainian
   citizen or every UKR-status holder.
-- `udsc-cukr-procedure` owns the CUKR route. At the 20 August 2026 source
+- `udsc-cukr-procedure` owns the CUKR route. At the 28 August 2026 source
   snapshot, the page says the electronic MOS procedure opened on 4 May 2026 and
   gives a current filing window ending 4 March 2027. Recheck the page before
   action and verify the source-defined applicant group, active-status dates,
   continuity, child branch, pending-case interaction, voivode, and current
   consequences. Never decide eligibility from the label PESEL UKR alone.
-- `gov-pesel-ukr-passport-update-2026` is a public outreach notice for records
-  where registration lacked a passport, a passport or its data changed, or a
-  child lacked a passport at registration. Use
+- `udsc-pesel-ukr-passport-update-2026` is the competent UdSC notice for the
+  declaration-based 31 August identity-confirmation group. The broader
+  `gov-pesel-ukr-passport-update-2026` outreach notice also names new or changed
+  passports and children whose registration lacked a passport. The two pages
+  differ in affected-group scope and in the certainty of the stated status
+  consequence; preserve the route's explicit conflict gate instead of choosing
+  one formulation. Use
   `sejm-ukraine-transition-act-2026` to classify the deadline: Article 25 sets
   31 August 2026 for identity confirmation when PESEL was assigned on the basis
   of a declaration, while Article 26 gives specified other original-document

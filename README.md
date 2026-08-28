@@ -50,8 +50,8 @@ verified again before action.
 | Civic and digital services | Trusted Profile, ePUAP, e-Deliveries, mObywatel, elections, MOS, praca.gov.pl, eZUS, IKP and CEIDG |
 
 The 33 skills are intentionally concise: one router selects among 32 focused
-owners. The deeper knowledge lives in 135 dated official-source records, 36
-digital-channel profiles, 71 composable scenarios, 114 plain-language terms, 16
+owners. The deeper knowledge lives in 138 dated official-source records, 36
+digital-channel profiles, 72 composable scenarios, 114 plain-language terms, 16
 regional records, strict schemas, shared references, and semantic portal
 playbooks. This progressive-disclosure design gives the agent breadth without
 loading a country-sized manual into every conversation.

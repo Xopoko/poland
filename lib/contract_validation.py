@@ -100,6 +100,13 @@ SCENARIO_FIELDS = {
     "stop_before",
     "escalate_when",
 }
+SCENARIO_OPTIONAL_FIELDS = {"applicability", "conflicts"}
+CITIZENSHIP_GROUPS = {
+    "polish",
+    "eu_eea_swiss",
+    "third_country",
+    "stateless_or_unknown",
+}
 TERM_FIELDS = {"id", "polish_ascii", "english", "aliases", "source_ids"}
 REGION_FIELDS = {"id", "name", "administrative_centres"}
 BOUNDARY_FIELDS = {"id", "automation", "allowed", "requires_confirmation", "never"}
@@ -128,11 +135,14 @@ def _object(
     path: str,
     fields: set[str],
     errors: list[str],
+    *,
+    optional_fields: set[str] | None = None,
 ) -> dict[str, Any] | None:
     if not isinstance(value, dict):
         _error(errors, path, "expected object")
         return None
-    for key in sorted(fields - set(value)):
+    optional = optional_fields or set()
+    for key in sorted((fields - optional) - set(value)):
         _error(errors, f"{path}.{key}", "required field missing")
     for key in sorted(set(value) - fields):
         _error(errors, f"{path}.{key}", "unsupported field")
@@ -441,7 +451,13 @@ def _validate_scenarios(payload: Any, errors: list[str]) -> None:
         return
     for index, record in enumerate(records):
         path = f"scenarios.json.scenarios[{index}]"
-        item = _object(record, path, SCENARIO_FIELDS, errors)
+        item = _object(
+            record,
+            path,
+            SCENARIO_FIELDS | SCENARIO_OPTIONAL_FIELDS,
+            errors,
+            optional_fields=SCENARIO_OPTIONAL_FIELDS,
+        )
         if item is None:
             continue
         _string(item.get("id"), f"{path}.id", errors, maximum=80, pattern=SLUG_PATTERN)
@@ -522,6 +538,62 @@ def _validate_scenarios(payload: Any, errors: list[str]) -> None:
             item_maximum=120,
             pattern=TOKEN_PATTERN,
         )
+        if "applicability" in item:
+            applicability = _object(
+                item.get("applicability"),
+                f"{path}.applicability",
+                {"citizenship_group"},
+                errors,
+            )
+            if applicability is not None:
+                citizenship_groups = _string_array(
+                    applicability.get("citizenship_group"),
+                    f"{path}.applicability.citizenship_group",
+                    errors,
+                    minimum=1,
+                    maximum=len(CITIZENSHIP_GROUPS),
+                    item_maximum=32,
+                    pattern=TOKEN_PATTERN,
+                )
+                for group in citizenship_groups or []:
+                    if group not in CITIZENSHIP_GROUPS:
+                        _error(
+                            errors,
+                            f"{path}.applicability.citizenship_group",
+                            "unsupported value",
+                        )
+        if "conflicts" in item:
+            conflicts = _object_array(
+                item.get("conflicts"),
+                f"{path}.conflicts",
+                errors,
+                minimum=1,
+                maximum=16,
+            )
+            for conflict_index, conflict in enumerate(conflicts or []):
+                conflict_path = f"{path}.conflicts[{conflict_index}]"
+                conflict_item = _object(
+                    conflict,
+                    conflict_path,
+                    {"source_id", "conflict_type"},
+                    errors,
+                )
+                if conflict_item is None:
+                    continue
+                _string(
+                    conflict_item.get("source_id"),
+                    f"{conflict_path}.source_id",
+                    errors,
+                    maximum=80,
+                    pattern=SLUG_PATTERN,
+                )
+                _string(
+                    conflict_item.get("conflict_type"),
+                    f"{conflict_path}.conflict_type",
+                    errors,
+                    maximum=120,
+                    pattern=SLUG_PATTERN,
+                )
         if required is not None and optional is not None and set(required) & set(optional):
             _error(errors, path, "required and optional parameters must be disjoint")
         if owners is not None and composition == "single" and len(owners) != 1:
@@ -827,6 +899,34 @@ def _validate_source_references(
                 )
 
 
+def _validate_scenario_conflicts(
+    payload: Any,
+    *,
+    known_sources: set[str],
+    errors: list[str],
+) -> None:
+    if not isinstance(payload, dict) or not isinstance(payload.get("scenarios"), list):
+        return
+    for scenario_index, scenario in enumerate(payload["scenarios"]):
+        if not isinstance(scenario, dict) or not isinstance(scenario.get("conflicts"), list):
+            continue
+        scenario_sources = set(scenario.get("source_ids", []))
+        for conflict_index, conflict in enumerate(scenario["conflicts"]):
+            if not isinstance(conflict, dict):
+                continue
+            source_id = conflict.get("source_id")
+            if not isinstance(source_id, str):
+                continue
+            path = (
+                f"scenarios.json.scenarios[{scenario_index}]."
+                f"conflicts[{conflict_index}].source_id"
+            )
+            if source_id not in known_sources:
+                _error(errors, path, "unknown source reference")
+            elif source_id not in scenario_sources:
+                _error(errors, path, "conflict source must also appear in source_ids")
+
+
 def validate_dataset_payload(name: str, payload: Any) -> list[str]:
     """Validate one parsed dataset payload and return deterministic errors."""
 
@@ -855,6 +955,11 @@ def validate_payloads(payloads: Mapping[str, Any]) -> list[str]:
         payloads.get("scenarios"),
         dataset_file="scenarios.json",
         record_key="scenarios",
+        known_sources=known_sources,
+        errors=errors,
+    )
+    _validate_scenario_conflicts(
+        payloads.get("scenarios"),
         known_sources=known_sources,
         errors=errors,
     )

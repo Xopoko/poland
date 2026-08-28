@@ -16,11 +16,11 @@ import contract_validation as contracts  # noqa: E402
 
 class CoreTests(unittest.TestCase):
     def test_bundle_is_strict_validated_and_sized(self):
-        report = core.validate_bundle("2026-08-21")
+        report = core.validate_bundle("2026-08-28")
         self.assertTrue(report["valid"], report["errors"])
         self.assertEqual("OFFLINE_PACKAGED_DATA", report["data_mode"])
-        self.assertEqual(135, report["counts"]["sources"])
-        self.assertEqual(71, report["counts"]["scenarios"])
+        self.assertEqual(138, report["counts"]["sources"])
+        self.assertEqual(72, report["counts"]["scenarios"])
         self.assertEqual(114, report["counts"]["terms"])
         self.assertEqual(16, report["counts"]["regions"])
         self.assertEqual(36, report["counts"]["digital_channels"])
@@ -31,8 +31,8 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(len(sources), len({item["id"] for item in sources}))
         for item in sources:
             self.assertTrue(item["url"].startswith("https://"))
-            self.assertLessEqual(date.fromisoformat(item["last_verified"]), date(2026, 8, 21))
-            self.assertLessEqual(date.fromisoformat(item["accessed_at"]), date(2026, 8, 21))
+            self.assertLessEqual(date.fromisoformat(item["last_verified"]), date(2026, 8, 28))
+            self.assertLessEqual(date.fromisoformat(item["accessed_at"]), date(2026, 8, 28))
             self.assertTrue(item["publisher"])
             self.assertIn(item["source_tier"], {"T0", "T1", "T2"})
             self.assertIn(
@@ -252,6 +252,45 @@ class CoreTests(unittest.TestCase):
                 self.assertEqual("insufficient_evidence", result["evidence_gate"]["state"])
                 self.assertFalse(result["evidence_gate"]["actionable"])
 
+    def test_citizenship_applicability_separates_meldunek_from_residence_permit(self):
+        citizen = core.route_scenario(
+            "zameldowanie na pobyt staly w Warszawie",
+            {"facts": {"citizenship_group": "polish"}},
+            as_of="2026-08-28",
+        )
+        self.assertEqual("polish-citizen-address-registration", citizen["id"])
+        self.assertEqual(
+            {"gov-meldunek-polish-citizens", "warsaw-meldunek-polish-citizens"},
+            set(citizen["source_ids"]),
+        )
+        self.assertFalse(
+            {"mos-permanent-residence", "udsc-mos-electronic-residence", "mos-residence"}
+            & set(citizen["source_ids"])
+        )
+
+        foreigner = core.route_scenario(
+            "zezwolenie na pobyt staly w Warszawie",
+            {"facts": {"citizenship_group": "third_country"}},
+            as_of="2026-08-28",
+        )
+        self.assertEqual("permanent-residence-permit-route", foreigner["id"])
+        self.assertIn("mos-permanent-residence", foreigner["source_ids"])
+
+        incompatible = core.route_scenario(
+            "permanent-residence-permit-route",
+            {"facts": {"citizenship_group": "polish"}},
+            as_of="2026-08-28",
+        )
+        self.assertIsNone(incompatible["id"])
+        self.assertEqual("not_applicable", incompatible["route_state"])
+        with self.assertRaises(core.PolandDataError) as caught:
+            core.build_checklist(
+                "permanent-residence-permit-route",
+                {"facts": {"citizenship_group": "polish"}},
+                as_of="2026-08-28",
+            )
+        self.assertEqual("SCENARIO_NOT_APPLICABLE", caught.exception.code)
+
     def test_route_inputs_are_closed_non_identifying_and_never_echoed(self):
         with self.assertRaises(core.PolandDataError) as unknown:
             core.route_scenario("residence", {"facts": {"passport_number": "XX0000000"}})
@@ -311,12 +350,14 @@ class CoreTests(unittest.TestCase):
         self.assertEqual("mazowieckie", core.list_regions("Warsaw")[0]["id"])
 
     def test_freshness_states_are_explicit(self):
-        current = core.freshness_report("2026-08-21")
-        self.assertEqual(134, current["summary"]["fresh"])
+        current = core.freshness_report("2026-08-28")
+        self.assertEqual(116, current["summary"]["fresh"])
+        self.assertEqual(21, current["summary"]["review_due"])
+        self.assertEqual(0, current["summary"]["stale"])
         self.assertEqual(1, current["summary"]["out_of_effective_period"])
         later = core.freshness_report("2030-08-20")
-        self.assertEqual(134, later["summary"]["stale"])
-        self.assertEqual(1, later["summary"]["out_of_effective_period"])
+        self.assertEqual(136, later["summary"]["stale"])
+        self.assertEqual(2, later["summary"]["out_of_effective_period"])
 
     def test_effective_period_and_inactive_source_states_fail_closed(self):
         source = core.get_source("udsc-home")

@@ -55,7 +55,7 @@ class PackageSurfaceTests(unittest.TestCase):
         marketplace = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text(encoding="utf-8"))
         package = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
         versions = {codex["version"], claude["version"], cursor["version"], marketplace["version"], marketplace["plugins"][0]["version"], package["version"]}
-        self.assertEqual({"0.2.1"}, versions)
+        self.assertEqual({"0.2.2"}, versions)
 
     def test_codex_marketplace_is_explicitly_opt_in(self):
         marketplace = json.loads(

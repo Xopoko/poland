@@ -42,6 +42,36 @@ class DataContractTests(unittest.TestCase):
             errors,
         )
 
+    def test_scenario_applicability_is_closed_and_uses_supported_citizenship_groups(self):
+        payloads = copy.deepcopy(live_payloads())
+        payloads["scenarios"]["scenarios"][0]["applicability"] = {
+            "citizenship_group": ["unsupported_group"]
+        }
+        errors = validate_payloads(payloads)
+        self.assertIn(
+            "scenarios.json.scenarios[0].applicability.citizenship_group: unsupported value",
+            errors,
+        )
+
+    def test_scenario_conflict_source_must_exist_and_be_listed_on_the_scenario(self):
+        payloads = copy.deepcopy(live_payloads())
+        scenario = payloads["scenarios"]["scenarios"][0]
+        scenario["conflicts"] = [
+            {"source_id": "missing-source", "conflict_type": "effective-date"}
+        ]
+        errors = validate_payloads(payloads)
+        self.assertIn(
+            "scenarios.json.scenarios[0].conflicts[0].source_id: unknown source reference",
+            errors,
+        )
+
+        scenario["conflicts"][0]["source_id"] = "mos-permanent-residence"
+        errors = validate_payloads(payloads)
+        self.assertIn(
+            "scenarios.json.scenarios[0].conflicts[0].source_id: conflict source must also appear in source_ids",
+            errors,
+        )
+
     def test_nested_action_value_with_wrong_type_is_rejected(self):
         payloads = copy.deepcopy(live_payloads())
         payloads["action-boundaries"]["boundaries"][0]["allowed"][0] = {

@@ -5,6 +5,10 @@ their own access and verification dates; this file describes release behavior.
 
 ## [Unreleased]
 
+- Split Polish-citizen address registration from foreigner permanent-residence
+  permits with citizenship applicability enforced by the router.
+- Refreshed the CUKR and PESEL UKR deadline evidence and preserved the official
+  source disagreement as explicit affected-group and legal-effect conflicts.
 - Kept the Poland router implicitly discoverable in Codex while making the 32
   focused skills explicit-only catalog entries, reducing startup metadata
   pressure without removing any skill.

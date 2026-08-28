@@ -21,7 +21,7 @@ from contract_validation import validate_datasets  # noqa: E402
 
 
 PLUGIN_ID = "poland"
-VERSION = "0.2.1"
+VERSION = "0.2.2"
 EXPECTED_SKILL_COUNT = 33
 REPOSITORY = "https://github.com/Xopoko/poland"
 SHARED_MANIFEST_FIELDS = (
@@ -464,7 +464,7 @@ def main() -> int:
     errors.extend(f"data contract: {item}" for item in validate_datasets(ROOT / "data"))
 
     cli = subprocess.run(
-        [sys.executable, str(ROOT / "scripts" / "poland.py"), "validate", "--as-of", "2026-08-21"],
+        [sys.executable, str(ROOT / "scripts" / "poland.py"), "validate", "--as-of", "2026-08-28"],
         cwd=ROOT,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -487,7 +487,7 @@ def main() -> int:
                     "--host",
                     host,
                     "--as-of",
-                    "2026-08-21",
+                    "2026-08-28",
                     *extra,
                 ],
                 cwd=ROOT,

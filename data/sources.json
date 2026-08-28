@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "registry_version": "2026-08-21",
+  "registry_version": "2026-08-28",
   "description": "First-party public sources for navigating administrative and daily-life matters in Poland.",
   "sources": [
     {
@@ -371,6 +371,86 @@
       "locator": {
         "type": "page",
         "value": "canonical_landing_page"
+      }
+    },
+    {
+      "id": "gov-meldunek-polish-citizens",
+      "title": "Register a permanent or longer temporary address as a Polish citizen",
+      "authority": "Ministry of the Interior and Administration",
+      "url": "https://www.gov.pl/web/gov/zamelduj-sie-na-pobyt-staly-lub-czasowy-dluzszy-niz-3-miesiace",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "gmina",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "address-registration",
+        "gmina",
+        "meldunek",
+        "polish-citizen"
+      ],
+      "access": "public",
+      "effect": "consequential",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-28",
+      "freshness_days": 30,
+      "notes": "The public service page distinguishes permanent address registration from temporary registration longer than three months and routes the filing to the gmina where the person lives. Use this record for Polish-citizen meldunek, not as a residence-permit source. Verify the current online or office channel, housing evidence and signature requirements before action.",
+      "publisher": "Ministry of Digital Affairs",
+      "source_tier": "T1",
+      "source_kind": "official_service",
+      "accessed_at": "2026-08-28",
+      "publication_date": null,
+      "modified_date": "2025-12-31",
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "heading",
+        "value": "Zamelduj sie na pobyt staly lub czasowy dluzszy niz 3 miesiace"
+      }
+    },
+    {
+      "id": "warsaw-meldunek-polish-citizens",
+      "title": "Permanent address registration for Polish citizens in Warsaw",
+      "authority": "City of Warsaw",
+      "url": "https://warszawa19115.pl/-/zameldowanie-na-pobyt-staly-obywateli-rp-",
+      "domains": [
+        "warszawa19115.pl"
+      ],
+      "jurisdiction": "gmina",
+      "localities": [
+        "warsaw"
+      ],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "address-registration",
+        "meldunek",
+        "polish-citizen",
+        "warsaw"
+      ],
+      "access": "public",
+      "effect": "consequential",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-28",
+      "freshness_days": 30,
+      "notes": "Warsaw 19115 owns the local permanent-address registration instructions for Polish citizens, including the office and online routes. Use it only when Warsaw is the competent gmina and verify the current office, appointment path, documents and fees before action.",
+      "publisher": "Warsaw 19115",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-28",
+      "publication_date": null,
+      "modified_date": "2026-07-06",
+      "effective_from": null,
+      "effective_to": null,
+      "status": "active",
+      "locator": {
+        "type": "heading",
+        "value": "Zameldowanie na pobyt staly obywateli Rzeczypospolitej Polskiej"
       }
     },
     {
@@ -2007,13 +2087,13 @@
       "access": "public",
       "effect": "consequential",
       "automation": "public_read_only_handoff",
-      "last_verified": "2026-08-20",
+      "last_verified": "2026-08-28",
       "freshness_days": 3,
       "notes": "The Office for Foreigners describes the source-defined CUKR applicant groups, status-history conditions, electronic MOS route and current filing window. Treat every condition as a live verification question, not an eligibility conclusion. The applicant personally authenticates and signs; do not freeze fees, deadlines or benefit consequences beyond a dated source observation.",
       "publisher": "Office for Foreigners",
       "source_tier": "T1",
       "source_kind": "official_guidance",
-      "accessed_at": "2026-08-20",
+      "accessed_at": "2026-08-28",
       "publication_date": "2026-05-04",
       "modified_date": null,
       "effective_from": "2026-05-04",
@@ -2105,6 +2185,46 @@
       }
     },
     {
+      "id": "udsc-pesel-ukr-passport-update-2026",
+      "title": "PESEL UKR identity confirmation and passport-data update notice",
+      "authority": "Office for Foreigners",
+      "url": "https://www.gov.pl/web/udsc/wazna-informacja-dla-obywateli-ukrainy-posiadajacych-numer-pesel-ze-statusem-ukr",
+      "domains": [
+        "gov.pl"
+      ],
+      "jurisdiction": "national",
+      "localities": [],
+      "languages": [
+        "pl"
+      ],
+      "topics": [
+        "identity-confirmation",
+        "passport-data",
+        "pesel-ukr",
+        "temporary-protection",
+        "ukraine"
+      ],
+      "access": "public",
+      "effect": "consequential",
+      "automation": "public_read_only_handoff",
+      "last_verified": "2026-08-28",
+      "freshness_days": 3,
+      "notes": "The Office for Foreigners ties the 2026-08-31 identity-confirmation deadline to PESEL UKR assigned only on the basis of a declaration without presentation of a valid travel document and states a categorical UKR-status consequence for that group. It separately says a newly issued passport should be updated and that a valid PESEL UKR is required for CUKR. Do not extend the stated consequence to every passport-data change or every PESEL UKR holder; classify the original registration basis against the legal text and preserve the conflict with the broader outreach notice.",
+      "publisher": "Office for Foreigners",
+      "source_tier": "T1",
+      "source_kind": "official_guidance",
+      "accessed_at": "2026-08-28",
+      "publication_date": "2026-07-27",
+      "modified_date": null,
+      "effective_from": "2026-07-27",
+      "effective_to": "2026-08-31",
+      "status": "active",
+      "locator": {
+        "type": "paragraph",
+        "value": "Declaration-based PESEL UKR records and 31 August 2026 deadline"
+      }
+    },
+    {
       "id": "gov-pesel-ukr-passport-update-2026",
       "title": "PESEL UKR passport-data update notice for affected records",
       "authority": "Ministry of Family, Labour and Social Policy",
@@ -2128,13 +2248,13 @@
       "access": "public",
       "effect": "consequential",
       "automation": "public_read_only_handoff",
-      "last_verified": "2026-08-20",
+      "last_verified": "2026-08-28",
       "freshness_days": 3,
-      "notes": "This outreach notice tells Ukrainian citizens with UKR status to check records where PESEL registration lacked a passport, a passport or its data changed, or a child lacked a passport at registration. It highlights 2026-08-31 and a possible UKR-status consequence, but the binding legal text distinguishes an Article 25 declaration-based deadline from Article 26's separate 60-day document route. Use this notice for discovery and gmina handoff, then classify the original registration basis against sejm-ukraine-transition-act-2026; do not apply one deadline to every PESEL UKR holder.",
+      "notes": "This outreach notice tells Ukrainian citizens with UKR status to check records where PESEL registration lacked a passport, a passport or its data changed, or a child lacked a passport at registration. It highlights 2026-08-31, but its lead says non-update causes status loss while the main Polish and Ukrainian text says it may cause status loss. Its affected-group shorthand is also broader than the declaration-based UdSC notice. Use it for discovery and gmina handoff, preserve both conflicts explicitly, then classify the original registration basis against sejm-ukraine-transition-act-2026; do not apply one deadline or consequence to every PESEL UKR holder.",
       "publisher": "Ministry of Family, Labour and Social Policy",
       "source_tier": "T2",
       "source_kind": "official_guidance",
-      "accessed_at": "2026-08-20",
+      "accessed_at": "2026-08-28",
       "publication_date": "2026-07-13",
       "modified_date": "2026-08-13",
       "effective_from": "2026-07-13",

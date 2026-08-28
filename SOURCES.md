@@ -20,8 +20,8 @@ authentication class, agent mode, mandatory pause-and-classify checkpoints, and 
 verified live. A channel record is descriptive metadata, not authority to enter
 the service or evidence that a route applies to a particular person.
 
-The 2026-08-21 coverage ledger contains 135 official-source records, 36 digital
-channels, 71 source-backed scenarios, 114 Polish terms, and all 16 voivodeships.
+The 2026-08-28 coverage ledger contains 138 official-source records, 36 digital
+channels, 72 source-backed scenarios, 114 Polish terms, and all 16 voivodeships.
 Counts are regression anchors, not a completeness score. Coverage is organized
 around resident life events: entry and stay; EU mobility and citizenship;
 identity and civil status; work, unemployment and business; tax and social
@@ -84,8 +84,10 @@ is stored.
 The Ukrainian temporary-protection transition is intentionally split across
 procedure-specific records. `udsc-ukraine-status-transition-2026` describes the
 general change from 5 March 2026; `udsc-cukr-procedure` owns the CUKR route;
-`gov-pesel-ukr-passport-update-2026` supplies the public passport-data outreach
-notice, while `sejm-ukraine-transition-act-2026` Articles 25-26 distinguish the
+`udsc-pesel-ukr-passport-update-2026` owns the declaration-based UdSC notice and
+`gov-pesel-ukr-passport-update-2026` supplies the broader public outreach notice.
+Their affected-group scope and legal-effect certainty remain an explicit
+scenario conflict, while `sejm-ukraine-transition-act-2026` Articles 25-26 distinguish the
 31 August declaration-based identity-confirmation group from a separate 60-day
 document route. Neither deadline may be presented as universal for every PESEL
 UKR holder. `mos-permanent-residence` separately owns national permanent

@@ -46,6 +46,31 @@
       "uniqueItems": true,
       "items": {"$ref": "#/$defs/token"}
     },
+    "applicability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["citizenship_group"],
+      "properties": {
+        "citizenship_group": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["polish", "eu_eea_swiss", "third_country", "stateless_or_unknown"]
+          }
+        }
+      }
+    },
+    "conflict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "conflict_type"],
+      "properties": {
+        "source_id": {"$ref": "#/$defs/slug"},
+        "conflict_type": {"$ref": "#/$defs/slug"}
+      }
+    },
     "scenario": {
       "type": "object",
       "additionalProperties": false,
@@ -93,6 +118,14 @@
           "maxItems": 32,
           "uniqueItems": true,
           "items": {"$ref": "#/$defs/slug"}
+        },
+        "applicability": {"$ref": "#/$defs/applicability"},
+        "conflicts": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/conflict"}
         },
         "local_source_topic": {"$ref": "#/$defs/slug"},
         "stop_before": {"$ref": "#/$defs/actionList"},

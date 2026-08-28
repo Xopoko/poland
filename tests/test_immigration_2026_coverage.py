@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 import json
+import sys
 import unittest
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "lib"))
+
+import poland_core as core  # noqa: E402
 
 
 def keyed(filename: str, collection: str) -> dict[str, dict[str, object]]:
@@ -20,6 +24,7 @@ class Immigration2026CoverageTests(unittest.TestCase):
             "udsc-cukr-procedure",
             "udsc-ukraine-status-transition-2026",
             "sejm-ukraine-transition-act-2026",
+            "udsc-pesel-ukr-passport-update-2026",
             "gov-pesel-ukr-passport-update-2026",
         }
         self.assertTrue(expected <= set(sources))
@@ -27,8 +32,15 @@ class Immigration2026CoverageTests(unittest.TestCase):
         for source_id in expected:
             source = sources[source_id]
             self.assertEqual("active", source["status"], source_id)
-            self.assertEqual("2026-08-20", source["accessed_at"], source_id)
-            self.assertEqual("2026-08-20", source["last_verified"], source_id)
+
+        for source_id in {
+            "udsc-cukr-procedure",
+            "udsc-pesel-ukr-passport-update-2026",
+            "gov-pesel-ukr-passport-update-2026",
+        }:
+            source = sources[source_id]
+            self.assertEqual("2026-08-28", source["accessed_at"], source_id)
+            self.assertEqual("2026-08-28", source["last_verified"], source_id)
 
         self.assertEqual(["api.sejm.gov.pl"], sources["sejm-ukraine-transition-act-2026"]["domains"])
         for source_id in expected - {"sejm-ukraine-transition-act-2026"}:
@@ -45,8 +57,27 @@ class Immigration2026CoverageTests(unittest.TestCase):
         deadline_source = sources["gov-pesel-ukr-passport-update-2026"]
         self.assertEqual("2026-08-31", deadline_source["effective_to"])
         notes = str(deadline_source["notes"]).lower()
-        for phrase in ("outreach notice", "lacked a passport", "child lacked a passport", "60-day", "do not apply"):
+        for phrase in (
+            "outreach notice",
+            "lacked a passport",
+            "child lacked a passport",
+            "causes status loss",
+            "may cause status loss",
+            "broader than",
+        ):
             self.assertIn(phrase, notes)
+
+        udsc_deadline_source = sources["udsc-pesel-ukr-passport-update-2026"]
+        self.assertEqual("T1", udsc_deadline_source["source_tier"])
+        self.assertEqual("2026-08-31", udsc_deadline_source["effective_to"])
+        udsc_notes = str(udsc_deadline_source["notes"]).lower()
+        for phrase in (
+            "only on the basis of a declaration",
+            "categorical",
+            "newly issued passport",
+            "preserve the conflict",
+        ):
+            self.assertIn(phrase, udsc_notes)
 
         cukr_source = sources["udsc-cukr-procedure"]
         self.assertEqual("2026-05-04", cukr_source["effective_from"])
@@ -79,8 +110,13 @@ class Immigration2026CoverageTests(unittest.TestCase):
 
         pesel_update = scenarios["pesel-ukr-passport-data-update-2026"]
         self.assertEqual(["poland-protection-referral"], pesel_update["owner_skill_ids"])
+        self.assertIn("udsc-pesel-ukr-passport-update-2026", pesel_update["source_ids"])
         self.assertIn("gov-pesel-ukr-passport-update-2026", pesel_update["source_ids"])
         self.assertIn("sejm-ukraine-transition-act-2026", pesel_update["source_ids"])
+        self.assertEqual(
+            {"affected-group-scope", "legal-effect-certainty"},
+            {item["conflict_type"] for item in pesel_update["conflicts"]},
+        )
         self.assertTrue(
             {
                 "affected_group_conclusion",
@@ -92,6 +128,14 @@ class Immigration2026CoverageTests(unittest.TestCase):
         )
         self.assertIn("problem_type", pesel_update["required_parameters"])
         self.assertIn("gmina", pesel_update["required_parameters"])
+
+        routed = core.route_scenario(
+            "PESEL UKR passport update",
+            as_of="2026-08-28",
+        )
+        self.assertEqual("conflict", routed["evidence_gate"]["state"])
+        self.assertFalse(routed["evidence_gate"]["actionable"])
+        self.assertEqual(["OFFICIAL_SOURCE_CONFLICT"], routed["evidence_gate"]["warnings"])
 
     def test_permanent_residence_has_a_dedicated_non_citizenship_route(self):
         sources = keyed("sources.json", "sources")
@@ -139,6 +183,7 @@ class Immigration2026CoverageTests(unittest.TestCase):
             "udsc-cukr-procedure",
             "udsc-ukraine-status-transition-2026",
             "sejm-ukraine-transition-act-2026",
+            "udsc-pesel-ukr-passport-update-2026",
             "gov-pesel-ukr-passport-update-2026",
         ):
             self.assertIn(source_id, protection)

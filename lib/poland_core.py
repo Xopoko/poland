@@ -898,16 +898,38 @@ def _term_route_matches(query_tokens: tuple[str, ...]) -> list[dict[str, Any]]:
     return matches
 
 
+def _scenario_applies_to_profile(
+    scenario: dict[str, Any], profile: dict[str, Any]
+) -> bool:
+    """Reject only a scenario contradicted by a known abstract profile fact."""
+    applicability = scenario.get("applicability", {})
+    if not isinstance(applicability, dict):
+        return False
+    for field, allowed_values in applicability.items():
+        if not isinstance(allowed_values, list):
+            return False
+        profile_value = _profile_value(profile, str(field))
+        if profile_value is not None and profile_value not in allowed_values:
+            return False
+    return True
+
+
 def _route_match_rows(
     raw_scenarios: list[dict[str, Any]],
     query_tokens: tuple[str, ...],
     normalized_query: str,
+    profile: dict[str, Any],
 ) -> list[dict[str, Any]]:
     """Build confidence-qualified rows; weak one-token overlap is excluded."""
+    candidate_scenarios = [
+        scenario
+        for scenario in raw_scenarios
+        if _scenario_applies_to_profile(scenario, profile)
+    ]
     scenario_tokens: dict[str, set[str]] = {}
     scenario_salient_tokens: dict[str, set[str]] = {}
     token_frequency: dict[str, int] = {}
-    for scenario in raw_scenarios:
+    for scenario in candidate_scenarios:
         scenario_id = str(scenario.get("id", ""))
         corpus = " ".join(
             [
@@ -933,8 +955,8 @@ def _route_match_rows(
     glossary_matches = _term_route_matches(query_tokens)
     rows: list[dict[str, Any]] = []
     query_token_set = set(query_tokens)
-    broad_token_limit = max(3, len(raw_scenarios) // 4)
-    for raw_scenario in raw_scenarios:
+    broad_token_limit = max(3, len(candidate_scenarios) // 4)
+    for raw_scenario in candidate_scenarios:
         scenario_id = str(raw_scenario.get("id", ""))
         id_phrase = normalize_text(scenario_id.replace("-", " "))
         exact_id = normalized_query in {normalize_text(scenario_id), id_phrase}
@@ -1046,7 +1068,30 @@ def route_scenario(
     safe_profile = validate_route_profile(profile)
     normalized = normalize_text(literal_query)
     query_tokens = _route_tokens(literal_query)
-    match_rows = _route_match_rows(_scenario_records(), query_tokens, normalized)
+    raw_scenarios = _scenario_records()
+    exact_scenario = next(
+        (
+            scenario
+            for scenario in raw_scenarios
+            if normalized
+            in {
+                normalize_text(str(scenario.get("id", ""))),
+                normalize_text(str(scenario.get("id", "")).replace("-", " ")),
+            }
+        ),
+        None,
+    )
+    if exact_scenario is not None and not _scenario_applies_to_profile(
+        exact_scenario, safe_profile
+    ):
+        return _unresolved_route(
+            as_of=as_of,
+            route_state="not_applicable",
+            match_truth="false",
+        )
+    match_rows = _route_match_rows(
+        raw_scenarios, query_tokens, normalized, safe_profile
+    )
     if not match_rows:
         return _unresolved_route(
             as_of=as_of,
@@ -1111,6 +1156,12 @@ def build_checklist(
             code="UNKNOWN_SCENARIO",
         )
     routed = route_scenario(scenario_id, profile, as_of=as_of)
+    if routed.get("id") != scenario_id:
+        raise PolandDataError(
+            "scenario is not applicable to the supplied profile",
+            code="SCENARIO_NOT_APPLICABLE",
+            details={"scenario_id": scenario_id},
+        )
     phases = routed.get("phases", [])
     if not isinstance(phases, list):
         raise PolandDataError(f"scenario {scenario_id} has invalid phases")
@@ -1713,7 +1764,7 @@ def overview() -> dict[str, Any]:
     validation = validate_bundle()
     return {
         "plugin": "poland",
-        "version": "0.2.0",
+        "version": "0.2.2",
         "model": "official-source-first",
         "data_mode": "OFFLINE_PACKAGED_DATA",
         "counts": validation["counts"],

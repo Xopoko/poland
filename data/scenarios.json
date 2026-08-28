@@ -75,7 +75,11 @@
       "composition": "single",
       "required_parameters": ["citizenship_group", "current_status_category", "problem_type", "gmina", "target_date"],
       "optional_parameters": ["household_context", "current_location_category", "document_type"],
-      "source_ids": ["sejm-ukraine-transition-act-2026", "gov-pesel-ukr-passport-update-2026", "udsc-ukraine-status-transition-2026", "gov-pesel-foreigners"],
+      "source_ids": ["sejm-ukraine-transition-act-2026", "udsc-pesel-ukr-passport-update-2026", "gov-pesel-ukr-passport-update-2026", "udsc-ukraine-status-transition-2026", "gov-pesel-foreigners"],
+      "conflicts": [
+        {"source_id": "gov-pesel-ukr-passport-update-2026", "conflict_type": "affected-group-scope"},
+        {"source_id": "gov-pesel-ukr-passport-update-2026", "conflict_type": "legal-effect-certainty"}
+      ],
       "local_source_topic": "identity",
       "stop_before": ["affected_group_conclusion", "legal_effect_conclusion", "personal_record_disclosure", "appointment_booking", "official_record_change", "user_only_identity_presentation"],
       "escalate_when": ["status_or_record_category_unclear", "deadline_near", "competent_gmina_unclear", "conflicting_official_instructions"]
@@ -108,16 +112,31 @@
     },
     {
       "id": "first-address-and-pesel",
-      "purpose": "Prepare a route for address registration, PESEL, or related identity administration.",
+      "purpose": "Prepare a foreigner's route for address registration, PESEL, or related identity administration.",
       "keywords": ["PESEL", "meldunek", "address registration", "identity record"],
       "owner_skill_ids": ["poland-identity"],
       "composition": "single",
-      "required_parameters": ["gmina", "procedure", "residence_status"],
+      "required_parameters": ["citizenship_group", "gmina", "procedure", "residence_status"],
       "optional_parameters": ["document_type", "target_date"],
       "source_ids": ["gov-pesel-foreigners", "gov-meldunek-foreigners", "profil-zaufany"],
+      "applicability": {"citizenship_group": ["eu_eea_swiss", "third_country", "stateless_or_unknown"]},
       "local_source_topic": "identity",
       "stop_before": ["application_submission", "identity_verification", "trusted_profile_confirmation"],
       "escalate_when": ["housing_document_disputed", "competent_gmina_unclear", "identity_data_mismatch"]
+    },
+    {
+      "id": "polish-citizen-address-registration",
+      "purpose": "Route a Polish citizen's permanent or longer temporary address registration to the competent gmina without confusing meldunek with a foreigner's residence permit.",
+      "keywords": ["zameldowanie na pobyt staly", "meldunek obywatela polskiego", "Polish citizen address registration", "register permanent address in Poland"],
+      "owner_skill_ids": ["poland-identity"],
+      "composition": "single",
+      "required_parameters": ["citizenship_group", "gmina", "procedure", "residence_status"],
+      "optional_parameters": ["delivery_channel", "document_type", "target_date"],
+      "source_ids": ["gov-meldunek-polish-citizens", "warsaw-meldunek-polish-citizens"],
+      "applicability": {"citizenship_group": ["polish"]},
+      "local_source_topic": "identity",
+      "stop_before": ["authentication", "user_only_signature", "application_submission", "official_record_change"],
+      "escalate_when": ["housing_document_disputed", "competent_gmina_unclear", "identity_data_mismatch", "local_instructions_conflict"]
     },
     {
       "id": "government-letter",
@@ -375,6 +394,7 @@
       "required_parameters": ["citizenship_group", "current_status_category", "procedure", "current_location_category", "voivodeship"],
       "optional_parameters": ["current_status", "household_context", "document_type", "target_date"],
       "source_ids": ["mos-permanent-residence", "udsc-mos-electronic-residence", "mos-residence"],
+      "applicability": {"citizenship_group": ["third_country", "stateless_or_unknown"]},
       "local_source_topic": "residence",
       "stop_before": ["eligibility_conclusion", "authentication", "user_only_signature", "sensitive_attachment_upload", "payment_initiation", "application_submission"],
       "escalate_when": ["claimed_basis_unclear", "document_chain_incomplete", "local_authority_or_appointment_unclear", "deadline_near"]

@@ -179,7 +179,7 @@ class CliTests(unittest.TestCase):
 
     def test_doctor_returns_path_free_telemetry_free_receipt(self):
         payload = self.assert_success_envelope(
-            run_cli("doctor", "--host", "package", "--as-of", "2026-08-21"),
+            run_cli("doctor", "--host", "package", "--as-of", "2026-08-28"),
             "doctor",
         )
         receipt = payload["result"]
@@ -227,7 +227,7 @@ class CliTests(unittest.TestCase):
         clean_env.pop("POLAND_PYTHON", None)
         for host in ("codex", "claude", "cursor"):
             payload = self.assert_success_envelope(
-                run_cli("doctor", "--host", host, "--as-of", "2026-08-21", env=clean_env),
+                run_cli("doctor", "--host", host, "--as-of", "2026-08-28", env=clean_env),
                 "doctor",
             )
             receipt = payload["result"]
@@ -238,7 +238,7 @@ class CliTests(unittest.TestCase):
             self.assertEqual("passed", configured["launcher"]["status"], host)
 
         pi = self.assert_success_envelope(
-            run_cli("doctor", "--host", "pi", "--as-of", "2026-08-21", env=clean_env),
+            run_cli("doctor", "--host", "pi", "--as-of", "2026-08-28", env=clean_env),
             "doctor",
         )["result"]
         self.assertEqual(
@@ -250,7 +250,7 @@ class CliTests(unittest.TestCase):
     def test_doctor_fails_closed_when_configured_launcher_is_missing(self):
         environment = os.environ.copy()
         environment["POLAND_PYTHON"] = "poland-python-command-that-does-not-exist"
-        result = run_cli("doctor", "--host", "claude", "--as-of", "2026-08-21", env=environment)
+        result = run_cli("doctor", "--host", "claude", "--as-of", "2026-08-28", env=environment)
         self.assertEqual(1, result.returncode, result.stderr)
         payload = json.loads(result.stdout)
         receipt = payload["result"]
@@ -271,7 +271,7 @@ class CliTests(unittest.TestCase):
                 "--host",
                 "claude",
                 "--as-of",
-                "2026-08-21",
+                "2026-08-28",
                 "--write-mcp-config",
                 str(target),
                 env=environment,
@@ -294,7 +294,7 @@ class CliTests(unittest.TestCase):
                 "--host",
                 "cursor",
                 "--as-of",
-                "2026-08-21",
+                "2026-08-28",
                 "--write-mcp-config",
                 str(target),
             )

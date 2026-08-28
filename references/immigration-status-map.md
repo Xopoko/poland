@@ -39,7 +39,7 @@ Ukrainian citizen, every temporary-protection beneficiary, or every person with
 a PESEL number.
 
 For a CUKR request, use `udsc-cukr-procedure` and the `mos` digital channel. The
-20 August 2026 source snapshot says the CUKR electronic procedure opened on
+28 August 2026 source snapshot says the CUKR electronic procedure opened on
 4 May 2026 and gives a current filing window ending 4 March 2027. Ask for the
 reported citizenship or family-member group, current PESEL UKR category,
 source-defined status-history dates, child branch if relevant, current location,
@@ -49,11 +49,16 @@ applicant groups, status dates, filing window, pending-case consequences,
 attachments, signature method, benefit consequences, card-collection rule, and
 fees before action. Do not freeze an amount or outcome.
 
-The PESEL UKR passport-data branch is a different route. The public outreach
-notice `gov-pesel-ukr-passport-update-2026` lists records where registration
-lacked a passport, a passport or passport data changed, or a child lacked a
-passport at registration. Do not infer one deadline from those shorthand
-categories. Use the T0 source `sejm-ukraine-transition-act-2026`: Article 25
+The PESEL UKR passport-data branch is a different route. The competent
+`udsc-pesel-ukr-passport-update-2026` notice ties the 31 August deadline and a
+categorical status consequence to declaration-based registrations without a
+valid travel document. The broader outreach notice
+`gov-pesel-ukr-passport-update-2026` also lists new or changed passports and
+children whose registration lacked a passport, while its own lead and body use
+different levels of certainty for the status consequence. Preserve the
+structured `affected-group-scope` and `legal-effect-certainty` conflicts. Do not
+infer one deadline from those shorthand categories. Use the T0 source
+`sejm-ukraine-transition-act-2026`: Article 25
 sets 31 August 2026 for identity confirmation where PESEL was assigned on the
 basis of a declaration and describes a 1 September status consequence when the
 specified confirmation did not occur; Article 26 uses a separate 60-day period

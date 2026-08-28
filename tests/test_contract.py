@@ -58,7 +58,7 @@ class ContractTests(unittest.TestCase):
         for key in ("name", "version", "description", "author", "license", "keywords"):
             self.assertEqual(codex[key], claude[key])
         self.assertEqual("poland", codex["name"])
-        self.assertEqual("0.2.1", codex["version"])
+        self.assertEqual("0.2.2", codex["version"])
         self.assertEqual("./.codex-mcp.json", codex["mcpServers"])
         self.assertLessEqual(len(codex["description"]), 240)
         self.assertEqual("https://github.com/Xopoko/poland", codex["interface"]["websiteURL"])
