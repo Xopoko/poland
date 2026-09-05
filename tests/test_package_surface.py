@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 import sys
+import tempfile
 import unittest
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 
@@ -11,6 +14,46 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class PackageSurfaceTests(unittest.TestCase):
+    def test_validator_accepts_current_verification_and_rejects_future_metadata(self):
+        with tempfile.TemporaryDirectory(prefix="poland-validation-") as directory:
+            checkout = Path(directory) / "package"
+            shutil.copytree(
+                ROOT,
+                checkout,
+                ignore=shutil.ignore_patterns(".git", "__pycache__", ".venv", "tmp"),
+            )
+            sources_path = checkout / "data" / "sources.json"
+            sources = json.loads(sources_path.read_text(encoding="utf-8"))
+            source = next(item for item in sources["sources"] if item["id"] == "udsc-home")
+            for days_ahead in (0, 2):
+                with self.subTest(days_ahead=days_ahead):
+                    source["last_verified"] = (
+                        datetime.now(timezone.utc).date() + timedelta(days=days_ahead)
+                    ).isoformat()
+                    sources_path.write_text(json.dumps(sources), encoding="utf-8")
+                    result = subprocess.run(
+                        [sys.executable, str(checkout / "scripts" / "validate_package.py")],
+                        cwd=checkout,
+                        capture_output=True,
+                        text=True,
+                        timeout=120,
+                    )
+                    payload = json.loads(result.stdout)
+                    if days_ahead == 0:
+                        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+                        self.assertTrue(payload["valid"])
+                    else:
+                        self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+                        self.assertFalse(payload["valid"])
+                        self.assertTrue(
+                            any(
+                                "SOURCE_VERIFICATION_DATE_IN_FUTURE" in error
+                                and "udsc-home" in error
+                                for error in payload["errors"]
+                            ),
+                            payload,
+                        )
+
     def test_standalone_validator_passes(self):
         result = subprocess.run(
             [sys.executable, str(ROOT / "scripts" / "validate_package.py")],

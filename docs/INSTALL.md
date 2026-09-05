@@ -222,12 +222,15 @@ From the repository root:
 
 ```bash
 python scripts/validate_package.py
-python scripts/poland.py validate --as-of 2026-08-21
-python scripts/poland.py doctor --host package --as-of 2026-08-21
+python scripts/poland.py validate
+python scripts/poland.py doctor --host package
 python -m unittest discover -s tests
 python scripts/token_report.py
 npm pack --dry-run --json
 ```
+
+Validation and doctor use the current UTC date by default. Reserve `--as-of`
+for intentional historical checks, where later verification dates are invalid.
 
 All default validation is network-free. The npm dry run is needed only when
 checking the pi/package archive surface; it must show all 33 skills, both MCP

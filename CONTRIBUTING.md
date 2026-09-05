@@ -48,10 +48,14 @@ a reviewed ADR, threat model, schemas, tests, and maintainer approval.
 
 ```bash
 python scripts/validate_package.py
-python scripts/poland.py validate --as-of 2026-08-20
+python scripts/poland.py validate
 python -m unittest discover -s tests
 python scripts/token_report.py
 ```
+
+Validation uses the current UTC date by default. Use `--as-of YYYY-MM-DD` only
+when intentionally inspecting a historical snapshot; later source verification
+dates are correctly rejected for that earlier date.
 
 Also inspect the final diff for secrets, private paths, personal data,
 unsupported capability claims, generated artifacts, and unreviewed source

@@ -74,7 +74,7 @@ Run before committing:
 
 ```bash
 python scripts/validate_package.py
-python scripts/poland.py validate --as-of 2026-08-21
+python scripts/poland.py validate
 python -m unittest discover -s tests
 python scripts/token_report.py
 ```
