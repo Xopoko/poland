@@ -464,7 +464,7 @@ def main() -> int:
     errors.extend(f"data contract: {item}" for item in validate_datasets(ROOT / "data"))
 
     cli = subprocess.run(
-        [sys.executable, str(ROOT / "scripts" / "poland.py"), "validate", "--as-of", "2026-08-28"],
+        [sys.executable, str(ROOT / "scripts" / "poland.py"), "validate"],
         cwd=ROOT,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -486,8 +486,6 @@ def main() -> int:
                     "doctor",
                     "--host",
                     host,
-                    "--as-of",
-                    "2026-08-28",
                     *extra,
                 ],
                 cwd=ROOT,
